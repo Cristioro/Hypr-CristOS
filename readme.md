@@ -9,6 +9,20 @@ Dotfiles personales para Hyprland y Waybar con integración de `Matugen` y `Quic
 - Temas generados automáticamente con `Matugen`
 - Selector de wallpaper integrado con `hyprquickpaper`
 
+## Capturas
+
+![Screenshot 1](assets/image0.png)
+
+![Screenshot 2](assets/image1.png)
+
+![Screenshot 3](assets/image2.png)
+
+![Screenshot 4](assets/image3.png)
+
+![Screenshot 5](assets/image4.png)
+
+![Screenshot 6](assets/image5.png)
+
 ## Herramientas principales
 
 ### Matugen
@@ -20,6 +34,7 @@ Componentes sincronizados:
 - Waybar (`colors.css`)
 - Kitty, Rofi, btop, Fastfetch
 - Quickshell (para hyprquickpaper)
+- Visual Studio Code (use el tema Name: [Matugen Theme](https://github.com/cristobal-rojas/matugen-vscode-theme))
 - Discord Theme (para BetterDiscord (funciona con otros clientes))
 
 Ubicación: `Dotsfile/.config/matugen/config.toml`
