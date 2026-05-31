@@ -1,0 +1,64 @@
+{
+    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+    "logo": {
+        "type": "builtin",
+        "height": 15,
+        "width": 30,
+        "padding": { "top": 5, "left": 3 }
+    },
+    "display": { "separator": "  " },
+    "modules": [
+        "break",
+        {
+            "type": "custom",
+            "format": "\u001b[38;2;{{ colors.outline_variant.default.red }};{{ colors.outline_variant.default.green }};{{ colors.outline_variant.default.blue }}m┌────────────────────────Hardware─────────────────────────┐"
+        },
+        { "type": "host", "key": "󰌢  PC", "keyColor": "{{ colors.primary.default.hex }}" },
+        { "type": "cpu", "key": "│ ├󰻠 ", "keyColor": "{{ colors.primary.default.hex }}" },
+        { "type": "gpu", "key": "│ ├󰍹 ", "keyColor": "{{ colors.primary.default.hex }}" },
+        { "type": "memory", "key": "│ ├󰑭 ", "keyColor": "{{ colors.primary.default.hex }}" },
+        { "type": "disk", "key": "└ └󰋊 ", "keyColor": "{{ colors.primary.default.hex }}" },
+        {
+            "type": "custom",
+            "format": "\u001b[38;2;{{ colors.outline_variant.default.red }};{{ colors.outline_variant.default.green }};{{ colors.outline_variant.default.blue }}m└─────────────────────────────────────────────────────────┘"
+        },
+        "break",
+        {
+            "type": "custom",
+            "format": "\u001b[38;2;{{ colors.outline_variant.default.red }};{{ colors.outline_variant.default.green }};{{ colors.outline_variant.default.blue }}m┌────────────────────────Software─────────────────────────┐"
+        },
+        { "type": "os", "key": "  OS", "keyColor": "{{ colors.secondary.default.hex }}" },
+        { "type": "kernel", "key": "│ ├󰌽 ", "keyColor": "{{ colors.secondary.default.hex }}" },
+        { "type": "bios", "key": "│ ├󰖡 ", "keyColor": "{{ colors.secondary.default.hex }}" },
+        { "type": "packages", "key": "│ ├󰏗 ", "keyColor": "{{ colors.secondary.default.hex }}" },
+        { "type": "shell", "key": "└ └󰞷 ", "keyColor": "{{ colors.secondary.default.hex }}" },
+        "break",
+        { "type": "de", "key": "󰧨  DE", "keyColor": "{{ colors.tertiary.default.hex }}" },
+        { "type": "lm", "key": "│ ├󰍁 ", "keyColor": "{{ colors.tertiary.default.hex }}" },
+        { "type": "wm", "key": "│ ├󱂬 ", "keyColor": "{{ colors.tertiary.default.hex }}" },
+        { "type": "wmtheme", "key": "│ ├󰉦 ", "keyColor": "{{ colors.tertiary.default.hex }}" },
+        { "type": "terminal", "key": "└ └󰆍 ", "keyColor": "{{ colors.tertiary.default.hex }}" },
+        {
+            "type": "custom",
+            "format": "\u001b[38;2;{{ colors.outline_variant.default.red }};{{ colors.outline_variant.default.green }};{{ colors.outline_variant.default.blue }}m└─────────────────────────────────────────────────────────┘"
+        },
+        "break",
+        {
+            "type": "custom",
+            "format": "\u001b[38;2;{{ colors.outline_variant.default.red }};{{ colors.outline_variant.default.green }};{{ colors.outline_variant.default.blue }}m┌────────────────────Uptime / Age / DT────────────────────┐"
+        },
+        {
+            "type": "command",
+            "key": "  ›  OS Age  ",
+            "keyColor": "{{ colors.error.default.hex }}",
+            "text": "birth_install=$(stat -c %W /); current=$(date +%s); time_progression=$((current - birth_install)); days_difference=$((time_progression / 86400)); echo $days_difference days"
+        },
+        { "type": "uptime", "key": "  ›  Uptime  ", "keyColor": "{{ colors.error.default.hex }}" },
+        { "type": "datetime", "key": "  ›  DateTime  ", "keyColor": "{{ colors.error.default.hex }}" },
+        {
+            "type": "custom",
+            "format": "\u001b[38;2;{{ colors.outline_variant.default.red }};{{ colors.outline_variant.default.green }};{{ colors.outline_variant.default.blue }}m└─────────────────────────────────────────────────────────┘"
+        },
+        { "type": "colors", "paddingLeft": 2, "symbol": "circle" }
+    ]
+}

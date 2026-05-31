@@ -1,0 +1,61 @@
+[config]
+mode = "dark"
+type = "scheme-tonal-spot"
+
+[templates.cava]
+input_path = "~/.config/matugen/templates/cava"
+output_path = "~/.config/cava/config"
+
+[templates.btop]
+input_path = '~/.config/matugen/templates/btop.theme'
+output_path = '~/.config/btop/themes/matugen.theme'
+post_hook = 'pkill -USR2 btop || true'
+
+[templates.fastfetch]
+input_path = "~/.config/matugen/templates/fastfetch.jsonc"
+output_path = "~/.config/fastfetch/config.jsonc"
+
+[templates.hyprland_lua]
+input_path = "~/.config/matugen/templates/hyprland.lua"
+output_path = "~/.config/hypr/settings/colors.lua"
+
+[templates.hyprquickpaper]
+input_path = "~/.config/matugen/templates/hyprquickpaper.json"
+output_path = "~/.config/quickshell/hyprquickpaper-copy/config.json"
+
+[templates.kitty]
+input_path = '~/.config/matugen/templates/kitty.conf'
+output_path = '~/.config/kitty/themes/Matugen.conf'
+post_hook = "kitty +kitten themes --reload-in=all Matugen"
+
+[templates.mako]
+input_path = '~/.config/matugen/templates/mako'
+output_path = '~/.config/mako/config'
+post_hook = 'makoctl reload'
+
+[templates.midnight_discord]
+input_path = "~/.config/matugen/templates/midnight.matugen.theme.css"
+output_path = "~/.config/BetterDiscord/themes/midnight.matugen.theme.css"
+
+[templates.rofi]
+input_path = "~/.config/matugen/templates/rofi.rasi"
+output_path = "~/.config/rofi/colors.rasi"
+
+[templates.waybar]
+input_path = '~/.config/matugen/templates/colors.css'
+output_path = '~/.config/waybar/colors.css'
+post_hook = 'pkill -SIGUSR2 waybar'
+
+# [templates.nvim]
+# input_path = '~/.config/matugen/templates/nvim.lua'
+# output_path = '~/.config/nvim/generated.lua'
+# post_hook = 'pkill -SIGUSR1 nvim'
+
+# VS Code matugen extension
+[templates.vscode-raw]
+input_path = '~/.config/matugen/templates/vscode/vscode-colors'
+output_path = '~/.cache/matugen/vscode-colors'
+
+[templates.vscode-json]
+input_path = '~/.config/matugen/templates/vscode/vscode-colors.json'
+output_path = '~/.cache/matugen/vscode-colors.json'

@@ -1,0 +1,64 @@
+{
+    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+    "logo": {
+        "type": "builtin",
+        "height": 15,
+        "width": 30,
+        "padding": { "top": 5, "left": 3 }
+    },
+    "display": { "separator": "  " },
+    "modules": [
+        "break",
+        {
+            "type": "custom",
+            "format": "\u001b[38;2;82;67;67m┌────────────────────────Hardware─────────────────────────┐"
+        },
+        { "type": "host", "key": "󰌢  PC", "keyColor": "#ffb3b3" },
+        { "type": "cpu", "key": "│ ├󰻠 ", "keyColor": "#ffb3b3" },
+        { "type": "gpu", "key": "│ ├󰍹 ", "keyColor": "#ffb3b3" },
+        { "type": "memory", "key": "│ ├󰑭 ", "keyColor": "#ffb3b3" },
+        { "type": "disk", "key": "└ └󰋊 ", "keyColor": "#ffb3b3" },
+        {
+            "type": "custom",
+            "format": "\u001b[38;2;82;67;67m└─────────────────────────────────────────────────────────┘"
+        },
+        "break",
+        {
+            "type": "custom",
+            "format": "\u001b[38;2;82;67;67m┌────────────────────────Software─────────────────────────┐"
+        },
+        { "type": "os", "key": "  OS", "keyColor": "#e6bdbc" },
+        { "type": "kernel", "key": "│ ├󰌽 ", "keyColor": "#e6bdbc" },
+        { "type": "bios", "key": "│ ├󰖡 ", "keyColor": "#e6bdbc" },
+        { "type": "packages", "key": "│ ├󰏗 ", "keyColor": "#e6bdbc" },
+        { "type": "shell", "key": "└ └󰞷 ", "keyColor": "#e6bdbc" },
+        "break",
+        { "type": "de", "key": "󰧨  DE", "keyColor": "#e5c18d" },
+        { "type": "lm", "key": "│ ├󰍁 ", "keyColor": "#e5c18d" },
+        { "type": "wm", "key": "│ ├󱂬 ", "keyColor": "#e5c18d" },
+        { "type": "wmtheme", "key": "│ ├󰉦 ", "keyColor": "#e5c18d" },
+        { "type": "terminal", "key": "└ └󰆍 ", "keyColor": "#e5c18d" },
+        {
+            "type": "custom",
+            "format": "\u001b[38;2;82;67;67m└─────────────────────────────────────────────────────────┘"
+        },
+        "break",
+        {
+            "type": "custom",
+            "format": "\u001b[38;2;82;67;67m┌────────────────────Uptime / Age / DT────────────────────┐"
+        },
+        {
+            "type": "command",
+            "key": "  ›  OS Age  ",
+            "keyColor": "#ffb4ab",
+            "text": "birth_install=$(stat -c %W /); current=$(date +%s); time_progression=$((current - birth_install)); days_difference=$((time_progression / 86400)); echo $days_difference days"
+        },
+        { "type": "uptime", "key": "  ›  Uptime  ", "keyColor": "#ffb4ab" },
+        { "type": "datetime", "key": "  ›  DateTime  ", "keyColor": "#ffb4ab" },
+        {
+            "type": "custom",
+            "format": "\u001b[38;2;82;67;67m└─────────────────────────────────────────────────────────┘"
+        },
+        { "type": "colors", "paddingLeft": 2, "symbol": "circle" }
+    ]
+}

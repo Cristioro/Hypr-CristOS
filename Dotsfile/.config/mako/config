@@ -1,0 +1,31 @@
+format=<span size="x-large"><b><span color="#ffdad9">%s</span></b></span>\n<span size="medium">%b</span>
+
+# ===== GENERAL =====
+font=JetBrainsMono Nerd Font Bold 10
+default-timeout=3000
+ignore-timeout=1
+
+# ===== COLORES =====
+background-color=#0b0c0cCC
+text-color=#ffdad9
+border-color=#561d20
+progress-color=#561d20
+
+# ===== DISEÑO =====
+border-size=1
+border-radius=12
+padding=10
+margin=10
+
+# ===== POSICIÓN =====
+anchor=top-right
+
+# ===== ICONOS =====
+icons=1
+max-icon-size=48
+
+# ===== COMPORTAMIENTO =====
+layer=overlay
+markup=1
+
+# Per-mode settings

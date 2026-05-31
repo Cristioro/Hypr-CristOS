@@ -1,0 +1,194 @@
+@import "~/.cache/wallust/rofi.rasi"
+
+configuration {
+  matching: "normal";
+  display-drun: " Apps ";
+  display-run: "  Run ";
+  display-Network: " 󰀂 Network";
+  display-window: "Windows:";
+  drun-display-format: "{name}";
+  font: "JetbrainsMono Nerd Font 12";
+  modi: "run,drun";
+  show-icons: true;
+}
+
+window {
+   background-color: rgba(0, 0, 0, 0.6);
+   width: 40%;
+   padding: 10px;
+   fullscreen: false;
+   border: 4px;
+   border-color: @color1;
+   border-radius: 7px;
+}
+
+mainbox {
+   spacing: 5px;
+   background-color: transparent;
+   border-radius: 20px;
+}
+
+message {
+   background-color: transparent;
+   padding: 10px 10px;
+   border-radius: 20px;
+}
+
+textbox {
+   text-color: @foreground;
+   background-color: transparent;
+   border-radius: 20px;
+}
+
+listview {
+   background-color: transparent;
+   fixed-height: true;
+   dynamic: false;
+   scrollbar: false;
+   spacing: 0px;
+   padding: 5px 0px 0px 0px;
+   margin: 1px;
+   border-radius: 20px;
+}
+
+element {
+   spacing: 5px;
+   background-color: transparent;
+   children: [ element-icon, element-text ];
+   padding: 4px 10px;
+   border-radius: 20px;
+}
+
+element-icon {
+   size: 22px;
+   background-color: transparent;
+   text-color: @foreground;
+}
+
+element-text {
+   background-color: transparent;
+   text-color: @foreground;
+   vertical-align: 0.5;
+}
+
+element-text selected.normal {
+   text-color: @background;
+}
+
+element normal.normal {
+   padding: 0px 15px;
+   border-radius: 20px;
+   background-color: transparent;
+   text-color: @foreground;
+}
+
+element normal.urgent {
+   background-color: transparent;
+   text-color: @color1;
+}
+
+element normal.active {
+   background-color: transparent;
+   text-color: @color1;
+   border-radius: 20px;
+}
+
+element selected.normal {
+   border-radius: 20px;
+   background-color: @color1;
+   text-color: @background;
+}
+
+element selected.urgent {
+   border-radius: 20px;
+   background-color: @color1;
+   text-color: @background;
+}
+
+element selected.active {
+   border-radius: 20px;
+   background-color: @color1;
+   text-color: @background;
+}
+
+element alternate.normal {
+   border-radius: 20px;
+   background-color: transparent;
+   text-color: @foreground;
+}
+
+element alternate.urgent {
+   background-color: transparent;
+   text-color: @color1;
+   border-radius: 20px;
+}
+
+element alternate.active {
+   background-color: transparent;
+   text-color: @color1;
+   border-radius: 20px;
+}
+
+scrollbar {
+   background-color: transparent;
+   handle-color: @color1;
+   handle-width: 0px;
+   border-radius: 20px;
+}
+
+mode-switcher {
+   background-color: transparent;
+   border-radius: 20px;
+}
+
+button {
+   background-color: transparent;
+   text-color: @foreground;
+   border-radius: 20px;
+}
+
+button selected {
+   text-color: @background;
+   background-color: @color1;
+   border-radius: 20px;
+}
+
+inputbar {
+   background-color: transparent;
+   spacing: 0px;
+   children: [ prompt, textbox-prompt-colon, entry, case-indicator ];
+   border-radius: 20px;
+}
+
+prompt {
+   padding: 0px 10px;
+   border-radius: 20px;
+   background-color: transparent;
+   text-color: @color1;
+}
+
+entry {
+   placeholder: "Search...";
+   background-color: transparent;
+   text-color: @foreground;
+   placeholder-color: @color1;
+   padding: 0px 6px;
+   cursor-width: 11px;
+}
+
+case-indicator {
+   padding: 6px 10px;
+   text-color: @color3;
+   background-color: transparent;
+   border-radius: 20px;
+}
+
+textbox-prompt-colon {
+   padding: 0px 0px;
+   expand: false;
+   str: "";
+   margin: 0px 0.3em 0em 0em;
+   border-radius: 20px;
+   text-color: @foreground;
+   background-color: transparent;
+}

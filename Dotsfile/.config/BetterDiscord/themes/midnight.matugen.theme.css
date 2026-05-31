@@ -1,0 +1,143 @@
+/**
+ * @name midnight Matugen
+ * @description Midnight theme with Matugen colors and mica blur.
+ * @author refact0r & matugen
+ * @version 1.0.0
+ * @invite nz87hXyvcy
+ * @website https://github.com/refact0r/midnight-discord
+ * @source https://github.com/refact0r/midnight-discord/blob/master/midnight.theme.css
+*/
+
+@import url('https://refact0r.github.io/midnight-discord/build/midnight.css');
+
+body {
+    /* transparency/blur options (mica effect) */
+    --transparency-tweaks: on;
+    --remove-bg-layer: on;
+    --panel-blur: on;
+    --blur-amount: 12px;
+    --bg-floating: var(--bg-3);
+
+    /* font options */
+    --font: 'figtree';
+    --code-font: '';
+    font-weight: 400;
+
+    /* sizes */
+    --gap: 12px;
+    --divider-thickness: 4px;
+    --border-thickness: 1px;
+
+    /* animation/transition options */
+    --animations: on;
+    --list-item-transition: 0.2s ease;
+    --dms-icon-svg-transition: 0.4s ease;
+    --border-hover-transition: 0.2s ease;
+
+    /* top bar options */
+    --top-bar-height: var(--gap);
+    --top-bar-button-position: titlebar;
+    --top-bar-title-position: off;
+    --subtle-top-bar-title: off;
+
+    /* window controls */
+    --custom-window-controls: on;
+    --window-control-size: 14px;
+
+    /* dms button options */
+    --custom-dms-icon: custom;
+    --dms-icon-svg-url: url("https://refact0r.github.io/midnight-discord/assets/Font_Awesome_5_solid_moon.svg");
+    --dms-icon-svg-size: 90%;
+    --dms-icon-color-before: var(--icon-secondary);
+    --dms-icon-color-after: var(--white);
+    --custom-dms-background: off;
+    --dms-background-image-url: url("");
+    --dms-background-image-size: cover;
+    --dms-background-color: linear-gradient(70deg, var(--blue-2), var(--purple-2), var(--red-2));
+
+    /* background image options */
+    --background-image: off;
+    --background-image-url: url("");
+
+    /* chatbar options */
+    --custom-chatbar: aligned;
+    --chatbar-height: 47px;
+    --chatbar-padding: 8px;
+
+    /* other options */
+    --small-user-panel: on;
+
+    /* top left corner text */
+    --corner-text: 'Midnight Matugen';
+}
+
+:root {
+    /* status indicators */
+    --online-indicator: #8f4a4c;
+    --dnd-indicator: #ffb4ab;
+    --idle-indicator: #5b421a;
+    --streaming-indicator: #561d20;
+
+    /* accent colors */
+    --accent-1: #e5c18d;
+    --accent-2: #ffb3b3;
+    --accent-3: #ffb3b3;
+    --accent-4: #423736;
+    --accent-5: #ffb3b3;
+    --accent-new: #8f4a4c;
+    --mention: #1a1111;
+    --mention-hover: #423736;
+
+    /* text colors */
+    --text-0: #1a1111;
+    --text-1: #f0dede;
+    --text-2: #f0dede;
+    --text-3: #d7c1c1;
+    --text-4: #382e2e;
+    --text-5: #a08c8c;
+
+    /* background and dark colors with alpha for mica blur (70% opacity) */
+    --bg-1: #524343;
+    --bg-2: #322827;
+    --bg-3: #221919;
+    --bg-4: color-mix(in srgb, #1a1111 70%, transparent);
+    --hover: #423736;
+    --active: #423736;
+    --message-hover: #423736;
+
+    /* roundness */
+    --roundness-xl: 22px;
+    --roundness-l: 20px;
+    --roundness-m: 16px;
+    --roundness-s: 12px;
+    --roundness-xs: 10px;
+    --roundness-xxs: 8px;
+
+    /* discord icon */
+    --discord-icon: none;
+    --moon-icon: block;
+    --moon-icon-url: url('https://upload.wikimedia.org/wikipedia/commons/c/c4/Font_Awesome_5_solid_moon.svg');
+    --moon-icon-size: auto;
+
+    --read-channel-color: color-mix(in srgb, var(--text-5), #000 30%);
+    --unread-channel-color: var(--text-1);
+}
+
+/* Selected chat/friend text */
+.selected_f5eb4b,
+.selected_f6f816 .link_d8bfb3 {
+    color: var(--text-0) !important;
+    background: var(--accent-3) !important;
+}
+
+.selected_f6f816 .link_d8bfb3 * {
+    color: var(--text-0) !important;
+    fill: var(--text-0) !important;
+}
+
+.modeDefault_f6f816 .link_d8bfb3 {
+    color: var(--read-channel-color) !important;
+}
+.modeUnread_f6f816 .link_d8bfb3 {
+    color: var(--unread-channel-color) !important;
+}
