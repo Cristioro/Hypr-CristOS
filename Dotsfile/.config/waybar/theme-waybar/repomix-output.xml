@@ -1,0 +1,8808 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+V1/
+  "put this is in hypr folder and rename this folder to scripts/
+    make-sure-to-make-it-executable.txt
+    volume.sh
+  config.jsonc
+  media.sh
+  ModulesCustom.txt
+  style.css
+V1.5/
+  config.jsonc
+  Modules
+  ModulesCustom
+  style.css
+V2/
+  config.jsonc
+  style.css
+V2.4/
+  config.jsonc
+  style.css
+V2.8/
+  config.jsonc
+  style.css
+V3/
+  config.jsonc
+  style.css
+V3.xa/
+  config.jsonc
+  style.css
+V3.Ω/
+  config.jsonc
+  metastats.sh
+  style.css
+  workspaces.sh
+V3.Ωx/
+  bottom/
+    config
+    style.css
+  cava.sh
+  config.jsonc
+  metastats.sh
+  secbar.sh
+  style.css
+  sysbar.sh
+  theme.sh
+  window.sh
+V4/
+  config.jsonc
+  style.css
+  window.sh
+V4.x/
+  config.jsonc
+  style.css
+  window.sh
+V4.y/
+  configs/
+    bar.jsonc
+    dock.jsonc
+  styles/
+    bar.css
+    dock.css
+  config.jsonc
+  mode.sh
+  style.css
+  window.sh
+V5/
+  config.jsonc
+  style.css
+  window.sh
+V6/
+  config.jsonc
+  style.css
+  window.sh
+V7/
+  clock.sh
+  config.jsonc
+  style.css
+  window.sh
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="V1/"put this is in hypr folder and rename this folder to scripts/make-sure-to-make-it-executable.txt">
+
+</file>
+
+<file path="V1/"put this is in hypr folder and rename this folder to scripts/volume.sh">
+#!/bin/bash
+# /* ---- 💫 https://github.com/JaKooLit 💫 ---- */  ##
+# Scripts for volume controls for audio and mic 
+
+iDIR="$HOME/.config/swaync/icons"
+sDIR="$HOME/.config/hypr/scripts"
+
+# Get Volume
+get_volume() {
+    volume=$(pamixer --get-volume)
+    if [[ "$volume" -eq "0" ]]; then
+        echo "Muted"
+    else
+        echo "$volume %"
+    fi
+}
+
+# Get icons
+get_icon() {
+    current=$(get_volume)
+    if [[ "$current" == "Muted" ]]; then
+        echo "$iDIR/volume-mute.png"
+    elif [[ "${current%\%}" -le 30 ]]; then
+        echo "$iDIR/volume-low.png"
+    elif [[ "${current%\%}" -le 60 ]]; then
+        echo "$iDIR/volume-mid.png"
+    else
+        echo "$iDIR/volume-high.png"
+    fi
+}
+
+# Notify
+notify_user() {
+    if [[ "$(get_volume)" == "Muted" ]]; then
+        notify-send -e -h string:x-canonical-private-synchronous:volume_notif -u low -i "$(get_icon)" " Volume:" " Muted"
+    else
+        notify-send -e -h int:value:"$(get_volume | sed 's/%//')" -h string:x-canonical-private-synchronous:volume_notif -u low -i "$(get_icon)" " Volume Level:" " $(get_volume)" &&
+        "$sDIR/Sounds.sh" --volume
+    fi
+}
+
+# Increase Volume
+inc_volume() {
+    if [ "$(pamixer --get-mute)" == "true" ]; then
+        toggle_mute
+    else
+        pamixer -i 5 --allow-boost --set-limit 150 && notify_user
+    fi
+}
+
+# Decrease Volume
+dec_volume() {
+    if [ "$(pamixer --get-mute)" == "true" ]; then
+        toggle_mute
+    else
+        pamixer -d 5 && notify_user
+    fi
+}
+
+# Toggle Mute
+toggle_mute() {
+	if [ "$(pamixer --get-mute)" == "false" ]; then
+		pamixer -m && notify-send -e -u low -i "$iDIR/volume-mute.png" " Mute"
+	elif [ "$(pamixer --get-mute)" == "true" ]; then
+		pamixer -u && notify-send -e -u low -i "$(get_icon)" " Volume:" " Switched ON"
+	fi
+}
+
+# Toggle Mic
+toggle_mic() {
+	if [ "$(pamixer --default-source --get-mute)" == "false" ]; then
+		pamixer --default-source -m && notify-send -e -u low -i "$iDIR/microphone-mute.png" " Microphone:" " Switched OFF"
+	elif [ "$(pamixer --default-source --get-mute)" == "true" ]; then
+		pamixer -u --default-source u && notify-send -e -u low -i "$iDIR/microphone.png" " Microphone:" " Switched ON"
+	fi
+}
+# Get Mic Icon
+get_mic_icon() {
+    current=$(pamixer --default-source --get-volume)
+    if [[ "$current" -eq "0" ]]; then
+        echo "$iDIR/microphone-mute.png"
+    else
+        echo "$iDIR/microphone.png"
+    fi
+}
+
+# Get Microphone Volume
+get_mic_volume() {
+    volume=$(pamixer --default-source --get-volume)
+    if [[ "$volume" -eq "0" ]]; then
+        echo "Muted"
+    else
+        echo "$volume %"
+    fi
+}
+
+# Notify for Microphone
+notify_mic_user() {
+    volume=$(get_mic_volume)
+    icon=$(get_mic_icon)
+    notify-send -e -h int:value:"$volume" -h "string:x-canonical-private-synchronous:volume_notif" -u low -i "$icon"  " Mic Level:" " $volume"
+}
+
+# Increase MIC Volume
+inc_mic_volume() {
+    if [ "$(pamixer --default-source --get-mute)" == "true" ]; then
+        toggle_mic
+    else
+        pamixer --default-source -i 5 && notify_mic_user
+    fi
+}
+
+# Decrease MIC Volume
+dec_mic_volume() {
+    if [ "$(pamixer --default-source --get-mute)" == "true" ]; then
+        toggle-mic
+    else
+        pamixer --default-source -d 5 && notify_mic_user
+    fi
+}
+
+# Execute accordingly
+if [[ "$1" == "--get" ]]; then
+	get_volume
+elif [[ "$1" == "--inc" ]]; then
+	inc_volume
+elif [[ "$1" == "--dec" ]]; then
+	dec_volume
+elif [[ "$1" == "--toggle" ]]; then
+	toggle_mute
+elif [[ "$1" == "--toggle-mic" ]]; then
+	toggle_mic
+elif [[ "$1" == "--get-icon" ]]; then
+	get_icon
+elif [[ "$1" == "--get-mic-icon" ]]; then
+	get_mic_icon
+elif [[ "$1" == "--mic-inc" ]]; then
+	inc_mic_volume
+elif [[ "$1" == "--mic-dec" ]]; then
+	dec_mic_volume
+else
+	get_volume
+fi
+</file>
+
+<file path="V1/config.jsonc">
+{
+    "layer": "top",
+    "position": "top",
+    "margin-top": 5,
+    "width": 1250,
+    "modules-left": [ "hyprland/workspaces", "custom/media", "sway/mode"],
+    "modules-center": [ "clock" ],
+    "modules-right": ["tray", "network", "pulseaudio" ],
+    "sway/window": {
+        "max-length": 50
+    },
+    "battery": {
+        "format": "{capacity}% {icon}",
+        "format-icons": ["", "", "", "", ""]
+    },
+    "clock": {
+	  "interval": 1,
+    "format": " {:%I:%M %p}", // AM PM format
+    //"format": " {:%H:%M:%S}",// 24H
+	  "format-alt": " {:%H:%M   %Y, %d %B, %A}",
+	  "tooltip-format": "<tt><small>{calendar}</small></tt>",
+	  "calendar": {
+		"mode": "year",
+		"mode-mon-col": 3,
+		"weeks-pos": "right",
+		"on-scroll": 1,
+		"format": {
+			"months": "<span color='#ffead3'><b>{}</b></span>",
+			"days": "<span color='#ecc6d9'><b>{}</b></span>",
+			"weeks": "<span color='#99ffdd'><b>W{}</b></span>",
+			"weekdays": "<span color='#ffcc66'><b>{}</b></span>",
+			"today": "<span color='#ff6699'><b><u>{}</u></b></span>"
+		}
+  }
+    },
+    "pulseaudio": {
+    "format": "{volume}% {icon}",
+    "format-bluetooth": "{volume}% {icon}",
+    "format-muted": "󰝟",
+    "format-icons": {
+        "alsa_output.pci-0000_00_1f.3.analog-stereo": "",
+        "alsa_output.pci-0000_00_1f.3.analog-stereo-muted": "",
+        "headphone": "",
+        "hands-free": "",
+        "headset": "",
+        "phone": "",
+        "phone-muted": "",
+        "portable": "",
+        "car": "",
+        "default": ["", ""]
+    },
+    "scroll-step": 1,
+    "on-click": "pavucontrol",
+    "ignored-sinks": ["Easy Effects Sink"]
+   
+    },
+
+     "network": {
+    "interface": "enp2s0",
+    "format": "{ifname}",
+    "format-wifi": "{essid} ({signalStrength}%) ",
+    "format-ethernet": "󰈀",
+    "format-disconnected": "", //An empty format will hide the module.
+    "tooltip-format": "{ifname} via {gwaddr} 󰊗",
+    "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
+    "tooltip-format-ethernet": "{ifname} ",
+    "tooltip-format-disconnected": "Disconnected",
+    "max-length": 50
+  },
+  
+ "hyprland/workspaces": {
+	"format": "{name}",
+       "persistent-workspaces": {
+             "*": 5
+       }
+  },
+    
+  "custom/omarchy": {
+    "format": "<span font='omarchy'>\ue900</span>",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space"
+  },
+  
+  "tray": {
+    "icon-size": 12,
+    "spacing": 10,
+    "icons": {
+        "blueman": "bluetooth",
+        "TelegramDesktop": "$HOME/.local/share/icons/hicolor/16x16/apps/telegram.png"
+    }
+  },
+   
+  "custom/media": {
+    "exec": "~/.config/waybar/media.sh",
+    "interval": 1,
+    "return-type": "string",
+    "on-click": "playerctl play-pause",
+    "tooltip": false
+  },
+
+  "mpris": {
+	"interval": 10,
+	"format": "{player_icon} <i>{dynamic}</i>",
+	"format-paused": "{status_icon} <i>{artist} {title}</i>",
+	"on-click-middle": "playerctl play-pause",
+	"on-click": "playerctl previous",
+	"on-click-right": "playerctl next",
+	"scroll-step": 5.0,
+	"on-scroll-up": "$HOME/.config/hypr/scripts/volume.sh --inc",
+	"on-scroll-down": "$HOME/.config/hypr/scripts/volume.sh --dec",
+	"smooth-scrolling-threshold": 1,
+	"tooltip": true,
+	"tooltip-format": "{status_icon} {dynamic}\nLeft Click: previous\nMid Click: Pause\nRight Click: Next",
+	"player-icons": {
+		"chromium": "",
+		"default": "",
+		"firefox": "",
+		"kdeconnect": "",
+		"mopidy": "",
+		"mpv": "󰐹",
+		"spotify": "",
+		"vlc": "󰕼",
+	},
+	"status-icons": {
+		"paused": "󰐎",
+		"playing": "",
+		"stopped": "",
+	},
+	"dynamic-order": ["artist", "title"],
+	"ignored-players": ["firefox", "zen"],
+	"max-length": 50,
+}
+ 
+}
+</file>
+
+<file path="V1/media.sh">
+#!/bin/bash
+
+status=$(playerctl status 2>/dev/null)
+
+if [ "$status" = "Playing" ]; then
+    icon=""   # pause icon
+else
+    icon=""   # play icon
+fi
+
+artist=$(playerctl metadata artist 2>/dev/null)
+title=$(playerctl metadata title 2>/dev/null)
+
+if [ -z "$artist" ] && [ -z "$title" ]; then
+    echo "$icon  Nothing playing"
+else
+    echo "$icon  $artist - $title"
+fi
+</file>
+
+<file path="V1/ModulesCustom.txt">
+//* ---- 💫 https://github.com/JaKooLit 💫 ---- *//
+/* Waybar Modules - Custom Modules */
+/* Basically created to reduce the lines in Waybar Modules bank */
+/* NOTE: This is only for Custom Modules */
+/* Custom Modules like weather browser, tty, file manager at the beginning */
+
+{
+"custom/weather": {
+	"format": "{}",
+	"format-alt": "{alt}: {}",
+	"format-alt-click": "click",
+	"interval": 3600,
+	"return-type": "json",
+	"exec": "$HOME/.config/hypr/UserScripts/Weather.py",
+	//"exec": "$HOME/.config/hypr/UserScripts/Weather.sh",
+	//"exec-if": "ping wttr.in -c1",
+	"tooltip": true,
+},
+
+"custom/file_manager": {
+	"format": " ",
+	"on-click": "xdg-open . &",
+	"tooltip": true,
+	"tooltip-format": "File Manager",
+},
+
+"custom/tty": {
+	"format": " ",
+	"on-click": "$HOME/.config/hypr/scripts/WaybarScripts.sh --term",
+	"tooltip": true,
+	"tooltip-format": "Launch Terminal",
+},
+
+"custom/browser": {
+	"format": " ",
+	"on-click": "xdg-open https://",
+	"tooltip": true,
+	"tooltip-format": "Launch Browser",
+},
+
+"custom/settings": {
+	"format": " ",
+	"on-click": "$HOME/.config/hypr/scripts/Kool_Quick_Settings.sh",
+	"tooltip": true,
+	"tooltip-format": "Launch KooL Hyprland Settings Menu",
+},
+
+"custom/cycle_wall": {
+	"format": " ",
+	"on-click": "$HOME/.config/hypr/UserScripts/WallpaperSelect.sh",
+	"on-click-right": "$HOME/.config/hypr/UserScripts/WallpaperRandom.sh",
+	"on-click-middle": "$HOME/.config/hypr/scripts/WaybarStyles.sh",
+	"tooltip": true,
+	"tooltip-format": "Left Click: Wallpaper Menu\nMiddle Click: Random wallpaper\nRight Click: Waybar Styles Menu",
+},
+
+"custom/hint": {
+	"format": "󰺁 HINT!",
+	"on-click": "$HOME/.config/hypr/scripts/KeyHints.sh",
+	"on-click-right": "$HOME/.config/hypr/scripts/KeyBinds.sh",
+	"tooltip": true,
+	"tooltip-format": "Left Click: Quick Tips\nRight Click: Keybinds",
+},
+
+"custom/dot_update": {
+	"format": " 󰁈 ",
+	"on-click": "$HOME/.config/hypr/scripts/KooLsDotsUpdate.sh",
+	"tooltip": true,
+	"tooltip-format": "Check KooL Dots update\nIf available",
+},
+
+// Hypridle inhibitor
+"custom/hypridle": {
+	"format": "󱫗 ",
+	"return-type": "json",
+	"escape": true,
+	"exec-on-event": true,
+	"interval": 60,
+	"exec": "$HOME/.config/hypr/scripts/Hypridle.sh status",
+	"on-click": "$HOME/.config/hypr/scripts/Hypridle.sh toggle",
+	"on-click-right": "hyprlock"
+},
+
+"custom/keyboard": {
+	"exec": "cat $HOME/.cache/kb_layout",
+	"interval": 1,
+	"format": " {}",
+	"on-click": "$HOME/.config/hypr/scripts/SwitchKeyboardLayout.sh",
+},
+
+"custom/light_dark": {
+	"format": "󰔎 ",
+	"on-click": "$HOME/.config/hypr/scripts/DarkLight.sh",
+	"on-click-right": "$HOME/.config/hypr/scripts/WaybarStyles.sh",
+	"on-click-middle": "$HOME/.config/hypr/UserScripts/WallpaperSelect.sh",
+	"tooltip": true,
+	"tooltip-format": "Left Click: Switch Dark-Light Themes\nMiddle Click: Wallpaper Menu\nRight Click: Waybar Styles Menu",
+},
+
+"custom/lock": {
+	"format": "󰌾",
+	"on-click": "$HOME/.config/hypr/scripts/LockScreen.sh",
+	"tooltip": true,
+	"tooltip-format": "󰷛 Screen Lock",
+},
+
+"custom/menu": {
+	"format": "  ",
+	"on-click": "pkill rofi || rofi -show drun -modi run,drun,filebrowser,window",
+	"on-click-middle": "$HOME/.config/hypr/UserScripts/WallpaperSelect.sh",
+	"on-click-right": "$HOME/.config/hypr/scripts/WaybarLayout.sh",
+	"tooltip": true,
+	"tooltip-format": "Left Click: Rofi Menu\nMiddle Click: Wallpaper Menu\nRight Click: Waybar Layout Menu",
+},
+// This is a custom cava visualizer
+"custom/cava_mviz": {
+	"exec": "$HOME/.config/hypr/scripts/waybarcava.sh",
+	"format": "{}"
+},
+
+"custom/playerctl": {
+	"format": "<span>{}</span>",
+	"return-type": "json",
+	"max-length": 25,
+	"exec": "playerctl -a metadata --format '{\"text\": \"{{artist}}  {{markup_escape(title)}}\", \"tooltip\": \"{{playerName}} : {{markup_escape(title)}}\", \"alt\": \"{{status}}\", \"class\": \"{{status}}\"}' -F",
+	"on-click-middle": "playerctl play-pause",
+	"on-click": "playerctl previous",
+	"on-click-right": "playerctl next",
+	"scroll-step": 5.0,
+	"on-scroll-up": "$HOME/.config/hypr/scripts/volume.sh --inc",
+	"on-scroll-down": "$HOME/.config/hypr/scripts/volume.sh --dec",
+	"smooth-scrolling-threshold": 1,
+},
+    
+"custom/power": {
+	"format": "⏻",
+	"on-click": "$HOME/.config/hypr/scripts/Wlogout.sh",
+	"on-click-right": "$HOME/.config/hypr/scripts/ChangeBlur.sh",
+	"tooltip": true,
+	"tooltip-format":"Logout Menu",
+},
+
+"custom/reboot": {
+    "format": "󰜉",
+    "on-click": "systemctl reboot",
+    "tooltip": true,
+	"tooltip-format": "Left Click: Reboot",
+},
+    
+"custom/quit": {
+    "format": "󰗼",
+    "on-click": "hyprctl dispatch exit",
+    "tooltip": true,
+	"tooltip-format": "Left Click: Exit Hyprland",
+},
+
+"custom/swaync": {
+	"tooltip": true,
+	"tooltip-format": "Left Click: Launch Notification Center\nRight Click: Do not Disturb",
+	"format": "{} {icon} ",
+	"format-icons": {
+		"notification": "<span foreground='red'><sup></sup></span>",
+		"none": "",
+		"dnd-notification": "<span foreground='red'><sup></sup></span>",
+		"dnd-none": "",
+		"inhibited-notification": "<span foreground='red'><sup></sup></span>",
+		"inhibited-none": "",
+		"dnd-inhibited-notification": "<span foreground='red'><sup></sup></span>",
+		"dnd-inhibited-none": ""
+	},
+	"return-type": "json",
+	"exec-if": "which swaync-client",
+	"exec": "swaync-client -swb",
+	"on-click": "sleep 0.1 && swaync-client -t -sw",
+	"on-click-right": "swaync-client -d -sw",
+	"escape": true,
+},
+// NOTE:! This is mainly for Arch and Arch Based Distros  depend: pacman-contrib
+// Other Distro dont have notifications but can use to check for update for any other distro
+"custom/updater": {
+	"format": " {}",
+	"exec": "checkupdates | wc -l",
+	"exec-if": "[[ $(checkupdates | wc -l) ]]",
+	"interval": 43200, // (Arch Linux will try to check 12 hrs interval only
+	"on-click": "$HOME/.config/hypr/scripts/Distro_update.sh",
+	"tooltip": true,
+	"tooltip-format": "Left Click: Update System\nArch (w/ notification)\nFedora, OpenSuse, Debian/Ubuntu click to update",
+},
+// Separators
+"custom/separator#dot": {
+	"format": "",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#dot-line": {
+	"format": "",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#line": {
+	"format": "|",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#blank": {
+	"format": "",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#blank_2": {
+	"format": "  ",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#blank_3": {
+	"format": "   ",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/arrow1": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow2": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow3": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow4": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow5": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow6": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow7": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow8": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow9": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow10": {
+	"format": "",
+	"tooltip": false
+}
+}
+</file>
+
+<file path="V1/style.css">
+* {
+    border: none;
+    font-family: "SF Pro Display", "JetBrainsMono Nerd Font Propo";
+    font-size: 10px;
+    
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+}
+
+window#waybar {
+    background: transparent;
+    color: white;
+}
+
+tooltip {
+  background: rgba(4, 4, 4, 0.5);
+  border: 1px solid rgba(100, 114, 125, 0.5);
+}
+tooltip label {
+  color: white;
+}
+
+#workspaces {
+    transition: all 150ms ease-in-out;
+}
+
+#workspaces button {
+    transition: all 150ms ease-in-out;
+    padding: 0px 0px;
+    background:alpha(#121212, 0.4);
+    color: white;
+    border: 1px solid #434343;
+    border-radius: 10px;
+    margin: 0 2px;
+}
+
+#workspaces button.active {
+    border: 1px solid aliceblue;
+    background-color:aliceblue;
+    color:#121212;
+    transition: all 150ms ease-in-out;
+    min-width: 35px;
+    border-radius: 100px;
+}
+
+#clock {
+    font-weight: 800;
+    background:alpha(#121212, 0.4);
+    border-radius: 8px;
+    padding: 0px 5px;
+}
+
+#pulseaudio {
+    font-weight: 800;
+    background:alpha(#121212, 0.4);
+    border-radius: 8px;
+    padding: 0px 5px;
+}
+
+#tray {
+    font-weight: 800;
+    background:alpha(#121212, 0.4);
+    border-radius: 8px;
+    padding: 0px 5px;
+    margin: 0 2px;
+}
+
+#custom-media {
+    margin: 0 2px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    color: aliceblue; /* aliceblue */
+    font-weight: bold;
+}
+
+#network {
+    font-weight: 800;
+    background:alpha(#121212, 0.4);
+    border-radius: 8px;
+    padding: 0px 5px;
+    margin: 0 2px;
+}
+
+#mpris {
+    margin: 0 2px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    color: aliceblue; /* aliceblue */
+    font-weight: bold;
+}
+</file>
+
+<file path="V1.5/config.jsonc">
+{
+   "include": [
+     "$HOME/.config/waybar/Modules",
+     "$HOME/.config/waybar/ModulesCustom",
+     ],
+
+    "layer": "top",
+    "position": "top",
+    "margin-top": 5,
+    "width": 1340,
+    "modules-left": [ "clock", "group/main", "tray", "hyprland/workspaces", "mpris"],
+    "modules-center": [ ],
+    "modules-right": [ "custom/update", "network", "pulseaudio", "custom/power"  ],
+    "sway/window": {
+        "max-length": 50
+    },
+    
+ 
+}
+</file>
+
+<file path="V1.5/Modules">
+//Main
+
+{
+
+"battery": {
+        "format": "{capacity}% {icon}",
+        "format-icons": ["", "", "", "", ""]
+    },
+    
+    "clock": {
+        "format": " {:%I:%M %p}", // AM PM format
+        //"format": "  {:%H:%M}",// 24H
+        "format-alt": "{:%A  |  %H:%M  |  %e %B}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+     },
+
+   "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-bluetooth": "{icon} {volume}%",
+    "format-muted": "󰝟",
+    "format-icons": {
+        "alsa_output.pci-0000_00_1f.3.analog-stereo": "",
+        "alsa_output.pci-0000_00_1f.3.analog-stereo-muted": "",
+        "headphone": "",
+        "hands-free": "",
+        "headset": "",
+        "phone": "",
+        "phone-muted": "",
+        "portable": "",
+        "car": "",
+        "default": ["", ""]
+    },
+    "scroll-step": 1,
+    "on-click": "pavucontrol",
+    "ignored-sinks": ["Easy Effects Sink"]
+   
+    },
+
+     "network": {
+	     "format": "{ifname}",
+	     "format-wifi": "{icon} {ifname}",
+	     "format-ethernet": "󱚻 {ifname}",
+	     "format-disconnected": "󰌙",
+	     "tooltip-format": "{ipaddr}  {bandwidthUpBits}  {bandwidthDownBits}",
+	     "format-linked": "󰈁 {ifname} (No IP)",
+	     "tooltip-format-wifi": "{essid} {icon} {signalStrength}%",
+	     "tooltip-format-ethernet": "{ifname} 󱚻",
+	     "tooltip-format-disconnected": "󰌙 Disconnected",
+	     "max-length": 30,
+	     "format-icons": [
+	     	"󰤯", "󰤟", "󰤢", "󰤥", "󰤨"
+	     ],
+	     "on-click": "omarchy-launch-wifi"
+    },
+  
+ "hyprland/workspaces": {
+	"format": "{icon}",
+  	"format-icons": {
+		"1": "A",
+		"2": "B",
+		"3": "C",
+		"4": "D",
+		"5": "E",
+		"6": "F",
+		"7": "G",
+		"8": "H",
+		"9": "I",
+		"10": "J",
+	},
+  "on-scroll-up": "hyprctl dispatch workspace e+1",
+	"on-scroll-down": "hyprctl dispatch workspace e-1",
+       "persistent-workspaces": {
+             "*": 5
+       }
+  },    
+  
+  "tray": {
+    "icon-size": 12,
+    "spacing": 6,
+    "icons": {
+        "blueman": "bluetooth",
+        "TelegramDesktop": "$HOME/.local/share/icons/hicolor/16x16/apps/telegram.png"
+    }
+  },
+
+  "mpris": {
+	"interval": 10,
+	"format": "{player_icon} {dynamic}",
+	"format-paused": "{status_icon} {artist} {title}",
+	"on-click-middle": "playerctl play-pause",
+	"on-click": "playerctl previous",
+	"on-click-right": "playerctl next",
+	"scroll-step": 5.0,
+	"on-scroll-up": "$HOME/.config/hypr/scripts/volume.sh --inc",
+	"on-scroll-down": "$HOME/.config/hypr/scripts/volume.sh --dec",
+	"smooth-scrolling-threshold": 1,
+	"tooltip": true,
+	"tooltip-format": "{status_icon} {dynamic}\nLeft Click: previous\nMid Click: Pause\nRight Click: Next",
+	"player-icons": {
+		"chromium": "",
+		"default": "",
+		"firefox": "",
+		"kdeconnect": "",
+		"mopidy": "",
+		"mpv": "󰐹",
+		"spotify": "",
+		"vlc": "󰕼",
+	},
+	"status-icons": {
+		"paused": "󰐎",
+		"playing": "",
+		"stopped": "",
+	},
+	"dynamic-order": ["artist", "title"],
+	"ignored-players": ["firefox", "zen"],
+	"max-length": 50,
+ },
+    
+  "custom/omarchy": {
+    "format": "󰣇",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space"
+  },
+
+  "custom/update": {
+    "format": "",
+    "exec": "omarchy-update-available",
+    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
+    "tooltip-format": "Omarchy update available",
+    "signal": 7,
+    "interval": 21600
+  },
+  
+  "custom/vicinae": {
+  "format": "",
+  "on-click": "hyprctl dispatch exec 'vicinae toggle'",
+  "interval": 0,
+  "tooltip-format": "Vicinae\n\nSuper + Space"
+  },
+
+}
+</file>
+
+<file path="V1.5/ModulesCustom">
+{
+    "custom/power": {
+	"format": "⏻",
+	"on-click": "$HOME/.config/hypr/scripts/Wlogout.sh",
+	"on-click-right": "$HOME/.config/hypr/scripts/ChangeBlur.sh",
+	"tooltip": true,
+	"tooltip-format":"Shutdown",
+},
+
+"custom/reboot": {
+    "format": "",
+    "on-click": "systemctl reboot",
+    "tooltip": true,
+	"tooltip-format": "Reboot",
+},
+
+//Groups..
+
+
+"group/main": {
+	"orientation": "inherit",
+	"modules": [
+		"custom/omarchy",
+		"custom/separator#blank",
+		"custom/vicinae",
+	]
+},
+
+// Separators
+
+"custom/separator#dot": {
+	"format": "",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#dot-line": {
+	"format": "",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#tinyr": {
+	"format": "›",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#tinyl": {
+	"format": "‹",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#aright": {
+	"format": "",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#aleft": {
+	"format": "",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#line": {
+	"format": "|",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#blank": {
+	"format": " ",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#blank_2": {
+	"format": "  ",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/separator#blank_3": {
+	"format": "   ",
+	"interval": "once",
+	"tooltip": false
+},
+"custom/arrow1": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow2": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow3": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow4": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow5": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow6": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow7": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow8": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow9": {
+	"format": "",
+	"tooltip": false
+},
+
+"custom/arrow10": {
+	"format": "",
+	"tooltip": false
+}
+}
+</file>
+
+<file path="V1.5/style.css">
+* {
+    border: none;
+    font-family: "SF Pro Display", "JetBrainsMono Nerd Font Propo";
+    font-size: 10px;
+    
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+}
+
+window#waybar {
+    background: transparent;
+    color: white;
+}
+
+tooltip {
+  background: rgba(4, 4, 4, 0.8);
+  border: 1px solid rgba(100, 114, 125, 0.5);
+}
+tooltip label {
+  color: white;
+}
+
+#workspaces {
+    transition: all 150ms ease-in-out;
+}
+
+#workspaces button {
+    transition: all 150ms ease-in-out;
+    padding: 1px 0px;
+    background:rgba(0, 0, 0, 0.3);
+    color: white;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    margin: 0 2px;
+    margin-top: 0;
+}
+
+#workspaces button.active {
+    border: 1px solid alpha(#121212, 0.4);
+    background-color:alpha(#ffffff, 0.8);
+    color:#121212;
+    transition: all 150ms ease-in-out;
+    min-width: 35px;
+    border-radius: 8px;
+}
+
+#clock {
+    font-weight: 800;
+    background:alpha(#121212, 0.4);
+    border-radius: 8px;
+    padding: 0px 5px;
+}
+
+#pulseaudio {
+    font-weight: 800;
+    background:alpha(#121212, 0.4);
+    border-radius: 8px;
+    padding: 0px 5px;
+    margin: 0 3px;
+}
+
+#tray {
+    font-weight: 800;
+    background:alpha(#121212, 0.4);
+    border-radius: 99px;
+    padding: 0px 5px;
+    margin: 0 4px;
+}
+
+#custom-media {
+    margin: 0 2px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    color: aliceblue; /* aliceblue */
+    font-weight: bold;
+}
+
+#network {
+    font-weight: 800;
+    background:alpha(#121212, 0.4);
+    border-radius: 8px;
+    padding: 0px 5px;
+    margin: 0 3px;
+}
+
+#mpris {
+    font-weight: 800;
+    background:alpha(#121212, 0.4);
+    border-radius: 8px;
+    padding: 0px 5px;
+    margin: 0 2px;
+}
+
+#custom-update,
+#custom-reboot,
+#custom-power {
+    font-weight: 800;
+    background:alpha(#121212, 0.4);
+    border-radius: 8px;
+    padding: 0px 5px;
+    margin: 0 2px;
+}
+
+#group-main,
+#group_main,
+#main {
+    background-color: alpha(#121212, 0.4);
+    border-radius: 16px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-right: 8px;
+	padding-left: 8px;
+	margin: 0 0 0 5px;
+}
+</file>
+
+<file path="V2/config.jsonc">
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 26,
+  "border-radius": 25,
+  "margin-right": 10,
+  "margin-left": 10,
+  "margin-top": 2,
+  "modules-left": ["custom/omarchy", "hyprland/workspaces", "mpris"],
+  "modules-center": ["hyprland/window" ],
+  "modules-right": [
+    "group/tray-expander",
+    "group/ctl",
+    "clock",
+  ],
+  "hyprland/workspaces": {
+    "on-click": "activate",
+    "format": "{icon}",
+    "format-icons": {
+      "default": "",
+      "active": ""
+    },
+    "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": []
+    }
+  },
+  "custom/omarchy": {
+    "format": "󰹡",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space"
+  },
+  "custom/update": {
+    "format": "",
+    "exec": "omarchy-update-available",
+    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
+    "tooltip-format": "Omarchy update available",
+    "signal": 7,
+    "interval": 21600
+  },
+
+  "cpu": {
+    "interval": 2,
+    "format": "󰍛 {usage}%",
+    "on-click": "omarchy-launch-or-focus-tui btop"
+  },
+    "clock": {
+        "format": " {:%I:%M %p}", // AM PM format
+        //"format": "  {:%H:%M}",// 24H
+        "format-alt": "{:%A  %e %B}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+     },
+  "network": {
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "󰀂",
+    "format-disconnected": "󰤮",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "omarchy-launch-wifi"
+  },
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging": "{icon}",
+    "format-plugged": "",
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "interval": 5,
+    "on-click": "omarchy-menu power",
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  },
+  "bluetooth": {
+    "format": "",
+    "format-disabled": "󰂲",
+    "format-connected": "󰂱",
+    "format-no-controller": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "omarchy-launch-bluetooth"
+  },
+
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "on-click": "omarchy-launch-or-focus-tui wiremix",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": "",
+    "format-icons": {
+      "default": [
+        "",
+        " ",
+        " "
+      ]
+    }
+  },
+  
+  "group/tray-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "tray-group-item"
+    },
+    "modules": ["custom/expand-icon", "tray"]
+  },
+  "custom/expand-icon": {
+    "format": "",
+    "tooltip": false
+  },
+  "custom/screenrecording-indicator": {
+    "on-click": "omarchy-cmd-screenrecord",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "signal": 8,
+    "return-type": "json"
+  },
+  "tray": {
+    "icon-size": 12,
+    "spacing": 4
+  },
+
+  "mpris": {
+	"interval": 10,
+	"format": "{player_icon} {dynamic}",
+	"format-paused": "{status_icon} {artist} {title}",
+	"on-click-middle": "playerctl play-pause",
+	"on-click": "playerctl previous",
+	"on-click-right": "playerctl next",
+	"scroll-step": 5.0,
+	"on-scroll-up": "$HOME/.config/hypr/scripts/volume.sh --inc",
+	"on-scroll-down": "$HOME/.config/hypr/scripts/volume.sh --dec",
+	"smooth-scrolling-threshold": 1,
+	"tooltip": true,
+	"tooltip-format": "{status_icon} {dynamic}\nLeft Click: previous\nMid Click: Pause\nRight Click: Next",
+	"player-icons": {
+		"chromium": "",
+		"default": "",
+		"firefox": "",
+		"kdeconnect": "",
+		"mopidy": "",
+		"mpv": "󰐹",
+		"spotify": "󰎆",
+		"vlc": "󰕼",
+	},
+	"status-icons": {
+		"paused": "",
+		"playing": "",
+		"stopped": "",
+	},
+	"dynamic-order": ["artist", "title"],
+	"ignored-players": ["firefox", "zen"],
+	"max-length": 40,
+ },
+  "custom/separator#blank": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/idle-indicator": {
+    "on-click": "omarchy-toggle-idle",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+    "signal": 9,
+    "return-type": "json"
+  },
+  
+  "custom/notification-silencing-indicator": {
+    "on-click": "omarchy-toggle-notification-silencing",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+    "signal": 10,
+    "return-type": "json"
+  },
+
+"custom/lock": {
+    "format": " ",
+    "tooltip": false,
+    "on-click": "hyprlock"
+},
+
+"hyprland/window": {
+    "format": "{title} - {class}",
+    "max-length": 25,
+    "rewrite": {
+      " - ": "", // if no window is focused, a single dash is displayed, this removes it
+      "(.*?) - Chromium - chromium": "   $1 ",
+      "(.*chrome)...(.*)": "   $1 ",
+      "(.*) - Obsidian - .* - obsidian": "   $1 ",
+      "(.*nvim)...(.*)": "   $2 ",
+      "(.*code) - (.*)": " 󰨞  $1 ",
+      "^.*btop( .*|$)": " 󰧨 BTOP $1 ",
+      "^.*unimatrix( .*|$)": " 󰘨 MATRIX $1 ",
+      "(.*) - Spotify": "  $1 ",
+      "(.*) - com.mitchellh.ghostty": " 󰊠 $1 ",
+      "(.*) - Alacritty": "   $1 ",
+      "(.*) - kitty": "   $1 ",
+      "(.*) - BeeperTexts": " 󰻞  $1 ",
+      "(.*Discord)...(.*).. (.*)": "   $2 ",
+      "(.*) - org.gnome.Nautilus": " 󰉓  $1 ",
+      "(.*) - fish": "   [$1] ",
+      "(.*Steam)...(.*)": "   $1",
+      "(.*imv)...(.*).. (.*)": "   $2",
+      "(.*) - com.obsproject.Studio": "  $1 "
+    }
+  },
+
+  "group/ctl": {
+	"orientation": "inherit",
+	"modules": [
+    "custom/screenrecording-indicator",
+    "custom/idle-indicator",
+    "custom/notification-silencing-indicator",
+    "custom/update", 
+    "custom/separator#blank",
+    "bluetooth",
+    "network",
+    "pulseaudio",
+    "cpu",
+    "battery",
+	]
+},
+
+  "custom/bt": {
+    "format": "",
+  }
+  	
+},
+</file>
+
+<file path="V2/style.css">
+@import "colors.css";
+
+* {
+  color: @foreground;
+  border: none;
+  border-radius: 25;
+  min-height: 0;
+  font-family: 'JetBrainsMono Nerd Font';
+  font-size: 12px;
+}
+
+.modules-left {
+  margin-left: 8px;
+}
+
+.modules-right {
+  margin-right: 8px;
+}
+
+window#waybar {
+  background-color: @background;
+  transition-property: background-color;
+  transition-duration: .5s;
+}
+
+window#waybar.empty #window {
+  background: transparent;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: transparent;
+  padding: 0;
+  margin: 0;
+}
+#waybar.empty .modules-center {
+  opacity: 0;
+}
+
+#workspaces {
+    padding: 0px 5px;
+    margin: 3.5 3.5px;
+    border-radius: 16px;
+    background-color: alpha(@foreground, 0.1);
+    opacity: 0.95;
+}
+
+#workspaces button {
+  all: initial;
+  padding: 0 6px;
+  margin: 0 1.5px;
+  min-width: 9px;
+}
+
+#workspaces button.empty {
+  opacity: 0.5;
+}
+
+#cpu,
+#battery,
+#pulseaudio,
+#custom-power,
+#custom-screenrecording-indicator,
+#custom-update {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+#tray {
+  background:alpha(@foreground, 0.0);
+  border-radius: 16px;
+  padding: 0px 5px;
+  margin: 3.5 2px;
+  margin-right: 1px;
+}
+
+#custom-idle-indicator,
+#custom-notification-silencing-indicator {
+  margin-right: 2px;
+  min-width: 15px;
+}
+
+#bluetooth {
+  margin-right: 8px;
+}
+
+#network {
+  margin-right: 9px;
+}
+
+#custom-expand-icon {
+  margin-right: 10px;
+}
+
+tooltip {
+  background: @background;
+  border: 1px solid @foreground;
+}
+tooltip label {
+  color: white;
+}
+
+
+#custom-update {
+  font-size: 10px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 8.75px;
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: #f13333;
+}
+
+#custom-lock,
+#clock,
+#mpris {
+    font-weight: 800;
+    background:alpha(@foreground, 0.1);
+    border-radius: 16px;
+    padding: 0px 5px;
+    margin: 3.5 3.5px;
+}
+
+#custom-omarchy{
+  border-radius: 99px;
+  margin:3px;
+  padding-right:5px;
+  padding-left: 1px;
+
+}
+
+#window {
+    font-weight: 800;
+    background:alpha(@foreground, 0.1);
+    border-radius: 16px;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+}
+
+#group-ctl,
+#group_ctl,
+#ctl {
+    font-weight: 800;
+    background:alpha(@foreground, 0.1);
+    border-radius: 16px;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+}
+</file>
+
+<file path="V2.4/config.jsonc">
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 26,
+  "border-radius": 25,
+  "margin-right": 10,
+  "margin-left": 10,
+  "margin-top": 2,
+  "modules-left": ["custom/omarchy", "hyprland/workspaces", "mpris"],
+  "modules-center": ["hyprland/window" ],
+  "modules-right": [
+    "group/tray-expander",
+    "group/ctl",
+    "clock",
+  ],
+  "hyprland/workspaces": {
+	"format": "{icon}",
+	"format-icons": {
+    		"1": "一",
+		    "2": "二",
+		    "3": "三",
+		    "4": "四",
+		    "5": "五",
+		    "6": "六",
+		    "7": "七",
+		    "8": "八",
+		    "9": "九",
+		    "10": "十",
+	},
+  "on-scroll-up": "hyprctl dispatch workspace e+1",
+	"on-scroll-down": "hyprctl dispatch workspace e-1",
+       "persistent-workspaces": {
+             "*": 5
+       }
+   },    
+  "custom/omarchy": {
+    "format": "󰹡",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space"
+  },
+  "custom/update": {
+    "format": "",
+    "exec": "omarchy-update-available",
+    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
+    "tooltip-format": "Omarchy update available",
+    "signal": 7,
+    "interval": 21600
+  },
+
+  "cpu": {
+    "interval": 2,
+    "format": "󰍛 {usage}%",
+    "on-click": "omarchy-launch-or-focus-tui btop"
+  },
+    "clock": {
+        "format": " {:%I:%M %p}", // AM PM format
+        //"format": "  {:%H:%M}",// 24H
+        "format-alt": "{:%A  %e %B}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+     },
+  "network": {
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "󰀂",
+    "format-disconnected": "󰤮",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "omarchy-launch-wifi"
+  },
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging": "{icon}",
+    "format-plugged": "",
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "interval": 5,
+    "on-click": "omarchy-menu power",
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  },
+  "bluetooth": {
+    "format": "",
+    "format-disabled": "󰂲",
+    "format-connected": "󰂱",
+    "format-no-controller": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "omarchy-launch-bluetooth"
+  },
+
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "on-click": "omarchy-launch-or-focus-tui wiremix",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": "",
+    "format-icons": {
+      "default": [
+        "",
+        " ",
+        " "
+      ]
+    }
+  },
+  
+  "group/tray-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "tray-group-item"
+    },
+    "modules": ["custom/expand-icon", "tray"]
+  },
+  "custom/expand-icon": {
+    "format": "",
+    "tooltip": false
+  },
+  "custom/screenrecording-indicator": {
+    "on-click": "omarchy-cmd-screenrecord",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "signal": 8,
+    "return-type": "json"
+  },
+  "tray": {
+    "icon-size": 12,
+    "spacing": 4
+  },
+
+  "mpris": {
+	"interval": 10,
+	"format": "{player_icon} {dynamic}",
+	"format-paused": "{status_icon} {artist} {title}",
+	"on-click-middle": "playerctl play-pause",
+	"on-click": "playerctl previous",
+	"on-click-right": "playerctl next",
+	"scroll-step": 5.0,
+	"on-scroll-up": "$HOME/.config/hypr/scripts/volume.sh --inc",
+	"on-scroll-down": "$HOME/.config/hypr/scripts/volume.sh --dec",
+	"smooth-scrolling-threshold": 1,
+	"tooltip": true,
+	"tooltip-format": "{status_icon} {dynamic}\nLeft Click: previous\nMid Click: Pause\nRight Click: Next",
+	"player-icons": {
+		"chromium": "",
+		"default": "",
+		"firefox": "",
+		"kdeconnect": "",
+		"mopidy": "",
+		"mpv": "󰐹",
+		"spotify": "󰎆",
+		"vlc": "󰕼",
+	},
+	"status-icons": {
+		"paused": "",
+		"playing": "",
+		"stopped": "",
+	},
+	"dynamic-order": ["artist", "title"],
+	"ignored-players": ["firefox", "zen"],
+	"max-length": 40,
+ },
+  "custom/separator#blank": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/idle-indicator": {
+    "on-click": "omarchy-toggle-idle",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+    "signal": 9,
+    "return-type": "json"
+  },
+  
+  "custom/notification-silencing-indicator": {
+    "on-click": "omarchy-toggle-notification-silencing",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+    "signal": 10,
+    "return-type": "json"
+  },
+
+"custom/lock": {
+    "format": " ",
+    "tooltip": false,
+    "on-click": "hyprlock"
+},
+
+"hyprland/window": {
+    "format": "{title} - {class}",
+    "max-length": 25,
+    "rewrite": {
+      " - ": "", // if no window is focused, a single dash is displayed, this removes it
+      "(.*?) - Chromium - chromium": "   $1 ",
+      "(.*chrome)...(.*)": "   $1 ",
+      "(.*) - Obsidian - .* - obsidian": "   $1 ",
+      "(.*nvim)...(.*)": "   $2 ",
+      "(.*code) - (.*)": " 󰨞  $1 ",
+      "^.*btop( .*|$)": " 󰧨 BTOP $1 ",
+      "^.*unimatrix( .*|$)": " 󰘨 MATRIX $1 ",
+      "(.*) - Spotify": "  $1 ",
+      "(.*) - com.mitchellh.ghostty": " 󰊠 $1 ",
+      "(.*) - Alacritty": "   $1 ",
+      "(.*) - kitty": "   $1 ",
+      "(.*) - BeeperTexts": " 󰻞  $1 ",
+      "(.*Discord)...(.*).. (.*)": "   $2 ",
+      "(.*) - org.gnome.Nautilus": " 󰉓  $1 ",
+      "(.*) - fish": "   [$1] ",
+      "(.*Steam)...(.*)": "   $1",
+      "(.*imv)...(.*).. (.*)": "   $2",
+      "(.*) - com.obsproject.Studio": "  $1 "
+    }
+  },
+
+  "group/ctl": {
+	"orientation": "inherit",
+	"modules": [
+    "custom/screenrecording-indicator",
+    "custom/idle-indicator",
+    "custom/notification-silencing-indicator",
+    "custom/update", 
+    "custom/separator#blank",
+    "bluetooth",
+    "network",
+    "pulseaudio",
+    "cpu",
+    "battery",
+	]
+},
+
+  "custom/bt": {
+    "format": "",
+  }
+  	
+},
+</file>
+
+<file path="V2.4/style.css">
+@import "colors.css";
+
+* {
+  color: @foreground;
+  border: none;
+  border-radius: 25;
+  min-height: 0;
+  font-family: 'JetBrainsMono Nerd Font';
+  font-size: 12px;
+}
+
+.modules-left {
+  margin-left: 7px;
+}
+
+.modules-right {
+  margin-right: 7px;
+}
+
+window#waybar {
+  background-color: @background;
+  transition-property: background-color;
+  transition-duration: .5s;
+}
+
+window#waybar.empty #window {
+  background: transparent;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: transparent;
+  padding: 0;
+  margin: 0;
+}
+#waybar.empty .modules-center {
+  opacity: 0;
+}
+
+#workspaces {
+    transition: all 150ms ease-in-out;
+    background:alpha(@foreground, 0.1);
+    padding: 0px 0px;
+    margin: 3.5 2px;
+}
+
+#workspaces button {
+    transition: all 90ms ease-in;
+    padding: 1px 0px;
+    background:alpha(@foreground, 0.0);
+    color: white;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    margin: 1 1px;
+}
+
+#workspaces button.active {
+    border: 1px solid alpha(#121212, 0.1);
+    background:alpha(#121212, 0.4);
+    color:#121212;
+    transition: all 90ms ease-in-out;
+    min-width: 45px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+ 
+}
+
+#workspaces button.empty{
+ opacity: 0.6;
+}
+
+#workspaces button.empty.active {
+   border: 1px solid alpha(#121212, 0.1);
+    background:alpha(#121212, 0.4);
+    color:#121212;
+    transition: all 90ms ease-in-out;
+    min-width: 45px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+#cpu,
+#battery,
+#pulseaudio,
+#custom-power,
+#custom-screenrecording-indicator,
+#custom-update {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+#tray {
+  background:alpha(@foreground, 0.0);
+  border-radius: 16px;
+  padding: 0px 5px;
+  margin: 3.5 2px;
+  margin-right: 1px;
+}
+
+#custom-idle-indicator,
+#custom-notification-silencing-indicator {
+  margin-right: 2px;
+  min-width: 15px;
+}
+
+#bluetooth {
+  margin-right: 8px;
+}
+
+#network {
+  margin-right: 9px;
+}
+
+#custom-expand-icon {
+  margin-right: 10px;
+}
+
+tooltip {
+  background: @background;
+  border: 1px solid @foreground;
+}
+tooltip label {
+  color: white;
+}
+
+
+#custom-update {
+  font-size: 10px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 8.75px;
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: #f13333;
+}
+
+#custom-lock,
+#clock,
+#mpris {
+    font-weight: 800;
+    background:alpha(@foreground, 0.1);
+    border-radius: 16px;
+    padding: 0px 5px;
+    margin: 3.5 3.5px;
+}
+
+#custom-omarchy{
+  border-radius: 99px;
+  margin:3px;
+  padding-right:5px;
+  padding-left: 1px;
+
+}
+
+#window {
+    font-weight: 800;
+    background:alpha(@foreground, 0.1);
+    border-radius: 16px;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+}
+
+#group-ctl,
+#group_ctl,
+#ctl {
+    font-weight: 800;
+    background:alpha(@foreground, 0.1);
+    border-radius: 16px;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+}
+</file>
+
+<file path="V2.8/config.jsonc">
+//  █████  ████████ ██ ███████        ██ ██   ██  ██████  ██████  
+// ██   ██    ██    ██ ██            ███ ██   ██ ██  ████      ██ 
+// ███████    ██    ██ █████   █████  ██ ███████ ██ ██ ██  █████  
+// ██   ██    ██    ██ ██             ██      ██ ████  ██ ██      
+// ██   ██    ██    ██ ██             ██      ██  ██████  ███████ 
+                                                                       
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 24,
+
+  "border-radius": 25,
+
+  "margin-top": 2,
+  "margin-left": 10,
+  "margin-right": 10,
+
+  "modules-left": [
+    "custom/omarchy",
+    "hyprland/workspaces",
+    "mpris"
+  ],
+
+  "modules-center": [
+    "custom/mpris"
+  ],
+
+  "modules-right": [
+    "group/ctl",
+    "group/stats",
+    "clock"
+  ],
+
+  // ======================
+  // HYPRLAND
+  // ======================
+
+  "hyprland/workspaces": {
+    "on-click": "activate",
+    "format": "{icon}",
+    "format-icons": {
+      "1": "<span size='13500'>󰬺</span>",
+      "2": "<span size='13500'>󰬻</span>",
+      "3": "<span size='13500'>󰬼</span>",
+      "4": "<span size='13500'>󰬽</span>",
+      "5": "<span size='13500'>󰬾</span>",
+      "6": "<span size='13500'>󰬿</span>",
+      "7": "<span size='13500'>󰭀</span>",
+      "8": "<span size='13500'>󰭁</span>",
+      "9": "<span size='13500'>󰭂</span>",
+      "10": "<span size='13500'>󰿩</span>"
+    },
+    "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": []
+    }
+  },
+
+  // ======================
+  // CORE MODULES
+  // ======================
+
+  "clock": {
+    "format": "{:%I:%M %p}",
+    "format-alt": "{:%e %B %A}",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+  },
+
+  "cpu": {
+    "interval": 2,
+    "format": "{icon} {usage} ",
+    "format-icons": ["󰪞","󰪟","󰪠","󰪡","󰪢","󰪣","󰪤","󰪥"],
+    "on-click": "omarchy-launch-or-focus-tui btop"
+  },
+
+  "memory": {
+    "interval": 2,
+    "format": "{icon} {percentage}",
+    "format-icons": ["󰪞","󰪟","󰪠","󰪡","󰪢","󰪣","󰪤","󰪥"],
+    "on-click": "omarchy-launch-or-focus-tui btop"
+  },
+
+  "network": {
+    "interval": 3,
+    "spacing": 1,
+
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "󰌘",
+    "format-disconnected": "󰤮",
+
+    "format-icons": ["󰤯","󰤟","󰤢","󰤥","󰤨"],
+
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes} ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes} ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+
+    "on-click": "omarchy-launch-wifi"
+  },
+
+  "battery": {
+    "interval": 5,
+
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging": "{icon}",
+    "format-plugged": "",
+    "format-full": "󰂅",
+
+    "format-icons": {
+      "charging": ["󰢜","󰂆","󰂇","󰂈","󰢝","󰂉","󰢞","󰂊","󰂋","󰂅"],
+      "default": ["󰁺","󰁻","󰁼","󰁽","󰁾","󰁿","󰂀","󰂁","󰂂","󰁹"]
+    },
+
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+
+    "on-click": "omarchy-menu power",
+
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  },
+
+  "bluetooth": {
+    "format": "",
+    "format-disabled": "󰂲",
+    "format-connected": "",
+    "format-no-controller": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "omarchy-launch-bluetooth"
+  },
+
+  "pulseaudio": {
+    "format": "{icon}",
+    "format-muted": "",
+
+    "format-icons": {
+      "default": ["","",""]
+    },
+
+    "scroll-step": 5,
+    "tooltip-format": "Playing at {volume}%",
+
+    "on-click": "omarchy-launch-or-focus-tui wiremix",
+    "on-click-right": "pamixer -t"
+  },
+
+  "mpris": {
+    "interval": 10,
+
+    "format": "{player_icon} {dynamic}",
+    "format-paused": "{status_icon} {artist} {title}",
+
+    "scroll-step": 5,
+    "smooth-scrolling-threshold": 1,
+
+    "tooltip": true,
+    "tooltip-format": "{status_icon} {dynamic}\nLeft: previous\nMiddle: pause\nRight: next",
+
+    "on-click": "playerctl previous",
+    "on-click-middle": "playerctl play-pause",
+    "on-click-right": "playerctl next",
+
+    "on-scroll-up": "$HOME/.config/hypr/scripts/volume.sh --inc",
+    "on-scroll-down": "$HOME/.config/hypr/scripts/volume.sh --dec",
+
+    "player-icons": {
+      "chromium": "",
+      "firefox": "",
+      "spotify": "󰎆",
+      "vlc": "󰕼",
+      "mpv": "󰐹",
+      "mopidy": "",
+      "kdeconnect": "",
+      "default": ""
+    },
+
+    "status-icons": {
+      "playing": "",
+      "paused": "",
+      "stopped": ""
+    },
+
+    "dynamic-order": ["artist","title"],
+    "ignored-players": ["firefox","zen"],
+    "max-length": 40
+  },
+
+  // ======================
+  // GROUPS
+  // ======================
+
+  "group/stats": {
+    "orientation": "inherit",
+    "modules": [
+      "cpu",
+      "memory",
+      "battery"
+    ]
+  },
+
+  "group/misc-expander": {
+    "orientation": "inherit",
+
+    "modules": [
+      "custom/expand-icon",
+      "custom/screenrecording-indicator",
+      "custom/update",
+      "custom/idle-indicator",
+      "custom/notification-silencing-indicator",
+      "power-profiles-daemon",
+      "tray"
+    ],
+
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "misc-group-item"
+    }
+  },
+
+  "group/ctl": {
+    "orientation": "inherit",
+    "modules": [
+      "group/misc-expander",
+      "network",
+      "bluetooth",
+      "pulseaudio"
+    ]
+  },
+
+  // ======================
+  // CUSTOM MODULES
+  // ======================
+
+  "custom/omarchy": {
+    "format": "",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space"
+  },
+
+  "custom/update": {
+    "format": "",
+    "exec": "omarchy-update-available",
+    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
+    "tooltip-format": "Omarchy update available",
+    "signal": 7,
+    "interval": 21600
+  },
+
+  "custom/screenrecording-indicator": {
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "on-click": "omarchy-cmd-screenrecord",
+    "signal": 8,
+    "return-type": "json"
+  },
+
+  "custom/idle-indicator": {
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+    "on-click": "omarchy-toggle-idle",
+    "signal": 9,
+    "return-type": "json"
+  },
+
+  "custom/notification-silencing-indicator": {
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+    "on-click": "omarchy-toggle-notification-silencing",
+    "signal": 10,
+    "return-type": "json"
+  },
+
+  "custom/expand-icon": {
+    "format": "",
+    "tooltip": false
+  },
+
+  "tray": {
+    "icon-size": 12,
+    "spacing": 4
+  },
+
+  "power-profiles-daemon": {
+    "format": "{icon}",
+
+    "tooltip": true,
+    "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+
+    "format-icons": {
+      "default": "",
+      "performance": "",
+      "balanced": "",
+      "power-saver": ""
+    }
+  }
+}
+</file>
+
+<file path="V2.8/style.css">
+/*  █████  ████████ ██ ███████        ██ ██   ██  ██████  ██████   */
+/* ██   ██    ██    ██ ██            ███ ██   ██ ██  ████      ██  */
+/* ███████    ██    ██ █████   █████  ██ ███████ ██ ██ ██  █████   */
+/* ██   ██    ██    ██ ██             ██      ██ ████  ██ ██       */
+/* ██   ██    ██    ██ ██             ██      ██  ██████  ███████  */
+
+@import "colors.css";
+@import "../omarchy/current/theme/colors.css";
+
+/* ======================
+   GLOBAL
+====================== */
+
+* {
+  border: none;
+  min-height: 0;
+  font-family: "JetBrainsMono Nerd Font Propo";
+  font-size: 12px;
+}
+
+window#waybar {
+  background-color: transparent;
+  transition: background-color 0.5s ease;
+}
+
+.modules-left {
+  margin-left: 0px;
+}
+
+.modules-right {
+  padding-top: 1px;
+  margin-right: 0px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+/* ======================
+   EMPTY STATE
+====================== */
+
+window#waybar.empty #window {
+  background: transparent;
+  border-radius: 0;
+  color: transparent;
+  padding: 0;
+  margin: 0;
+}
+
+#waybar.empty .modules-center {
+  opacity: 0;
+}
+
+/* ======================
+   WORKSPACES
+====================== */
+
+#workspaces {
+  padding: 0 5px;
+  margin: 0.5px 0.5px;
+  border-radius: 16px;
+}
+
+#workspaces button {
+  padding: 0 12px;
+  margin: 0 1px;
+  background-color: @background;
+  color: @foreground;
+  border-radius: 4px;
+  transition: all 250ms ease;
+}
+
+#workspaces button:hover {
+  background: @foreground;
+  color: @background;
+  border-radius: 12px;
+  transition: all 0.1s ease;
+}
+
+#workspaces button.active {
+  background-color: @foreground;
+  color: @background;
+  margin: 0 2px;
+  min-width: 32px;
+  font-weight: bold;
+}
+
+#workspaces button.empty {
+  color: alpha(@foreground, 0.5);
+  background-color: @background;
+}
+
+#workspaces button:first-child {
+  border-radius: 16px 4px 4px 16px;
+}
+
+#workspaces button:last-child {
+  border-radius: 4px 16px 16px 4px;
+}
+
+/* ======================
+   MODULE GROUPS
+====================== */
+
+#group-misc, 
+#group_misc, 
+#misc, 
+#group-ctl, 
+#group_ctl, 
+#ctl, 
+#group-stats,
+#group_stats, 
+#stats {
+  background-color: @background;
+  color: @foreground;
+  font-weight: bold;
+  margin-right: 2px;
+  border-radius: 4px;
+  padding: 0px 3px 0px 6px;
+}
+
+#group-ctl, 
+#group_ctl, 
+#ctl  {
+  border-radius: 16px 4px 4px 16px;
+}
+
+#group-misc-expander, 
+#group_misc-expander, 
+#misc-expander {
+  margin-right: 3px;
+  border-radius: 16px;
+}
+
+/* ======================
+   CLOCK
+====================== */
+
+#clock {
+  background-color: @background;
+  color: @foreground;
+  font-weight: bold;
+  border-radius: 4px 16px 16px 4px;
+  padding: 0px 6px 0px 4px;
+}
+
+/* ======================
+   SYSTEM MODULE SPACING
+====================== */
+
+#battery,
+#pulseaudio,
+#custom-screenrecording-indicator,
+#custom-update {
+  min-width: 12px;
+  margin: 0 3.5px;
+}
+
+#bluetooth {
+  margin-right: 4px;
+}
+
+#network {
+  margin-left: 4px;
+  margin-right: 9px;
+}
+
+#custom-expand-icon {
+  margin-right: 4px;
+}
+
+#custom-idle-indicator,
+#custom-notification-silencing-indicator {
+  margin-right: 7px;
+}
+
+#memory {
+  margin-right: 2px;
+}
+
+#power-profiles-daemon {
+  margin-right: 3px;
+}
+
+/* ======================
+   TRAY
+====================== */
+
+#tray {
+  background: alpha(@foreground, 0);
+  border-radius: 16px;
+  padding: 0 5px;
+  margin: 3.5px 0px;
+  margin-right: 1px;
+  margin-left: -2px;
+}
+
+/* ======================
+   CUSTOM MODULES
+====================== */
+
+#custom-omarchy {
+  border-radius: 32px;
+  color: @color6;
+  background-color: @background;
+  padding: 0 7px;
+  margin: 1 1px;
+}
+
+#custom-update {
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 8.75px;
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: #f13333;
+}
+
+/* ======================
+   POWER PROFILES
+====================== */
+
+#power-profiles-daemon.performance {
+  color: #de6868;
+}
+
+#power-profiles-daemon.balanced {
+  color: @color3;
+}
+
+#power-profiles-daemon.power-saver {
+  color: #31a93f;
+}
+
+/* ======================
+   MPRIS
+====================== */
+
+#mpris {
+  background-color: @background;
+  color: @foreground;
+  font-weight: bold;
+  margin-right: 2px;
+  border-radius: 16px;
+  margin-top: 1px;
+  padding: 0px 10px 0px 8px;
+}
+
+#mpris.playing {
+  animation: mpris-breathe 4s ease-in-out infinite;
+}
+
+@keyframes mpris-breathe {
+  0% {
+    text-shadow: 0 0 1px alpha(@accent,0.15);
+  }
+
+  50% {
+    text-shadow: 0 0 3px alpha(@accent,0.35);
+  }
+
+  100% {
+    text-shadow: 0 0 1px alpha(@accent,0.15);
+  }
+}
+
+/* ======================
+   TOOLTIP
+====================== */
+
+tooltip {
+  background: @background;
+  border: 1px solid alpha(@accent, 0.5);
+}
+
+tooltip label {
+  color: @foreground;
+}
+</file>
+
+<file path="V3/config.jsonc">
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 26,
+  "modules-left": ["custom/omarchy", "custom/sep", "hyprland/workspaces", "custom/sep", "mpris"],
+  "modules-center": [ ],
+  "modules-right": [
+    "group/tray-expander",
+    "custom/sep",
+    "memory",
+    "disk",
+    "cpu",
+    "battery",
+    "custom/sep",
+    "custom/screenrecording-indicator",
+    "custom/update",
+    "custom/gamemode",
+    "custom/idle-indicator",
+    "custom/notification-silencing-indicator",
+    "custom/sep",
+    "bluetooth",
+    "network",
+    "pulseaudio",
+    "custom/sep",
+    "clock",
+  ],
+  "hyprland/workspaces": {
+    "on-click": "activate",
+    "format": "{icon}",
+    "format-icons": {
+      "default": "",
+      "1": "I",
+      "2": "II",
+      "3": "III",
+      "4": "IV",
+      "5": "V",
+      "6": "VI",
+      "7": "VII",
+      "8": "VIII",
+      "9": "IX",
+      "10": "X",
+    },
+    "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": []
+    }
+  },
+  "custom/omarchy": {
+    "format": "󰣇",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space"
+  },
+  "custom/update": {
+    "format": "",
+    "exec": "omarchy-update-available",
+    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
+    "tooltip-format": "Omarchy update available",
+    "signal": 7,
+    "interval": 21600
+  },
+
+  "cpu": {
+    "interval": 5,
+    "format": " 󰍛 {usage}%",
+    "on-click": "omarchy-launch-or-focus-tui btop",
+    "on-click-right": "alacritty"
+  },
+  "disk": {
+    "interval": 30,
+    "format": " 󱂵 {percentage_free}%",
+  },
+  "memory": {
+    "interval": 30,
+    "format": "  {}% ",
+    "max-length": 10 
+  },
+  "clock": {
+      "format": " {:%I:%M %p}", // AM PM format
+      //"format": "  {:%H:%M}",// 24H
+      "format-alt": " {:%A  %e %B}",
+      "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+   },
+  "network": {
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "󰀂",
+    "format-disconnected": "󰤮",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "omarchy-launch-wifi"
+  },
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging": "{icon}",
+    "format-plugged": "",
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "interval": 5,
+    "on-click": "omarchy-menu power",
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  },
+  "bluetooth": {
+    "format": "",
+    "format-disabled": "󰂲",
+    "format-connected": "󰂱",
+    "format-no-controller": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "omarchy-launch-bluetooth"
+  },
+  "pulseaudio": {
+    "format": "{icon} ",
+    "on-click": "omarchy-launch-or-focus-tui wiremix",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": "",
+    "format-icons": {
+      "default": ["", "", ""]
+    }
+  },
+  "group/tray-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "tray-group-item"
+    },
+    "modules": ["custom/expand-icon", "tray"]
+  },
+  "custom/expand-icon": {
+    "format": "",
+    "tooltip": false
+  },
+  "custom/screenrecording-indicator": {
+    "on-click": "omarchy-cmd-screenrecord",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "signal": 8,
+    "return-type": "json"
+  },
+  "tray": {
+    "icon-size": 12,
+    "spacing": 8
+  },
+  "custom/blank": {
+    "format": " ",
+  },
+  "custom/sep": {
+    "format": "|",
+  },
+  "custom/gamemode": {
+    "exec": "test -f ~/.cache/hypr_gamemode && echo '{\"text\":\"\"}' || echo '{\"text\":\"\"}'",
+    "on-click": "test -f ~/.cache/hypr_gamemode && (rm ~/.cache/hypr_gamemode && hyprctl keyword animations:enabled 1 && hyprctl keyword decoration:blur:enabled 1) || (touch ~/.cache/hypr_gamemode && hyprctl keyword animations:enabled 0 && hyprctl keyword decoration:blur:enabled 0)",
+    "interval": 1,
+    "return-type": "json",
+    "tooltip": true,
+    "tooltip-format": "GameMode"
+  },
+
+  "custom/idle-indicator": {
+    "on-click": "omarchy-toggle-idle",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+    "signal": 9,
+    "return-type": "json"
+  },
+  
+  "custom/notification-silencing-indicator": {
+    "on-click": "omarchy-toggle-notification-silencing",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+    "signal": 10,
+    "return-type": "json"
+  },
+
+  "mpris": {
+	  "interval": 10,
+	  "format": "{player_icon} {dynamic}",
+	  "format-paused": "{status_icon} {artist} {title}",
+	  "on-click-middle": "playerctl play-pause",
+	  "on-click": "playerctl previous",
+	  "on-click-right": "playerctl next",
+	  "scroll-step": 5.0,
+	  "on-scroll-up": "$HOME/.config/hypr/scripts/volume.sh --inc",
+	  "on-scroll-down": "$HOME/.config/hypr/scripts/volume.sh --dec",
+	  "smooth-scrolling-threshold": 1,
+	  "tooltip": true,
+	  "tooltip-format": "{status_icon} {dynamic}\nLeft Click: previous\nMid Click: Pause\nRight Click: Next",
+	  "player-icons": {
+	  	"chromium": "",
+	  	"default": "",
+	  	"firefox": "",
+	  	"kdeconnect": "",
+	  	"mopidy": "",
+	  	"mpv": "󰐹",
+	  	"spotify": "󰎆",
+	  	"vlc": "󰕼",
+	  },
+	  "status-icons": {
+	  	"paused": "",
+	  	"playing": "",
+	  	"stopped": "",
+	  },
+	  "dynamic-order": ["artist", "title"],
+	  "ignored-players": ["firefox", "zen"],
+	  "max-length": 40,
+ },
+}
+</file>
+
+<file path="V3/style.css">
+@import "colors.css";
+
+* {
+  background-color: alpha(@background, 0.9);
+  color: @foreground;
+
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  font-family: 'JetBrainsMono Nerd Font';
+  font-size: 12px;
+  border: 0px solid alpha(@foreground, 0.6)
+}
+
+.modules-left {
+  margin-left: 8px;
+}
+
+.modules-right {
+  margin-right: 8px;
+}
+
+#workspaces {
+  transition: all 150ms ease-in-out;
+}
+
+#workspaces button {
+  all: initial;
+  transition: all 90ms ease-in-out;  
+  padding: 0 6px;
+  margin: 0 1.5px;
+  min-width: 9px;
+  border-radius: 0px;
+  border: 0px solid alpha(@foreground, 0.64);
+  border-bottom-width: 2px;
+}
+
+#workspaces button.empty {
+  transition: all 90ms ease-in-out;
+  opacity: 0.5;
+}
+
+#workspaces button.active {
+  transition: all 90ms ease-in-out;
+  border-radius: 0px;
+  border: 0px solid alpha(@foreground, 0.64);
+  border-bottom-width: 4px;
+}
+
+#cpu,
+#idle_inhibitor,
+#battery,
+#custom-screenrecording-indicator,
+#custom-update {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+#custom-gamemode {
+  margin-left: 2px;
+  margin-right: 8px;
+}
+
+#pulseaudio {
+  margin-right: 4px;
+  margin-left: 1px;
+}
+
+#tray {
+  margin-right: 4px;
+}
+
+#bluetooth {
+  margin-right: 2px;
+}
+
+#custom-idle-indicator,
+#custom-notification-silencing-indicator {
+  margin-right: 2px;
+  min-width: 15px;
+}
+
+#network {
+  margin-right: 10px;
+  margin-left: 6px;
+}
+
+#custom-expand-icon {
+  margin-right: 10px;
+}
+
+tooltip {
+  padding: 2px;
+}
+
+#custom-update {
+  font-size: 10px;
+}
+
+#clock {
+  margin-left: 8.75px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 8.75px;
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: #a55555;
+}
+
+#custom-omarchy {
+  background-color: alpha(@foreground, 0.2);
+  /* border-radius: 2px; */
+  padding-right: 1.5px;
+  padding-left: 0px;
+  min-width: 24px;
+  margin: 0 1px;
+  margin-right: 4px; 
+  /* margin-top: 1px; */
+  /* margin-bottom: 1px; */
+}
+
+#mpris {
+    font-weight: 600;
+    border-radius: 16px;
+    padding: 0px 5px;
+    margin: 3.5 3.5px;
+}
+</file>
+
+<file path="V3.xa/config.jsonc">
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 30,
+  "modules-left": ["custom/omarchy", "custom/sep", "hyprland/workspaces", "custom/sep", "mpris"],
+  "modules-center": [ ],
+  "modules-right": [
+    "group/tray-expander",
+    "custom/sep",
+    "group/right2",
+    "custom/sep",
+    "group/right",
+    "custom/sep",
+    "clock",
+  ],
+
+  "group/right": {
+    "orientation": "inherit",
+	  "modules": [
+    "bluetooth",
+    "network",
+    "pulseaudio",
+    "battery",
+	]
+  },
+
+  "group/right2": {
+    "orientation": "inherit",
+	  "modules": [
+    "custom/screenrecording-indicator",
+    "custom/update",
+    "custom/gamemode",
+    "custom/idle-indicator",
+    "custom/notification-silencing-indicator",
+  ]
+  },
+
+  "hyprland/workspaces": {
+    "on-click": "activate",
+    "format": "{icon}",
+    "format-icons": {
+      "default": "",
+      "1": "I",
+      "2": "II",
+      "3": "III",
+      "4": "IV",
+      "5": "V",
+      "6": "VI",
+      "7": "VII",
+      "8": "VIII",
+      "9": "IX",
+      "10": "X",
+    },
+    "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": []
+    }
+  },
+  "custom/omarchy": {
+    "format": "󰣇",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space"
+  },
+  "custom/update": {
+    "format": "",
+    "exec": "omarchy-update-available",
+    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
+    "tooltip-format": "Omarchy update available",
+    "signal": 7,
+    "interval": 21600
+  },
+  "clock": {
+      "format": " {:%I:%M %p}", // AM PM format
+      //"format": "  {:%H:%M}",// 24H
+      "format-alt": " {:%A  %e %B}",
+      "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+   },
+  "network": {
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "󰀂",
+    "format-disconnected": "󰤮",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "omarchy-launch-wifi"
+  },
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging": "{icon}",
+    "format-plugged": "",
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "interval": 5,
+    "on-click": "omarchy-menu power",
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  },
+  "bluetooth": {
+    "format": "",
+    "format-disabled": "󰂲",
+    "format-connected": "󰂱",
+    "format-no-controller": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "omarchy-launch-bluetooth"
+  },
+  "pulseaudio": {
+    "format": "{icon} ",
+    "on-click": "omarchy-launch-or-focus-tui wiremix",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": " ",
+    "format-icons": {
+      "default": ["", "", ""]
+    }
+  },
+  "group/tray-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "tray-group-item"
+    },
+    "modules": ["custom/expand-icon", "tray"]
+  },
+  "custom/expand-icon": {
+    "format": "",
+    "tooltip": false
+  },
+  "custom/screenrecording-indicator": {
+    "on-click": "omarchy-cmd-screenrecord",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "signal": 8,
+    "return-type": "json"
+  },
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  },
+  "custom/blank": {
+    "format": " ",
+  },
+  "custom/sep": {
+    "format": "︱",
+  },
+  "custom/gamemode": {
+    "exec": "test -f ~/.cache/hypr_gamemode && echo '{\"text\":\"\"}' || echo '{\"text\":\"\"}'",
+    "on-click": "test -f ~/.cache/hypr_gamemode && (rm ~/.cache/hypr_gamemode && hyprctl keyword animations:enabled 1 && hyprctl keyword decoration:blur:enabled 1) || (touch ~/.cache/hypr_gamemode && hyprctl keyword animations:enabled 0 && hyprctl keyword decoration:blur:enabled 0)",
+    "interval": 1,
+    "return-type": "json",
+    "tooltip": true,
+    "tooltip-format": "GameMode"
+  },
+  "custom/idle-indicator": {
+    "on-click": "omarchy-toggle-idle",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+    "signal": 9,
+    "return-type": "json"
+  },
+  "custom/notification-silencing-indicator": {
+    "on-click": "omarchy-toggle-notification-silencing",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+    "signal": 10,
+    "return-type": "json"
+  },
+  "mpris": {
+	  "interval": 10,
+	  "format": "{player_icon} {dynamic}",
+	  "format-paused": "{status_icon} {artist} {title}",
+	  "on-click-middle": "playerctl play-pause",
+	  "on-click": "playerctl previous",
+	  "on-click-right": "playerctl next",
+	  "scroll-step": 5.0,
+	  "on-scroll-up": "$HOME/.config/hypr/scripts/volume.sh --inc",
+	  "on-scroll-down": "$HOME/.config/hypr/scripts/volume.sh --dec",
+	  "smooth-scrolling-threshold": 1,
+	  "tooltip": true,
+	  "tooltip-format": "{status_icon} {dynamic}\nLeft Click: previous\nMid Click: Pause\nRight Click: Next",
+	  "player-icons": {
+	  	"chromium": "",
+	  	"default": "",
+	  	"firefox": "",
+	  	"kdeconnect": "",
+	  	"mopidy": "",
+	  	"mpv": "󰐹",
+	  	"spotify": "󰎆",
+	  	"vlc": "󰕼",
+	  },
+	  "status-icons": {
+	  	"paused": "",
+	  	"playing": "",
+	  	"stopped": "",
+	  },
+	  "dynamic-order": ["artist", "title"],
+	  "ignored-players": ["firefox", "zen"],
+	  "max-length": 40,
+ },
+}
+</file>
+
+<file path="V3.xa/style.css">
+@import "colors.css";
+
+* {
+  background-color: alpha(@background, 0.9);
+  color: @foreground;
+
+  border-radius: 0;
+  min-height: 0;
+  font-family: 'JetBrainsMono Nerd Font Propo';
+  font-size: 12px;
+  border: 0px solid alpha(@foreground, 0.6)
+}
+
+.modules-left {
+  margin-left: 8px;
+}
+
+.modules-right {
+  margin-right: 8px;
+}
+
+#workspaces {
+  margin: 3px 2px 3px 3px;
+  border: 1px solid alpha(@foreground, 0.6);
+  transition: all 150ms ease-in-out;
+}
+
+#workspaces button {
+  all: initial;
+  transition: all 90ms ease-in-out;  
+  padding: 0 6px;
+  margin: 0 1.5px;
+  min-width: 9px;
+  border-radius: 0px;
+  border: 0px solid alpha(@foreground, 0.8);
+  border-bottom-width: 2px;
+}
+
+#workspaces button.empty {
+  transition: all 90ms ease-in-out;
+  opacity: 0.5;
+}
+
+#workspaces button.empty:hover {
+  transition: all 90ms ease-in-out;
+  opacity: 0.8;
+}
+
+#workspaces button:hover{
+  border: 0px solid alpha(@foreground, 0.8);
+  border-bottom-width: 3px;
+  transition: all 90ms ease-in-out;
+}
+
+#workspaces button.active {
+  transition: all 90ms ease-in-out;
+  border-radius: 0px;
+  border: 0px solid alpha(@foreground, 1);
+  border-bottom-width: 3px;
+}
+
+#cpu,
+#battery,
+#custom-screenrecording-indicator,
+#custom-update {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+#custom-idle-indicator,
+#custom-notification-silencing-indicator {
+  margin-right: 2px;
+  min-width: 15px;
+}
+
+#custom-gamemode {
+  margin-left: 2px;
+  margin-right: 8px;
+}
+
+#pulseaudio {
+  margin-right: -4px;
+  margin-left: 1px;
+}
+
+#tray {
+  margin-right: 4px;
+}
+
+#bluetooth {
+  margin-right: 5px;
+  margin-left: 3px;
+}
+
+#network {
+  margin-right: 10px;
+  margin-left: 6px;
+}
+
+#custom-expand-icon {
+  margin-right: 10px;
+}
+
+tooltip {
+  padding: 2px;
+  border: 1px solid @foreground;
+}
+
+#custom-update {
+  font-size: 10px;
+}
+
+#clock {
+  border: 1px solid alpha(@foreground, 0.6);
+  border-bottom-width: 2px;
+  font-weight: 600;
+  padding: 0px 5px;
+  margin: 3.5 3.5px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 8.75px;
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: #ff0000;
+}
+
+#custom-omarchy {
+  border: 1px solid alpha(@foreground, 0.6);
+  border-bottom-width: 2px;
+  background-color: alpha(@foreground, 0.01);
+  min-width: 24px;
+  margin: 3px 3px 3px 0px;
+}
+
+#custom-omarchy:hover {
+  border-bottom: 3px solid alpha(@foreground, 0.8);
+}
+
+#mpris {
+  border: 1px solid alpha(@foreground, 0.6);
+  border-bottom-width: 2px;
+  font-weight: 600;
+  padding: 0px 5px;
+  margin: 3.5 3.5px;
+}
+
+#group-right2,
+#group_right2,
+#right2,
+#group-right,
+#group_right,
+#right {
+  border: 1px solid alpha(@foreground, 0.6);
+  border-bottom-width: 2px;
+  font-weight: 800;
+  padding: 0px 5px;
+  margin: 3.5 3.5px;
+}
+</file>
+
+<file path="V3.Ω/config.jsonc">
+{
+  // ======================================================
+  // BAR SETTINGS
+  // ======================================================
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 26,
+
+  // ======================================================
+  // MODULE PLACEMENT
+  // ======================================================
+  "modules-left": [
+    "custom/omarchy",
+    "custom/blank",
+    "custom/workspaces",
+    "custom/blank",
+    "group/misc"
+  ],
+
+  "modules-center": [],
+
+  "modules-right": [
+    "tray",
+    "custom/metastats",
+    "pulseaudio",
+    "clock"
+  ],
+
+  // ======================================================
+  // LEFT SIDE MODULES
+  // ======================================================
+
+  "custom/omarchy": {
+    "format": "",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec"
+  },
+
+  "custom/workspaces": {
+    "exec": "~/.config/waybar/workspaces.sh",
+    "interval": 0,
+    "return-type": "json",
+    "on-scroll-up": "~/.config/waybar/workspaces.sh up",
+    "on-scroll-down": "~/.config/waybar/workspaces.sh down"
+  },
+
+  "custom/blank": {
+    "format": " "
+  },
+
+  // ======================================================
+  // GROUP: MISC (Drawer)
+  // ======================================================
+
+  "group/misc": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "transition-left-to-right": false,
+      "children-class": "center2-group-item"
+    },
+    "modules": [
+      "custom/arrow",
+      "custom/blank",
+      "custom/screenrecording-indicator",
+      "custom/update",
+      "custom/idle-indicator",
+      "custom/notification-silencing-indicator",
+      "power-profiles-daemon",
+      "custom/sep",
+      "network",
+      "bluetooth",
+      "battery"
+    ]
+  },
+
+  // ======================================================
+  // RIGHT SIDE MODULES
+  // ======================================================
+
+  "tray": {
+    "icon-size": 13,
+    "spacing": 6
+  },
+
+  "custom/metastats": {
+    "exec": "~/.config/waybar/metastats.sh",
+    "interval": 2,
+    "on-scroll-up": "~/.config/waybar/metastats.sh up",
+    "on-scroll-down": "~/.config/waybar/metastats.sh down"
+  },
+
+  "pulseaudio": {
+    "format": "[VOL {volume}%] ",
+    "format-muted": "[VOL MUTE] ",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "on-click": "omarchy-launch-or-focus-tui wiremix",
+    "on-click-right": "pamixer -t",
+    "format-icons": {
+      "default": ["", "", ""]
+    }
+  },
+
+  "clock": {
+    "format": "[{:%I:%M %p}]",
+    "format-alt": "[{:%e %B %A}]"
+  },
+
+  // ======================================================
+  // SYSTEM MODULES (Inside Drawer)
+  // ======================================================
+
+  "power-profiles-daemon": {
+    "format": "{icon}",
+    "tooltip": true,
+    "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+    "format-icons": {
+      "default": "",
+      "performance": "",
+      "balanced": "",
+      "power-saver": ""
+    }
+  },
+
+  "network": {
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "󰌘",
+    "format-disconnected": "󰤮",
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "omarchy-launch-wifi"
+  },
+
+  "bluetooth": {
+    "format": "󰂯",
+    "format-disabled": "󰂲",
+    "format-connected": "",
+    "format-no-controller": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "omarchy-launch-bluetooth"
+  },
+
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging": "{icon}",
+    "format-plugged": "",
+    "format-full": "󰂅",
+    "interval": 5,
+    "on-click": "omarchy-menu power",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "states": {
+      "warning": 20,
+      "critical": 10
+    },
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    }
+  },
+
+  // ======================================================
+  // INDICATORS (JSON RETURN)
+  // ======================================================
+
+  "custom/screenrecording-indicator": {
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "on-click": "omarchy-cmd-screenrecord",
+    "signal": 8,
+    "return-type": "json"
+  },
+
+  "custom/idle-indicator": {
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+    "on-click": "omarchy-toggle-idle",
+    "signal": 9,
+    "return-type": "json"
+  },
+
+  "custom/notification-silencing-indicator": {
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+    "on-click": "omarchy-toggle-notification-silencing",
+    "signal": 10,
+    "return-type": "json"
+  },
+
+  // ======================================================
+  // SMALL VISUAL HELPERS
+  // ======================================================
+
+  "custom/update": {
+    "format": "",
+    "exec": "omarchy-update-available",
+    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
+    "signal": 7,
+    "interval": 21600
+  },
+
+  "custom/sep": {
+    "format": "︱"
+  },
+
+  "custom/bracr": {
+    "format": "]"
+  },
+
+  "custom/bracl": {
+    "format": "["
+  },
+
+  "custom/arrow": {
+    "format": ""
+  }
+}
+</file>
+
+<file path="V3.Ω/metastats.sh">
+#!/bin/bash
+
+STATE_FILE="/tmp/waybar_stack_state"
+MAX=5
+
+[ ! -f "$STATE_FILE" ] && echo 0 > "$STATE_FILE"
+STATE=$(cat "$STATE_FILE")
+
+# ---- HANDLE SCROLL ----
+if [ "$1" = "up" ]; then
+    STATE=$(( (STATE + 1) % MAX ))
+    echo "$STATE" > "$STATE_FILE"
+elif [ "$1" = "down" ]; then
+    STATE=$(( (STATE - 1 + MAX) % MAX ))
+    echo "$STATE" > "$STATE_FILE"
+fi
+
+# ---- STATS ----
+CPU=$(grep 'cpu ' /proc/stat | awk '{print int(($2+$4)*100/($2+$4+$5))}')
+MEM=$(free | awk '/Mem:/ {print int($3/$2*100)}')
+LOAD=$(uptime | awk -F'load average:' '{print $2}' | cut -d, -f1 | xargs)
+TEMP=$(cat /sys/class/thermal/thermal_zone*/temp 2>/dev/null | head -n1)
+[ -n "$TEMP" ] && TEMP=$((TEMP/1000))
+
+# ---- UPTIME ----
+UPTIME=$(awk '{print int($1)}' /proc/uptime)
+DAYS=$((UPTIME/86400))
+HOURS=$(( (UPTIME%86400)/3600 ))
+MINS=$(( (UPTIME%3600)/60 ))
+
+if [ "$DAYS" -gt 0 ]; then
+    UPTIME_STR="${DAYS}d ${HOURS}h"
+else
+    UPTIME_STR="${HOURS}h ${MINS}m"
+fi
+
+# ---- OUTPUT ----
+case "$STATE" in
+    0)
+        echo "[CPU $CPU%]"
+        ;;
+    1)
+        echo "[MEM $MEM%]"
+        ;;
+    2)
+        echo "[LOAD $LOAD]"
+        ;;
+    3)
+        [ -n "$TEMP" ] && echo "[TEMP ${TEMP}°C]" || echo "[TEMP N/A]"
+        ;;
+    4)
+        echo "[UP $UPTIME_STR]"
+        ;;
+esac
+</file>
+
+<file path="V3.Ω/style.css">
+@import "colors.css";
+
+/* ===================================================== */
+/* GLOBAL                                                */
+/* ===================================================== */
+
+* {
+  background-color: alpha(@background, 0.9);
+  color: @foreground;
+
+  border: none;
+  border-radius: 0;
+  border: 0px solid alpha(@foreground, 0.6);
+
+  min-height: 0;
+
+  font-family: 'JetBrainsMono Nerd Font';
+  font-size: 12px;
+}
+
+
+/* ===================================================== */
+/* LAYOUT SPACING                                        */
+/* ===================================================== */
+
+.modules-left {
+  margin-left: 8px;
+}
+
+.modules-right {
+  margin-right: 8px;
+}
+
+
+/* ===================================================== */
+/* RIGHT SIDE CORE MODULES                               */
+/* ===================================================== */
+
+#tray {
+  margin-right: 4px;
+}
+
+#pulseaudio {
+  margin-left: 1px;
+  margin-right: 4px;
+}
+
+#clock {
+  margin-left: -10px;
+}
+
+
+/* ===================================================== */
+/* SYSTEM MODULES                                        */
+/* ===================================================== */
+
+#battery,
+#cpu,
+#idle_inhibitor,
+#custom-update,
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+#network {
+  margin-left: 3px;
+  margin-right: 10px;
+}
+
+#bluetooth {
+  margin-right: 6px;
+}
+
+#power-profiles-daemon {
+  margin-left: 4px;
+  margin-right: 3px;
+}
+
+
+/* ===================================================== */
+/* CUSTOM MODULES                                        */
+/* ===================================================== */
+
+#custom-metastats {
+  min-width: 0px;
+  transition: opacity 0.15s ease;
+}
+
+#custom-omarchy {
+  margin-right: 8px;
+}
+
+#custom-update {
+  margin-left: 3px;
+  margin-right: 3px;
+  font-size: 10px;
+}
+
+#custom-expand-icon {
+  margin-right: 10px;
+}
+
+
+/* ===================================================== */
+/* INDICATORS                                            */
+/* ===================================================== */
+
+#custom-idle-indicator,
+#custom-notification-silencing-indicator {
+  margin-right: 2px;
+  min-width: 15px;
+}
+
+#custom-screenrecording-indicator {
+  margin-left: 2px;
+  margin-right: 2px;
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: #a55555;
+}
+
+
+/* ===================================================== */
+/* GROUPS                                                */
+/* ===================================================== */
+
+#group-ctl,
+#group_ctl,
+#ctl {
+  margin-right: 6px;
+}
+</file>
+
+<file path="V3.Ω/workspaces.sh">
+#!/bin/bash
+
+# ---- HANDLE SCROLL ----
+if [ "$1" = "up" ]; then
+    hyprctl dispatch workspace e+1 >/dev/null 2>&1
+    exit 0
+elif [ "$1" = "down" ]; then
+    hyprctl dispatch workspace e-1 >/dev/null 2>&1
+    exit 0
+fi
+
+# ---- GET ACTIVE WORKSPACE ----
+ACTIVE=$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id')
+
+[ -z "$ACTIVE" ] && exit 0
+
+TEXT="[Workspace $ACTIVE]"
+TOOLTIP="Active Workspace: $ACTIVE"
+
+echo "{\"text\":\"$TEXT\"}"
+</file>
+
+<file path="V3.Ωx/bottom/config">
+{
+  // ======================================================
+  // BAR SETTINGS
+  // ======================================================
+
+  "reload_style_on_change": true,
+  "layer": "bottom",
+  "position": "bottom",
+  "spacing": 0,
+  "height": 26,
+
+  // ======================================================
+  // MODULE PLACEMENT
+  // ======================================================
+
+  "modules-left": [
+    "custom/window"
+  ],
+
+  "modules-center": [],
+
+  "modules-right": [
+    "custom/cava",
+    "custom/sysbar",
+    "custom/theme"
+  ],
+
+  // ======================================================
+  // MODULES
+  // ======================================================
+
+  "custom/window": {
+      "exec": "~/.config/waybar/window.sh",
+      "interval": 1,
+      "return-type": "json",
+      "markup": "none"
+  },
+
+  "custom/theme": {
+    "exec": "~/.config/waybar/theme.sh",
+    "interval": 2,
+    "return-type": "json"
+  },
+
+  "custom/sysbar": {
+    "exec": "~/.config/waybar/sysbar.sh",
+    "interval": 1,
+    "on-scroll-up": "~/.config/waybar/sysbar.sh up",
+    "on-scroll-down": "~/.config/waybar/sysbar.sh down",
+    "return-type": "json"
+  },
+
+  "custom/cava": {
+      "exec": "~/.config/waybar/cava.sh",
+      "return-type": "json",
+      "restart-interval": 5
+  },
+
+  "custom/sep": {
+    "format": "︱"
+  },
+
+  "custom/bracr": {
+    "format": "]"
+  },
+
+  "custom/bracl": {
+    "format": "["
+  },
+
+  "custom/arrow": {
+    "format": ""
+  }
+}
+</file>
+
+<file path="V3.Ωx/bottom/style.css">
+@import "colors.css";
+
+/* ===================================================== */
+/* GLOBAL                                                */
+/* ===================================================== */
+
+* {
+  background-color: alpha(@background, 0.9);
+  color: @foreground;
+
+  border: none;
+  border-radius: 0;
+  border: 0px solid alpha(@foreground, 0.6);
+
+  min-height: 0;
+
+  font-family: 'JetBrainsMono Nerd Font';
+  font-size: 12px;
+}
+
+
+/* ===================================================== */
+/* LAYOUT SPACING                                        */
+/* ===================================================== */
+
+.modules-left {
+  margin-left: 8px;
+}
+
+.modules-right {
+  margin-right: 8px;
+}
+
+#custom-cava {
+    font-size: 12px;
+    color: #cdd6f4;
+    padding: 0 8px;
+}
+</file>
+
+<file path="V3.Ωx/cava.sh">
+#!/usr/bin/env bash
+
+SOURCE="$(pactl get-default-sink).monitor"
+CONFIG="/tmp/cava_waybar.conf"
+
+cat > "$CONFIG" <<EOF
+[general]
+bars = 10
+framerate = 60
+
+[input]
+method = pulse
+source = $SOURCE
+
+[output]
+method = raw
+raw_target = /dev/stdout
+data_format = ascii
+ascii_max_range = 5
+EOF
+
+cava -p "$CONFIG" | while IFS=';' read -ra values; do
+    bars=""
+    for i in "${values[@]}"; do
+        case $i in
+            0) bars+="⣀" ;;
+            1) bars+="⣄" ;;
+            2) bars+="⣆" ;;
+            3) bars+="⣇" ;;
+            4) bars+="⣧" ;;
+            5) bars+="⣷" ;;
+            6) bars+="⣿" ;;
+            7) bars+="⣿" ;;
+        esac
+    done
+    printf '{"text":"[%s]"}\n' "$bars"
+done
+</file>
+
+<file path="V3.Ωx/config.jsonc">
+{
+  // ======================================================
+  // BAR SETTINGS
+  // ======================================================
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 26,
+
+  // ======================================================
+  // MODULE PLACEMENT
+  // ======================================================
+  "modules-left": [
+    "custom/omarchy",
+    "custom/blank",
+    "custom/sep",
+    "hyprland/workspaces",
+    "custom/blank",
+    "group/misc"
+  ],
+
+  "modules-center": [],
+
+  "modules-right": [
+    "tray",
+    "custom/secbar",
+    "custom/metastats",
+    "pulseaudio",
+    "clock"
+  ],
+
+  // ======================================================
+  // LEFT SIDE MODULES
+  // ======================================================
+
+  "custom/omarchy": {
+    "format": "",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+    "tooltip": true,
+    "tooltip-format": "Omarchy Menu\nSuper + Alt + Space"
+  },
+
+  "hyprland/workspaces": {
+    "on-click": "activate",
+    "format": "{name}",
+    "format-icons": {
+      "default": "",
+      "1": "I",
+      "2": "II",
+      "3": "III",
+      "4": "IV",
+      "5": "V",
+      "6": "VI",
+      "7": "VII",
+      "8": "VIII",
+      "9": "IX",
+      "10": "X",
+    },
+    "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": []
+    }
+  },
+
+  "custom/blank": {
+    "format": " ",
+    "tooltip": false
+  },
+
+  // ======================================================
+  // GROUP: MISC (Drawer)
+  // ======================================================
+
+  "group/misc": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "transition-left-to-right": false,
+      "children-class": "center2-group-item"
+    },
+    "modules": [
+      "custom/arrow",
+      "custom/blank",
+      "custom/screenrecording-indicator",
+      "custom/update",
+      "custom/idle-indicator",
+      "custom/notification-silencing-indicator",
+      "power-profiles-daemon",
+      "custom/sep",
+      "network",
+      "bluetooth",
+      "battery"
+    ]
+  },
+
+  // ======================================================
+  // RIGHT SIDE MODULES
+  // ======================================================
+
+  "tray": {
+    "icon-size": 13,
+    "spacing": 6
+  },
+
+  "custom/metastats": {
+    "exec": "~/.config/waybar/metastats.sh",
+    "interval": 2,
+    "on-scroll-up": "~/.config/waybar/metastats.sh up",
+    "on-scroll-down": "~/.config/waybar/metastats.sh down"
+  },
+
+  "pulseaudio": {
+    "format": "[VOL {volume}%] ",
+    "format-muted": "[VOL MUTE] ",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "on-click": "omarchy-launch-or-focus-tui wiremix",
+    "on-click-right": "pamixer -t",
+    "format-icons": {
+      "default": ["", "", ""]
+    }
+  },
+
+  "clock": {
+    "format": "[{:%I:%M %p}]",
+    "format-alt": "[{:%e %B %A}]",
+    "tooltip": false
+  },
+
+  // ======================================================
+  // SYSTEM MODULES (Inside Drawer)
+  // ======================================================
+
+  "power-profiles-daemon": {
+    "format": "{icon}",
+    "tooltip": true,
+    "tooltip-format": "Power profile: {profile}\nDriver: {driver}",
+    "format-icons": {
+      "default": "",
+      "performance": "",
+      "balanced": "",
+      "power-saver": ""
+    }
+  },
+
+  "network": {
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "󰌘",
+    "format-disconnected": "󰤮",
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "omarchy-launch-wifi",
+    "tooltip": false
+  },
+
+  "bluetooth": {
+    "format": "󰂯",
+    "format-disabled": "󰂲",
+    "format-connected": "",
+    "format-no-controller": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "omarchy-launch-bluetooth"
+  },
+
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging": "{icon}",
+    "format-plugged": "",
+    "format-full": "󰂅",
+    "interval": 5,
+    "on-click": "omarchy-menu power",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "states": {
+      "warning": 20,
+      "critical": 10
+    },
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    }
+  },
+
+  // ======================================================
+  // INDICATORS (JSON RETURN)
+  // ======================================================
+
+  "custom/screenrecording-indicator": {
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "on-click": "omarchy-cmd-screenrecord",
+    "signal": 8,
+    "return-type": "json"
+  },
+
+  "custom/idle-indicator": {
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+    "on-click": "omarchy-toggle-idle",
+    "signal": 9,
+    "return-type": "json"
+  },
+
+  "custom/notification-silencing-indicator": {
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+    "on-click": "omarchy-toggle-notification-silencing",
+    "signal": 10,
+    "return-type": "json"
+  },
+
+  // ======================================================
+  // SMALL VISUAL HELPERS
+  // ======================================================
+
+  "custom/update": {
+    "format": "",
+    "exec": "omarchy-update-available",
+    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
+    "signal": 7,
+    "interval": 21600
+  },
+
+  "custom/sep": {
+    "format": "︱",
+    "tooltip": false
+  },
+
+  "custom/bracr": {
+    "format": "]",
+    "tooltip": false
+  },
+
+  "custom/bracl": {
+    "format": "[",
+    "tooltip": false
+  },
+
+  "custom/arrow": {
+    "format": "",
+    "tooltip": false
+  },
+
+  "custom/secbar": {
+    "format": "[BTMBAR]",
+    "tooltip": true,
+    "tooltip-format": "Toggle bottom bar",
+    "on-click": "~/.config/waybar/secbar.sh",
+    "return-type": "json"
+  }
+}
+</file>
+
+<file path="V3.Ωx/metastats.sh">
+#!/bin/bash
+
+STATE_FILE="/tmp/waybar_stack_state"
+MAX=5
+
+[ ! -f "$STATE_FILE" ] && echo 0 > "$STATE_FILE"
+STATE=$(cat "$STATE_FILE")
+
+# ---- HANDLE SCROLL ----
+if [ "$1" = "up" ]; then
+    STATE=$(( (STATE + 1) % MAX ))
+    echo "$STATE" > "$STATE_FILE"
+elif [ "$1" = "down" ]; then
+    STATE=$(( (STATE - 1 + MAX) % MAX ))
+    echo "$STATE" > "$STATE_FILE"
+fi
+
+# ---- STATS ----
+CPU=$(grep 'cpu ' /proc/stat | awk '{print int(($2+$4)*100/($2+$4+$5))}')
+MEM=$(free | awk '/Mem:/ {print int($3/$2*100)}')
+LOAD=$(uptime | awk -F'load average:' '{print $2}' | cut -d, -f1 | xargs)
+TEMP=$(cat /sys/class/thermal/thermal_zone*/temp 2>/dev/null | head -n1)
+[ -n "$TEMP" ] && TEMP=$((TEMP/1000))
+
+# ---- UPTIME ----
+UPTIME=$(awk '{print int($1)}' /proc/uptime)
+DAYS=$((UPTIME/86400))
+HOURS=$(( (UPTIME%86400)/3600 ))
+MINS=$(( (UPTIME%3600)/60 ))
+
+if [ "$DAYS" -gt 0 ]; then
+    UPTIME_STR="${DAYS}d ${HOURS}h"
+else
+    UPTIME_STR="${HOURS}h ${MINS}m"
+fi
+
+# ---- OUTPUT ----
+case "$STATE" in
+    0)
+        echo "[CPU $CPU%]"
+        ;;
+    1)
+        echo "[MEM $MEM%]"
+        ;;
+    2)
+        echo "[LOAD $LOAD]"
+        ;;
+    3)
+        [ -n "$TEMP" ] && echo "[TEMP ${TEMP}°C]" || echo "[TEMP N/A]"
+        ;;
+    4)
+        echo "[UP $UPTIME_STR]"
+        ;;
+esac
+</file>
+
+<file path="V3.Ωx/secbar.sh">
+#!/bin/bash
+
+if pgrep -f "bottom/config" > /dev/null; then
+    pkill -f "bottom/config"
+else
+    waybar -c ~/.config/waybar/bottom/config &
+fi
+</file>
+
+<file path="V3.Ωx/style.css">
+@import "colors.css";
+
+/* ===================================================== */
+/* GLOBAL                                                */
+/* ===================================================== */
+
+* {
+  background-color: alpha(@background, 0.9);
+  color: @foreground;
+
+  border: none;
+  border-radius: 0;
+  border: 0px solid alpha(@foreground, 0.6);
+
+  min-height: 0;
+
+  font-family: 'JetBrainsMono Nerd Font';
+  font-size: 12px;
+}
+
+
+/* ===================================================== */
+/* LAYOUT SPACING                                        */
+/* ===================================================== */
+
+.modules-left {
+  margin-left: 8px;
+}
+
+.modules-right {
+  margin-right: 8px;
+}
+
+
+/* ===================================================== */
+/* RIGHT SIDE CORE MODULES                               */
+/* ===================================================== */
+
+#tray {
+  margin-right: 4px;
+}
+
+#pulseaudio {
+  margin-left: 1px;
+  margin-right: 4px;
+}
+
+#clock {
+  margin-left: -10px;
+}
+
+/* ===================================================== */
+/* LEFT SIDE CORE MODULES                               */
+/* ===================================================== */
+
+#workspaces button {
+  all: initial;
+  transition: all 90ms ease-in-out;  
+  padding: 0 6px;
+  margin-left:  0px;
+  min-width: 2px;
+}
+
+#workspaces button.active {
+  border-top: 1px solid @foreground;
+  margin-bottom: 2px;
+}
+
+#workspaces button.empty {
+  opacity: 0.5;
+}
+
+/* ===================================================== */
+/* SYSTEM MODULES                                        */
+/* ===================================================== */
+
+#battery,
+#cpu,
+#idle_inhibitor,
+#custom-update,
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+#network {
+  margin-left: 3px;
+  margin-right: 10px;
+}
+
+#bluetooth {
+  margin-right: 6px;
+}
+
+#power-profiles-daemon {
+  margin-left: 4px;
+  margin-right: 3px;
+}
+
+
+/* ===================================================== */
+/* CUSTOM MODULES                                        */
+/* ===================================================== */
+
+#custom-metastats {
+  min-width: 0px;
+  transition: opacity 0.15s ease;
+}
+
+#custom-omarchy {
+  margin-right: 8px;
+}
+
+#custom-update {
+  margin-left: 3px;
+  margin-right: 3px;
+  font-size: 10px;
+}
+
+#custom-expand-icon {
+  margin-right: 10px;
+}
+
+
+/* ===================================================== */
+/* INDICATORS                                            */
+/* ===================================================== */
+
+#custom-idle-indicator,
+#custom-notification-silencing-indicator {
+  margin-right: 2px;
+  min-width: 15px;
+}
+
+#custom-screenrecording-indicator {
+  margin-left: 2px;
+  margin-right: 2px;
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: #a55555;
+}
+
+
+/* ===================================================== */
+/* GROUPS                                                */
+/* ===================================================== */
+
+#group-ctl,
+#group_ctl,
+#ctl {
+  margin-right: 6px;
+}
+</file>
+
+<file path="V3.Ωx/sysbar.sh">
+#!/usr/bin/env bash
+
+STATE="/tmp/waybar_sysbar"
+[ ! -f "$STATE" ] && echo "cpu" > "$STATE"
+
+mode=$(cat "$STATE")
+
+# Scroll handling
+if [ "$1" = "up" ]; then
+
+case $mode in
+cpu) echo "mem" > "$STATE" ;;
+mem) echo "swap" > "$STATE" ;;
+swap) echo "cpu" > "$STATE" ;;
+esac
+
+mode=$(cat "$STATE")
+
+fi
+
+if [ "$1" = "down" ]; then
+
+case $mode in
+cpu) echo "swap" > "$STATE" ;;
+mem) echo "cpu" > "$STATE" ;;
+swap) echo "mem" > "$STATE" ;;
+esac
+
+mode=$(cat "$STATE")
+
+fi
+
+make_bar(){
+
+percent=$1
+
+# 8 segment bar (cleaner than 10)
+filled=$((percent / 12))
+empty=$((8 - filled))
+
+bar=""
+
+for ((i=0;i<filled;i++)); do
+bar+=""
+done
+
+for ((i=0;i<empty;i++)); do
+bar+=""
+done
+
+echo "$bar"
+}
+
+case $mode in
+
+cpu)
+
+cpu=$(top -bn1 | awk '/Cpu/ {print int($2)}')
+
+bar=$(make_bar $cpu)
+
+printf '{"text":"[cpu %2d%% %s ]"}\n' "$cpu" "$bar"
+
+;;
+
+mem)
+
+mem=$(free | awk '/Mem:/ {print int($3/$2 *100)}')
+
+bar=$(make_bar $mem)
+
+printf '{"text":"[ mem %2d%% %s ]"}\n' "$mem" "$bar"
+
+;;
+
+swap)
+
+swap=$(free | awk '/Swap:/ {if($2==0){print 0}else{print int($3/$2 *100)}}')
+
+bar=$(make_bar $swap)
+
+printf '{"text":"[ swap %2d%% %s ]"}\n' "$swap" "$bar"
+
+;;
+
+esac
+</file>
+
+<file path="V3.Ωx/theme.sh">
+#!/usr/bin/env bash
+
+FILE="$HOME/.config/omarchy/current/theme.name"
+
+if [ -f "$FILE" ]; then
+    THEME=$(cat "$FILE")
+else
+    THEME="unknown"
+fi
+
+echo "{\"text\":\"[theme = $THEME]\"}"
+</file>
+
+<file path="V3.Ωx/window.sh">
+#!/usr/bin/env bash
+
+MAX_LEN=50
+
+print_window() {
+
+window=$(hyprctl activewindow -j)
+
+title=$(jq -r '.title' <<< "$window")
+class=$(jq -r '.class' <<< "$window")
+
+if [[ "$title" == "null" || -z "$title" ]]; then
+    ws=$(hyprctl activeworkspace -j | jq -r '.id')
+    echo "{\"text\":\"[Desktop = Workspace $ws]\"}"
+    return
+fi
+
+# Calculate safe title length (reserve space for brackets + class)
+reserve=$(( ${#class} + 7 ))
+limit=$(( MAX_LEN - reserve ))
+
+if (( ${#title} > limit )); then
+    title="${title:0:$((limit-3))}.."
+fi
+
+echo "{\"text\":\"[$class = $title]\"}"
+
+}
+
+print_window
+
+socat -u UNIX-CONNECT:/tmp/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock - |
+while read -r event
+do
+    case "$event" in
+        activewindow*|workspace*|focusedmon*)
+            print_window
+        ;;
+    esac
+done
+</file>
+
+<file path="V4/config.jsonc">
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 35,
+  "border-radius": 25,
+  "margin-right": 10,
+  "margin-left": 10,
+  "margin-top": 2,
+  "modules-left": ["custom/omarchy", "custom/active_window", ],
+  "modules-center": [ "group/center3", "hyprland/workspaces", "group/center2" ],
+  "modules-right": [
+    "group/right1",
+  ],
+
+// GROUPS MODULE
+
+  "group/center2": {
+	"orientation": "inherit",
+	"modules": [
+    "clock",
+    "custom/idle-indicator",
+    "custom/notification-silencing-indicator",
+    "custom/screenrecording-indicator", 
+    "custom/update", 
+	]
+},
+
+  "group/center3": {
+	"orientation": "inherit",
+	"modules": [
+    "cpu",
+    "memory",
+    "custom/separator#blank",
+    "custom/media", 
+	]
+},
+
+  "group/right1": {
+	"orientation": "inherit",
+	"modules": [
+    "tray",
+    "custom/separator#blank",
+    "custom/separator#dot",
+    "custom/separator#blank",
+    "pulseaudio",
+    "bluetooth",
+    "network",
+    "battery",
+	]
+},
+
+// MODULES
+
+  "custom/active_window": {
+    "exec": "~/.config/waybar/window.sh",
+    "return-type": "json",
+    "markup": true
+},
+
+  "hyprland/workspaces": {
+	  "on-click": "activate",
+        "format": "{icon}",
+        "format-icons": {
+          "default": "",
+          "active": "",
+          "urgent": "",
+          "empty": "",
+        },
+      "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": [],
+      "6": [],
+      "7": [],
+      "8": [],
+    },
+	},
+
+  "custom/omarchy": {
+    // "format": "󰹡",
+    "format": "<span size='12500'></span>",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space"
+  },
+
+"cpu": {
+  "interval": 2,
+  "format": "{icon} ",
+  "format-icons": ["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "on-click": "omarchy-launch-or-focus-tui btop"
+},
+
+"memory": {
+  "interval": 2,
+  "format": "{icon} ",
+  "format-icons": ["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "on-click": "omarchy-launch-or-focus-tui btop"
+},
+
+"clock": {
+    "format": " {:%I:%M %p • %a, %d/%m}     ",
+    "format-alt": "{:%A, %d %B %Y}   ",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+},
+
+  "network": {
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "<span size='11500'>󰌘</span>",
+    "format-disconnected": "<span size='11500'>󰤮</span>",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "omarchy-launch-wifi"
+  },
+
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging": "{icon}",
+    "format-plugged": "",
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "interval": 5,
+    "on-click": "omarchy-menu power",
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  },
+
+  "bluetooth": {
+    "format": "<span size='11500'>󰂯</span>",
+    "format-disabled": "<span size='11500'>󰂲</span>",
+    "format-connected": "<span size='11500'></span>",
+    "format-no-controller": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "omarchy-launch-bluetooth"
+  },
+
+  "pulseaudio": {
+    "format": "<span size='11500'>{icon}</span>",
+    "on-click": "omarchy-launch-or-focus-tui wiremix",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": "",
+    "format-icons": {
+      "default": [
+        " ",
+        " ",
+        " "
+      ]
+    }
+  },
+  
+  "group/tray-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "tray-group-item"
+    },
+    "modules": ["custom/expand-icon", "tray"]
+  },
+
+  "custom/expand-icon": {
+    "format": "",
+    "tooltip": false
+  },
+
+  "custom/screenrecording-indicator": {
+    "on-click": "omarchy-cmd-screenrecord",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "signal": 8,
+    "return-type": "json"
+  },
+
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  },
+
+"custom/media": {
+  "exec": "title=$(playerctl metadata title 2>/dev/null); if [ -n \"$title\" ]; then echo \"  ${title:0:25} \"; else echo \"         No media           \"; fi",
+  "interval": 2,
+  "on-click": "playerctl play-pause"
+},
+
+  "custom/separator#blank": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/separator#dot": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/idle-indicator": {
+    "on-click": "omarchy-toggle-idle",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+    "signal": 9,
+    "return-type": "json"
+  },
+  
+  "custom/notification-silencing-indicator": {
+    "on-click": "omarchy-toggle-notification-silencing",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+    "signal": 10,
+    "return-type": "json"
+  },
+
+  "custom/update": {
+    "format": "",
+    "exec": "omarchy-update-available",
+    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
+    "tooltip-format": "Omarchy update available",
+    "signal": 7,
+    "interval": 21600
+  },
+
+}
+</file>
+
+<file path="V4/style.css">
+@import "colors.css";
+
+* {
+  color: @foreground;
+  border: none;
+  border-radius: 1;
+  min-height: 0;
+  font-family: 'JetBrainsMono Nerd Font Propo';
+  font-size: 12px;
+}
+
+.modules-left {
+  margin-left: 8px;
+}
+
+.modules-right {
+  margin-right: 8px;
+}
+
+window#waybar {
+  background-color: @background;
+  transition-property: background-color;
+  transition-duration: .5s;
+  border-radius: 32px;
+}
+
+window#waybar.empty #window {
+  background: transparent;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: transparent;
+  padding: 0;
+  margin: 0;
+}
+#waybar.empty .modules-center {
+  opacity: 0;
+}
+
+#workspaces {
+    padding: 0px 5px;
+    margin: 3.5 3.5px;
+    border-radius: 11px;
+    background-color: alpha(@foreground, 0.1);
+    opacity: 0.95;
+}
+
+#workspaces button {
+  all: initial;
+  padding: 0 6px;
+  margin: 0 1.5px;
+  min-width: 9px;
+}
+
+#workspaces button.empty {
+  opacity: 0.5;
+}
+
+#workspaces button.active {
+  border-radius: 18px;
+  background: alpha(@foreground, 0.2);
+  opacity: 1;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-left: 5px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
+#workspaces button:hover {
+  border-radius: 18px;
+  background: transparent;
+  opacity: 1;
+}
+
+#workspaces button.urgent {
+  border-radius: 18px;
+  background: alpha(#f13333, 0.5);
+  opacity: 1;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-left: 5px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
+#battery,
+#pulseaudio,
+#custom-screenrecording-indicator,
+#custom-update {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+#tray {
+  background:alpha(@foreground, 0.0);
+  border-radius: 16px;
+  padding: 0px 5px;
+  margin: 3.5 2px;
+  margin-right: 4px;
+}
+
+#clock {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+#pulseaudio {
+  margin-right: 5px;
+}
+
+#bluetooth {
+  margin-right: 12px;
+}
+
+#custom-idle-indicator,
+#custom-notification-silencing-indicator {
+  margin-right: 2px;
+  min-width: 15px;
+}
+
+#network {
+  margin-right: 9px;
+}
+
+tooltip {
+  background: @background;
+  border: 1px solid alpha(@foreground, 0.2);
+  border-radius: 4px 4px 11px 11px;
+}
+tooltip label {
+  color: white;
+}
+
+
+#custom-active_window {
+    padding: 3px 6px;
+    border-radius: 14px;
+    background: @background;
+    font-size: 12px;
+}
+
+#custom-update {
+  font-size: 10px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 8.75px;
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: red;
+}
+
+#custom-omarchy{
+  background:alpha(@foreground, 0.1);
+  border-radius: 99px;
+  /* margin:3px; */
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-left: -3px;
+  margin-right: 5px;
+  padding-right: 7px;
+  padding-left: 7px;
+
+}
+
+#cpu, #memory {
+    font-size: 18px;      
+    padding: 2px 1px;
+}
+
+#group-right1,
+#group_right1,
+#right1 {
+    font-weight: 800;
+    background: transparent;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+}
+
+#group-center3,
+#group_center3,
+#center3,
+#group-center2,
+#group_center2,
+#center2 {
+    font-weight: 800;
+    background:alpha(@foreground, 0.1);
+    border-radius: 12px;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+}
+</file>
+
+<file path="V4/window.sh">
+#!/usr/bin/env bash
+
+MAX_TITLE_LEN=20
+
+print_status() {
+    window=$(hyprctl activewindow -j 2>/dev/null)
+    address=$(jq -r '.address // empty' <<< "$window")
+
+    # No active window → show Desktop + Workspace
+    if [[ -z "$address" || "$address" == "null" ]]; then
+        ws=$(hyprctl activeworkspace -j | jq -r '.id')
+
+        top_line="Desktop"
+        bottom_line="Workspace $ws"
+
+        esc_top=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$top_line")
+        esc_bottom=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$bottom_line")
+
+        text="<span size='7500' foreground='#a6adc8' rise='-2000'>$esc_top</span>
+<span size='9000' weight='bold' foreground='#ffffff'>$esc_bottom</span>"
+
+        jq -nc \
+            --arg text "$text" \
+            --arg tooltip "$bottom_line" \
+            '{ text: $text, class: "custom-window", tooltip: $tooltip }'
+        return
+    fi
+
+    class=$(jq -r '.class // "Unknown"' <<< "$window")
+    title=$(jq -r '.title // ""' <<< "$window")
+
+    app_class="${class,,}"
+
+    # Discord / Vesktop cleanup
+    if [[ "$app_class" == *discord* || "$app_class" == *vesktop* ]]; then
+        title=$(sed -E 's/^\([0-9]+\)[[:space:]]*//' <<< "$title")
+        title=$(sed -E 's/^Discord[[:space:]]*\|[[:space:]]*//' <<< "$title")
+    fi
+
+    # Truncate title
+    if (( ${#title} > MAX_TITLE_LEN )); then
+        title="${title:0:$((MAX_TITLE_LEN-3))}..."
+    fi
+
+    esc_top=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$class")
+    esc_bottom=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$title")
+
+    text="<span size='7500' foreground='#a6adc8' rise='-2000'>$esc_top</span>
+<span size='9000' weight='bold' foreground='#ffffff'>$esc_bottom</span>"
+
+    tooltip="$class: $title"
+
+    jq -nc \
+        --arg text "$text" \
+        --arg tooltip "$tooltip" \
+        '{ text: $text, class: "custom-window", tooltip: $tooltip }'
+}
+
+# Initial output
+print_status
+
+last=""
+
+# Update only when state changes
+while true; do
+    current_window=$(hyprctl activewindow -j 2>/dev/null)
+    current_ws=$(hyprctl activeworkspace -j 2>/dev/null)
+
+    current="$current_window$current_ws"
+
+    if [[ "$current" != "$last" ]]; then
+        print_status
+        last="$current"
+    fi
+
+    sleep 0.5
+done
+</file>
+
+<file path="V4.x/config.jsonc">
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 35,
+  "border-radius": 25,
+  "margin-right": 10,
+  "margin-left": 10,
+  "margin-top": 2,
+  "modules-left": ["custom/omarchy", "custom/active_window", ],
+  "modules-center": [ "group/center3", "hyprland/workspaces", "group/center2" ],
+  "modules-right": [
+    "group/right1",
+  ],
+
+// GROUPS MODULE
+
+  "group/center2": {
+	"orientation": "inherit",
+	"modules": [
+    "clock",
+    "custom/gamemode",
+    "custom/idle-indicator",
+    "custom/notification-silencing-indicator",
+    "custom/screenrecording-indicator", 
+    "custom/update", 
+	]
+},
+
+  "group/center3": {
+	"orientation": "inherit",
+	"modules": [
+    "cpu",
+    "memory",
+    "custom/separator#blank",
+    "custom/media", 
+	]
+},
+
+  "group/right1": {
+	"orientation": "inherit",
+	"modules": [
+    "tray",
+    "custom/separator#blank",
+    "custom/separator#dot",
+    "custom/separator#blank",
+    "pulseaudio",
+    "bluetooth",
+    "network",
+    "battery",
+	]
+},
+
+// MODULES
+
+  "custom/active_window": {
+    "exec": "~/.config/waybar/window.sh",
+    "return-type": "json",
+    "markup": true
+  },
+  
+  "hyprland/workspaces": {
+	  "on-click": "activate",
+        "format": "{icon}",
+        "format-icons": {
+          "default": "",
+          "active": "",
+          "empty": "",
+        },
+      "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": [],
+      "6": [],
+      "7": [],
+      "8": [],
+    },
+	},
+
+  "custom/omarchy": {
+    // "format": "󰹡",
+    "format": "<span size='11500'></span>",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space"
+  },
+
+"cpu": {
+  "interval": 2,
+  "format": "{icon} ",
+  "format-icons": ["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "on-click": "omarchy-launch-or-focus-tui btop"
+},
+
+"memory": {
+  "interval": 2,
+  "format": "{icon} ",
+  "format-icons": ["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "on-click": "omarchy-launch-or-focus-tui btop"
+},
+
+"clock": {
+    "format": " {:%I:%M %p • %a, %d/%m}     ",
+    "format-alt": "{:%A, %d %B %Y}   ",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+},
+
+  "network": {
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "<span size='11500'>󰌘</span>",
+    "format-disconnected": "<span size='11500'>󰤮</span>",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "omarchy-launch-wifi"
+  },
+
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging": "{icon}",
+    "format-plugged": "",
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "interval": 5,
+    "on-click": "omarchy-menu power",
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  },
+
+  "bluetooth": {
+    "format": "<span size='11500'>󰂯</span>",
+    "format-disabled": "<span size='11500'>󰂲</span>",
+    "format-connected": "<span size='11500'></span>",
+    "format-no-controller": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "omarchy-launch-bluetooth"
+  },
+
+  "pulseaudio": {
+    "format": "<span size='11500'>{icon}</span>",
+    "on-click": "omarchy-launch-or-focus-tui wiremix",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": "",
+    "format-icons": {
+      "default": [
+        " ",
+        " ",
+        " "
+      ]
+    }
+  },
+  
+  "group/tray-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "tray-group-item"
+    },
+    "modules": ["custom/expand-icon", "tray"]
+  },
+
+  "custom/expand-icon": {
+    "format": "",
+    "tooltip": false
+  },
+
+  "custom/screenrecording-indicator": {
+    "on-click": "omarchy-cmd-screenrecord",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "signal": 8,
+    "return-type": "json"
+  },
+
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  },
+
+"custom/media": {
+  "exec": "title=$(playerctl metadata title 2>/dev/null); if [ -n \"$title\" ]; then echo \"  ${title:0:25} \"; else echo \"         No media           \"; fi",
+  "interval": 2,
+  "on-click": "playerctl play-pause"
+},
+
+  "custom/separator#blank": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/separator#dot": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/idle-indicator": {
+    "on-click": "omarchy-toggle-idle",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+    "signal": 9,
+    "return-type": "json"
+  },
+  
+  "custom/notification-silencing-indicator": {
+    "on-click": "omarchy-toggle-notification-silencing",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+    "signal": 10,
+    "return-type": "json"
+  },
+
+  "custom/update": {
+    "format": "",
+    "exec": "omarchy-update-available",
+    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
+    "tooltip-format": "Omarchy update available",
+    "signal": 7,
+    "interval": 21600
+  },
+
+  "custom/gamemode": {
+    "exec": "test -f ~/.cache/hypr_gamemode && echo '{\"text\":\"\"}' || echo '{\"text\":\"\"}'",
+    "on-click": "test -f ~/.cache/hypr_gamemode && (rm ~/.cache/hypr_gamemode && hyprctl keyword animations:enabled 1 && hyprctl keyword decoration:blur:enabled 1) || (touch ~/.cache/hypr_gamemode && hyprctl keyword animations:enabled 0 && hyprctl keyword decoration:blur:enabled 0)",
+    "interval": 1,
+    "return-type": "json",
+    "tooltip": true,
+    "tooltip-format": "GameMode"
+  },
+
+}
+</file>
+
+<file path="V4.x/style.css">
+@import "colors.css";
+
+* {
+  border: none;
+  border-radius: 1;
+  min-height: 0;
+  font-family: 'JetBrainsMono Nerd Font Propo';
+  font-size: 12px;
+}
+
+.modules-left {
+  margin-left: 8px;
+}
+
+.modules-right {
+  margin-right: 8px;
+}
+
+window#waybar {
+  background-color: @background;
+  transition-property: background-color;
+  transition-duration: .5s;
+  border-radius: 32px;
+}
+
+window#waybar.empty #window {
+  background: transparent;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: transparent;
+  padding: 0;
+  margin: 0;
+}
+#waybar.empty .modules-center {
+  opacity: 0;
+}
+
+#workspaces {
+    padding: 0px 5px;
+    margin: 3.5 3.5px;
+    border-radius: 11px;
+    background-color: alpha(@foreground, 0.1);
+    opacity: 0.95;
+    
+}
+
+#workspaces button {
+  color: @foreground;
+  padding: 0 6px;
+  margin: 0 1.5px;
+  min-width: 9px;
+}
+
+#workspaces button.empty {
+  color: @foreground;
+  opacity: 0.5;
+}
+
+#workspaces button.active {
+   transition: all 50ms ease-out;
+  border-radius: 18px;
+  color: @background;
+  background: alpha(@foreground, 0.9);
+  opacity: 1;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-left: 5px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
+#workspaces button.active:hover {
+  background-color: alpha(@background, 0.5);
+  color: @foreground;
+} 
+
+#workspaces button:hover {
+  background-color: transparent;
+}
+
+#workspaces button.empty:hover {
+  border-radius: 18px;
+  background: transparent;
+  opacity: 1;
+}
+
+#battery,
+#pulseaudio,
+#custom-screenrecording-indicator,
+#custom-update {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+#tray {
+  background:alpha(@foreground, 0.0);
+  border-radius: 16px;
+  padding: 0px 5px;
+  margin: 3.5 2px;
+  margin-right: 4px;
+}
+
+#clock {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+#pulseaudio {
+  margin-right: 5px;
+}
+
+#bluetooth {
+  margin-right: 12px;
+}
+
+#custom-idle-indicator,
+#custom-notification-silencing-indicator {
+  margin-right: 2px;
+  min-width: 15px;
+}
+
+#network {
+  margin-right: 9px;
+}
+
+#custom-gamemode {
+  margin-right: 8px;
+}
+
+tooltip {
+  background: @background;
+  border: 1px solid alpha(@foreground, 0.2);
+  border-radius: 4px 4px 11px 11px;
+}
+tooltip label {
+  color: white;
+}
+
+
+#custom-active_window {
+    padding: 3px 6px;
+    border-radius: 14px;
+    background: @background;
+    font-size: 12px;
+}
+
+#custom-update {
+  font-size: 10px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 8.75px;
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: red;
+}
+
+#custom-omarchy{
+  background:alpha(@foreground, 0.1);
+  border-radius: 99px;
+  /* margin:3px; */
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-left: -3px;
+  margin-right: 5px;
+  padding-right: 7px;
+  padding-left: 7px;
+
+}
+
+#cpu, #memory {
+    font-size: 18px;      
+    padding: 2px 1px;
+}
+
+#group-right1,
+#group_right1,
+#right1 {
+    font-weight: 800;
+    background: transparent;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+}
+
+#group-center3,
+#group_center3,
+#center3,
+#group-center2,
+#group_center2,
+#center2 {
+    font-weight: 800;
+    background:alpha(@foreground, 0.1);
+    border-radius: 12px;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+}
+</file>
+
+<file path="V4.x/window.sh">
+#!/usr/bin/env bash
+
+MAX_TITLE_LEN=20
+
+print_status() {
+    window=$(hyprctl activewindow -j 2>/dev/null)
+    address=$(jq -r '.address // empty' <<< "$window")
+
+    # No active window → show Desktop + Workspace
+    if [[ -z "$address" || "$address" == "null" ]]; then
+        ws=$(hyprctl activeworkspace -j | jq -r '.id')
+
+        top_line="Desktop"
+        bottom_line="Workspace $ws"
+
+        esc_top=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$top_line")
+        esc_bottom=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$bottom_line")
+
+        text="<span size='7500' foreground='#a6adc8' rise='-2000'>$esc_top</span>
+<span size='9000' weight='bold' foreground='#ffffff'>$esc_bottom</span>"
+
+        jq -nc \
+            --arg text "$text" \
+            --arg tooltip "$bottom_line" \
+            '{ text: $text, class: "custom-window", tooltip: $tooltip }'
+        return
+    fi
+
+    class=$(jq -r '.class // "Unknown"' <<< "$window")
+    title=$(jq -r '.title // ""' <<< "$window")
+
+    app_class="${class,,}"
+
+    # Discord / Vesktop cleanup
+    if [[ "$app_class" == *discord* || "$app_class" == *vesktop* ]]; then
+        title=$(sed -E 's/^\([0-9]+\)[[:space:]]*//' <<< "$title")
+        title=$(sed -E 's/^Discord[[:space:]]*\|[[:space:]]*//' <<< "$title")
+    fi
+
+    # Truncate title
+    if (( ${#title} > MAX_TITLE_LEN )); then
+        title="${title:0:$((MAX_TITLE_LEN-3))}..."
+    fi
+
+    esc_top=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$class")
+    esc_bottom=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$title")
+
+    text="<span size='7500' foreground='#a6adc8' rise='-2000'>$esc_top</span>
+<span size='9000' weight='bold' foreground='#ffffff'>$esc_bottom</span>"
+
+    tooltip="$class: $title"
+
+    jq -nc \
+        --arg text "$text" \
+        --arg tooltip "$tooltip" \
+        '{ text: $text, class: "custom-window", tooltip: $tooltip }'
+}
+
+# Initial output
+print_status
+
+last=""
+
+# Update only when state changes
+while true; do
+    current_window=$(hyprctl activewindow -j 2>/dev/null)
+    current_ws=$(hyprctl activeworkspace -j 2>/dev/null)
+
+    current="$current_window$current_ws"
+
+    if [[ "$current" != "$last" ]]; then
+        print_status
+        last="$current"
+    fi
+
+    sleep 0.5
+done
+</file>
+
+<file path="V4.y/configs/bar.jsonc">
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 3,
+  "modules-left": ["custom/omarchy", "custom/active_window", ],
+  "modules-center": [ "group/center3", "hyprland/workspaces", "group/center2" ],
+  "modules-right": [
+    "group/right1",
+  ],
+
+// GROUPS MODULE
+
+  "group/center2": {
+	"orientation": "inherit",
+	"modules": [
+    "clock",
+    "custom/gamemode",
+    "custom/idle-indicator",
+    "custom/notification-silencing-indicator",
+    "custom/screenrecording-indicator", 
+    "custom/update", 
+	]
+},
+
+  "group/center3": {
+	"orientation": "inherit",
+	"modules": [
+    "cpu",
+    "memory",
+    "custom/separator#blank",
+    "custom/media", 
+	]
+},
+
+  "group/right1": {
+	"orientation": "inherit",
+	"modules": [
+    "tray",
+    "custom/separator#blank",
+    "custom/separator#dot",
+    "custom/separator#blank",
+    "custom/mode",
+    "pulseaudio",
+    "bluetooth",
+    "network",
+    "battery",
+	]
+},
+
+// MODULES
+
+  "custom/mode": {
+      "exec": "~/.config/waybar/mode.sh",
+      "on-click": "~/.config/waybar/mode.sh toggle",
+      "return-type": "json",
+      "format": "{}"
+  },
+
+  "custom/active_window": {
+    "exec": "~/.config/waybar/window.sh",
+    "return-type": "json",
+    "markup": true
+  },
+  
+  "hyprland/workspaces": {
+	  "on-click": "activate",
+        "format": "{icon}",
+        "format-icons": {
+          "default": "",
+          "active": "",
+          "empty": "",
+        },
+      "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": [],
+      "6": [],
+      "7": [],
+      "8": [],
+    },
+	},
+
+  "custom/omarchy": {
+    // "format": "󰹡",
+    "format": "<span size='11500'></span>",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space"
+  },
+
+"cpu": {
+  "interval": 2,
+  "format": "{icon} ",
+  "format-icons": ["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "on-click": "omarchy-launch-or-focus-tui btop"
+},
+
+"memory": {
+  "interval": 2,
+  "format": "{icon} ",
+  "format-icons": ["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "on-click": "omarchy-launch-or-focus-tui btop"
+},
+
+"clock": {
+    "format": " {:%I:%M %p • %a, %d/%m}     ",
+    "format-alt": "{:%A, %d %B %Y}   ",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+},
+
+  "network": {
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "<span size='11500'>󰌘</span>",
+    "format-disconnected": "<span size='11500'>󰤮</span>",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "omarchy-launch-wifi"
+  },
+
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging": "{icon}",
+    "format-plugged": "",
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "interval": 5,
+    "on-click": "omarchy-menu power",
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  },
+
+  "bluetooth": {
+    "format": "<span size='11500'>󰂯</span>",
+    "format-disabled": "<span size='11500'>󰂲</span>",
+    "format-connected": "<span size='11500'></span>",
+    "format-no-controller": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "omarchy-launch-bluetooth"
+  },
+
+  "pulseaudio": {
+    "format": "<span size='11500'>{icon}</span>",
+    "on-click": "omarchy-launch-or-focus-tui wiremix",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": " ",
+    "format-icons": {
+      "default": [
+        " ",
+        " ",
+        " "
+      ]
+    }
+  },
+  
+  "group/tray-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "tray-group-item"
+    },
+    "modules": ["custom/expand-icon", "tray"]
+  },
+
+  "custom/expand-icon": {
+    "format": "",
+    "tooltip": false
+  },
+
+  "custom/screenrecording-indicator": {
+    "on-click": "omarchy-cmd-screenrecord",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "signal": 8,
+    "return-type": "json"
+  },
+
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  },
+
+"custom/media": {
+  "exec": "title=$(playerctl metadata title 2>/dev/null); if [ -n \"$title\" ]; then echo \"  ${title:0:25} \"; else echo \"         No media           \"; fi",
+  "interval": 2,
+  "on-click": "playerctl play-pause"
+},
+
+  "custom/separator#blank": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/separator#dot": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/idle-indicator": {
+    "on-click": "omarchy-toggle-idle",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+    "signal": 9,
+    "return-type": "json"
+  },
+  
+  "custom/notification-silencing-indicator": {
+    "on-click": "omarchy-toggle-notification-silencing",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+    "signal": 10,
+    "return-type": "json"
+  },
+
+  "custom/update": {
+    "format": "",
+    "exec": "omarchy-update-available",
+    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
+    "tooltip-format": "Omarchy update available",
+    "signal": 7,
+    "interval": 21600
+  },
+
+  "custom/gamemode": {
+    "exec": "test -f ~/.cache/hypr_gamemode && echo '{\"text\":\"\"}' || echo '{\"text\":\"\"}'",
+    "on-click": "test -f ~/.cache/hypr_gamemode && (rm ~/.cache/hypr_gamemode && hyprctl keyword animations:enabled 1 && hyprctl keyword decoration:blur:enabled 1) || (touch ~/.cache/hypr_gamemode && hyprctl keyword animations:enabled 0 && hyprctl keyword decoration:blur:enabled 0)",
+    "interval": 1,
+    "return-type": "json",
+    "tooltip": true,
+    "tooltip-format": "GameMode"
+  },
+
+}
+</file>
+
+<file path="V4.y/configs/dock.jsonc">
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 35,
+  "border-radius": 25,
+  "margin-right": 10,
+  "margin-left": 10,
+  "margin-top": 2,
+  "modules-left": ["custom/omarchy", "custom/active_window", ],
+  "modules-center": [ "group/center3", "hyprland/workspaces", "group/center2" ],
+  "modules-right": [
+    "group/right1",
+  ],
+
+// GROUPS MODULE
+
+  "group/center2": {
+	"orientation": "inherit",
+	"modules": [
+    "clock",
+    "custom/gamemode",
+    "custom/idle-indicator",
+    "custom/notification-silencing-indicator",
+    "custom/screenrecording-indicator", 
+    "custom/update", 
+	]
+},
+
+  "group/center3": {
+	"orientation": "inherit",
+	"modules": [
+    "cpu",
+    "memory",
+    "custom/separator#blank",
+    "custom/media", 
+	]
+},
+
+  "group/right1": {
+	"orientation": "inherit",
+	"modules": [
+    "tray",
+    "custom/separator#blank",
+    "custom/separator#dot",
+    "custom/separator#blank",
+    "custom/mode",
+    "pulseaudio",
+    "bluetooth",
+    "network",
+    "battery",
+	]
+},
+
+// MODULES
+
+  "custom/mode": {
+      "exec": "~/.config/waybar/mode.sh",
+      "on-click": "~/.config/waybar/mode.sh toggle",
+      "return-type": "json",
+      "format": "{}"
+  },
+
+  "custom/active_window": {
+    "exec": "~/.config/waybar/window.sh",
+    "return-type": "json",
+    "markup": true
+  },
+  
+  "hyprland/workspaces": {
+	  "on-click": "activate",
+        "format": "{icon}",
+        "format-icons": {
+          "default": "",
+          "active": "",
+          "empty": "",
+        },
+      "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": [],
+      "6": [],
+      "7": [],
+      "8": [],
+    },
+	},
+
+  "custom/omarchy": {
+    // "format": "󰹡",
+    "format": "<span size='11500'></span>",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space"
+  },
+
+"cpu": {
+  "interval": 2,
+  "format": "{icon} ",
+  "format-icons": ["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "on-click": "omarchy-launch-or-focus-tui btop"
+},
+
+"memory": {
+  "interval": 2,
+  "format": "{icon} ",
+  "format-icons": ["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "on-click": "omarchy-launch-or-focus-tui btop"
+},
+
+"clock": {
+    "format": " {:%I:%M %p • %a, %d/%m}     ",
+    "format-alt": "{:%A, %d %B %Y}   ",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+},
+
+  "network": {
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "<span size='11500'>󰌘</span>",
+    "format-disconnected": "<span size='11500'>󰤮</span>",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "omarchy-launch-wifi"
+  },
+
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging": "{icon}",
+    "format-plugged": "",
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "interval": 5,
+    "on-click": "omarchy-menu power",
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  },
+
+  "bluetooth": {
+    "format": "<span size='11500'>󰂯</span>",
+    "format-disabled": "<span size='11500'>󰂲</span>",
+    "format-connected": "<span size='11500'></span>",
+    "format-no-controller": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "omarchy-launch-bluetooth"
+  },
+
+  "pulseaudio": {
+    "format": "<span size='11500'>{icon}</span>",
+    "on-click": "omarchy-launch-or-focus-tui wiremix",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": " ",
+    "format-icons": {
+      "default": [
+        " ",
+        " ",
+        " "
+      ]
+    }
+  },
+  
+  "group/tray-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "tray-group-item"
+    },
+    "modules": ["custom/expand-icon", "tray"]
+  },
+
+  "custom/expand-icon": {
+    "format": "",
+    "tooltip": false
+  },
+
+  "custom/screenrecording-indicator": {
+    "on-click": "omarchy-cmd-screenrecord",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "signal": 8,
+    "return-type": "json"
+  },
+
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  },
+
+"custom/media": {
+  "exec": "title=$(playerctl metadata title 2>/dev/null); if [ -n \"$title\" ]; then echo \"  ${title:0:25} \"; else echo \"         No media           \"; fi",
+  "interval": 2,
+  "on-click": "playerctl play-pause"
+},
+
+  "custom/separator#blank": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/separator#dot": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/idle-indicator": {
+    "on-click": "omarchy-toggle-idle",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+    "signal": 9,
+    "return-type": "json"
+  },
+  
+  "custom/notification-silencing-indicator": {
+    "on-click": "omarchy-toggle-notification-silencing",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+    "signal": 10,
+    "return-type": "json"
+  },
+
+  "custom/update": {
+    "format": "",
+    "exec": "omarchy-update-available",
+    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
+    "tooltip-format": "Omarchy update available",
+    "signal": 7,
+    "interval": 21600
+  },
+
+  "custom/gamemode": {
+    "exec": "test -f ~/.cache/hypr_gamemode && echo '{\"text\":\"\"}' || echo '{\"text\":\"\"}'",
+    "on-click": "test -f ~/.cache/hypr_gamemode && (rm ~/.cache/hypr_gamemode && hyprctl keyword animations:enabled 1 && hyprctl keyword decoration:blur:enabled 1) || (touch ~/.cache/hypr_gamemode && hyprctl keyword animations:enabled 0 && hyprctl keyword decoration:blur:enabled 0)",
+    "interval": 1,
+    "return-type": "json",
+    "tooltip": true,
+    "tooltip-format": "GameMode"
+  },
+
+}
+</file>
+
+<file path="V4.y/styles/bar.css">
+@import "colors.css";
+
+* {
+  border: none;
+  border-radius: 1;
+  min-height: 0;
+  font-family: 'JetBrainsMono Nerd Font Propo';
+  font-size: 12px;
+}
+
+.modules-left {
+  margin-left: 8px;
+}
+
+.modules-right {
+  margin-right: 0px;
+}
+
+window#waybar {
+  background-color: @background;
+  transition-property: background-color;
+  transition-duration: .5s;
+}
+
+window#waybar.empty #window {
+  background: transparent;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: transparent;
+  padding: 0;
+  margin: 0;
+}
+#waybar.empty .modules-center {
+  opacity: 0;
+}
+
+#workspaces {
+    padding: 0px 5px;
+    margin: 3.5 3.5px;
+    border-radius: 11px;
+    background-color: alpha(@foreground, 0.1);
+    opacity: 0.95;
+    
+}
+
+#workspaces button {
+  color: @foreground;
+  padding: 0 6px;
+  margin: 0 1.5px;
+  min-width: 9px;
+}
+
+#workspaces button.empty {
+  color: @foreground;
+  opacity: 0.5;
+}
+
+#workspaces button.active {
+   transition: all 50ms ease-out;
+  border-radius: 18px;
+  color: @background;
+  background: alpha(@foreground, 0.9);
+  opacity: 1;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-left: 5px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
+#workspaces button.active:hover {
+  background-color: alpha(@background, 0.5);
+  color: @foreground;
+} 
+
+#workspaces button:hover {
+  background-color: transparent;
+}
+
+#workspaces button.empty:hover {
+  border-radius: 18px;
+  background: transparent;
+  opacity: 1;
+}
+
+#battery,
+#pulseaudio,
+#custom-screenrecording-indicator,
+#custom-update {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+#tray {
+  background:alpha(@foreground, 0.0);
+  border-radius: 16px;
+  padding: 0px 5px;
+  margin: 3.5 2px;
+  margin-right: 4px;
+}
+
+#clock {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+#pulseaudio {
+  margin-right: 5px;
+}
+
+#bluetooth {
+  margin-right: 12px;
+}
+
+#custom-idle-indicator,
+#custom-notification-silencing-indicator {
+  margin-right: 2px;
+  min-width: 15px;
+}
+
+#network {
+  margin-right: 9px;
+}
+
+#custom-gamemode {
+  margin-right: 8px;
+}
+
+tooltip {
+  background: @background;
+  border: 1px solid alpha(@foreground, 0.2);
+  border-radius: 4px 4px 11px 11px;
+}
+tooltip label {
+  color: white;
+}
+
+
+#custom-active_window {
+    padding: 3px 6px;
+    border-radius: 14px;
+    background: @background;
+    font-size: 12px;
+}
+
+#custom-update {
+  font-size: 10px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 8.75px;
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: red;
+}
+
+#custom-mode {
+  margin-right: 4px;
+}
+
+#custom-omarchy{
+  background:alpha(@foreground, 0.1);
+  border-radius: 99px;
+  /* margin:3px; */
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-left: -3px;
+  margin-right: 5px;
+  padding-right: 7px;
+  padding-left: 7px;
+
+}
+
+#cpu, #memory {
+    font-size: 18px;      
+    padding: 2px 1px;
+}
+
+#group-right1,
+#group_right1,
+#right1 {
+    font-weight: 800;
+    background: transparent;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+}
+
+#group-center3,
+#group_center3,
+#center3,
+#group-center2,
+#group_center2,
+#center2 {
+    font-weight: 800;
+    background:alpha(@foreground, 0.1);
+    border-radius: 12px;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+}
+</file>
+
+<file path="V4.y/styles/dock.css">
+@import "colors.css";
+
+* {
+  border: none;
+  border-radius: 1;
+  min-height: 0;
+  font-family: 'JetBrainsMono Nerd Font Propo';
+  font-size: 12px;
+}
+
+.modules-left {
+  margin-left: 8px;
+}
+
+.modules-right {
+  margin-right: 8px;
+}
+
+window#waybar {
+  background-color: @background;
+  transition-property: background-color;
+  transition-duration: .5s;
+  border-radius: 32px;
+}
+
+window#waybar.empty #window {
+  background: transparent;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: transparent;
+  padding: 0;
+  margin: 0;
+}
+#waybar.empty .modules-center {
+  opacity: 0;
+}
+
+#workspaces {
+    padding: 0px 5px;
+    margin: 3.5 3.5px;
+    border-radius: 11px;
+    background-color: alpha(@foreground, 0.1);
+    opacity: 0.95;
+    
+}
+
+#workspaces button {
+  color: @foreground;
+  padding: 0 6px;
+  margin: 0 1.5px;
+  min-width: 9px;
+}
+
+#workspaces button.empty {
+  color: @foreground;
+  opacity: 0.5;
+}
+
+#workspaces button.active {
+   transition: all 50ms ease-out;
+  border-radius: 18px;
+  color: @background;
+  background: alpha(@foreground, 0.9);
+  opacity: 1;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-left: 5px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
+#workspaces button.active:hover {
+  background-color: alpha(@background, 0.5);
+  color: @foreground;
+} 
+
+#workspaces button:hover {
+  background-color: transparent;
+}
+
+#workspaces button.empty:hover {
+  border-radius: 18px;
+  background: transparent;
+  opacity: 1;
+}
+
+#battery,
+#pulseaudio,
+#custom-screenrecording-indicator,
+#custom-update {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+#tray {
+  background:alpha(@foreground, 0.0);
+  border-radius: 16px;
+  padding: 0px 5px;
+  margin: 3.5 2px;
+  margin-right: 4px;
+}
+
+#clock {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+#pulseaudio {
+  margin-right: 5px;
+}
+
+#bluetooth {
+  margin-right: 12px;
+}
+
+#custom-idle-indicator,
+#custom-notification-silencing-indicator {
+  margin-right: 2px;
+  min-width: 15px;
+}
+
+#network {
+  margin-right: 9px;
+}
+
+#custom-gamemode {
+  margin-right: 8px;
+}
+
+tooltip {
+  background: @background;
+  border: 1px solid alpha(@foreground, 0.2);
+  border-radius: 4px 4px 11px 11px;
+}
+tooltip label {
+  color: white;
+}
+
+
+#custom-active_window {
+    padding: 3px 6px;
+    border-radius: 14px;
+    background: @background;
+    font-size: 12px;
+}
+
+#custom-update {
+  font-size: 10px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 8.75px;
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: red;
+}
+
+#custom-mode {
+  margin-right: 4px;
+}
+
+#custom-omarchy{
+  background:alpha(@foreground, 0.1);
+  border-radius: 99px;
+  /* margin:3px; */
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-left: -3px;
+  margin-right: 5px;
+  padding-right: 7px;
+  padding-left: 7px;
+
+}
+
+#cpu, #memory {
+    font-size: 18px;      
+    padding: 2px 1px;
+}
+
+#group-right1,
+#group_right1,
+#right1 {
+    font-weight: 800;
+    background: transparent;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+}
+
+#group-center3,
+#group_center3,
+#center3,
+#group-center2,
+#group_center2,
+#center2 {
+    font-weight: 800;
+    background:alpha(@foreground, 0.1);
+    border-radius: 12px;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+}
+</file>
+
+<file path="V4.y/config.jsonc">
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 3,
+  "modules-left": ["custom/omarchy", "custom/active_window", ],
+  "modules-center": [ "group/center3", "hyprland/workspaces", "group/center2" ],
+  "modules-right": [
+    "group/right1",
+  ],
+
+// GROUPS MODULE
+
+  "group/center2": {
+	"orientation": "inherit",
+	"modules": [
+    "clock",
+    "custom/gamemode",
+    "custom/idle-indicator",
+    "custom/notification-silencing-indicator",
+    "custom/screenrecording-indicator", 
+    "custom/update", 
+	]
+},
+
+  "group/center3": {
+	"orientation": "inherit",
+	"modules": [
+    "cpu",
+    "memory",
+    "custom/separator#blank",
+    "custom/media", 
+	]
+},
+
+  "group/right1": {
+	"orientation": "inherit",
+	"modules": [
+    "tray",
+    "custom/separator#blank",
+    "custom/separator#dot",
+    "custom/separator#blank",
+    "custom/mode",
+    "pulseaudio",
+    "bluetooth",
+    "network",
+    "battery",
+	]
+},
+
+// MODULES
+
+  "custom/mode": {
+      "exec": "~/.config/waybar/mode.sh",
+      "on-click": "~/.config/waybar/mode.sh toggle",
+      "return-type": "json",
+      "format": "{}"
+  },
+
+  "custom/active_window": {
+    "exec": "~/.config/waybar/window.sh",
+    "return-type": "json",
+    "markup": true
+  },
+  
+  "hyprland/workspaces": {
+	  "on-click": "activate",
+        "format": "{icon}",
+        "format-icons": {
+          "default": "",
+          "active": "",
+          "empty": "",
+        },
+      "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": [],
+      "6": [],
+      "7": [],
+      "8": [],
+    },
+	},
+
+  "custom/omarchy": {
+    // "format": "󰹡",
+    "format": "<span size='11500'></span>",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space"
+  },
+
+"cpu": {
+  "interval": 2,
+  "format": "{icon} ",
+  "format-icons": ["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "on-click": "omarchy-launch-or-focus-tui btop"
+},
+
+"memory": {
+  "interval": 2,
+  "format": "{icon} ",
+  "format-icons": ["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "on-click": "omarchy-launch-or-focus-tui btop"
+},
+
+"clock": {
+    "format": " {:%I:%M %p • %a, %d/%m}     ",
+    "format-alt": "{:%A, %d %B %Y}   ",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+},
+
+  "network": {
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "<span size='11500'>󰌘</span>",
+    "format-disconnected": "<span size='11500'>󰤮</span>",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "omarchy-launch-wifi"
+  },
+
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging": "{icon}",
+    "format-plugged": "",
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "interval": 5,
+    "on-click": "omarchy-menu power",
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  },
+
+  "bluetooth": {
+    "format": "<span size='11500'>󰂯</span>",
+    "format-disabled": "<span size='11500'>󰂲</span>",
+    "format-connected": "<span size='11500'></span>",
+    "format-no-controller": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "omarchy-launch-bluetooth"
+  },
+
+  "pulseaudio": {
+    "format": "<span size='11500'>{icon}</span>",
+    "on-click": "omarchy-launch-or-focus-tui wiremix",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": " ",
+    "format-icons": {
+      "default": [
+        " ",
+        " ",
+        " "
+      ]
+    }
+  },
+  
+  "group/tray-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "tray-group-item"
+    },
+    "modules": ["custom/expand-icon", "tray"]
+  },
+
+  "custom/expand-icon": {
+    "format": "",
+    "tooltip": false
+  },
+
+  "custom/screenrecording-indicator": {
+    "on-click": "omarchy-cmd-screenrecord",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "signal": 8,
+    "return-type": "json"
+  },
+
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  },
+
+"custom/media": {
+  "exec": "title=$(playerctl metadata title 2>/dev/null); if [ -n \"$title\" ]; then echo \"  ${title:0:25} \"; else echo \"         No media           \"; fi",
+  "interval": 2,
+  "on-click": "playerctl play-pause"
+},
+
+  "custom/separator#blank": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/separator#dot": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/idle-indicator": {
+    "on-click": "omarchy-toggle-idle",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+    "signal": 9,
+    "return-type": "json"
+  },
+  
+  "custom/notification-silencing-indicator": {
+    "on-click": "omarchy-toggle-notification-silencing",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+    "signal": 10,
+    "return-type": "json"
+  },
+
+  "custom/update": {
+    "format": "",
+    "exec": "omarchy-update-available",
+    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
+    "tooltip-format": "Omarchy update available",
+    "signal": 7,
+    "interval": 21600
+  },
+
+  "custom/gamemode": {
+    "exec": "test -f ~/.cache/hypr_gamemode && echo '{\"text\":\"\"}' || echo '{\"text\":\"\"}'",
+    "on-click": "test -f ~/.cache/hypr_gamemode && (rm ~/.cache/hypr_gamemode && hyprctl keyword animations:enabled 1 && hyprctl keyword decoration:blur:enabled 1) || (touch ~/.cache/hypr_gamemode && hyprctl keyword animations:enabled 0 && hyprctl keyword decoration:blur:enabled 0)",
+    "interval": 1,
+    "return-type": "json",
+    "tooltip": true,
+    "tooltip-format": "GameMode"
+  },
+
+}
+</file>
+
+<file path="V4.y/mode.sh">
+#!/bin/bash
+
+DIR="$HOME/.config/waybar"
+STATE="$DIR/.mode"
+
+BAR_CONFIG="$DIR/configs/bar.jsonc"
+DOCK_CONFIG="$DIR/configs/dock.jsonc"
+
+BAR_STYLE="$DIR/styles/bar.css"
+DOCK_STYLE="$DIR/styles/dock.css"
+
+ACTIVE_CONFIG="$DIR/config.jsonc"
+ACTIVE_STYLE="$DIR/style.css"
+
+# default state
+[ ! -f "$STATE" ] && echo "bar" > "$STATE"
+
+MODE=$(cat "$STATE")
+
+if [ "$1" = "toggle" ]; then
+
+    if [ "$MODE" = "bar" ]; then
+        
+        cp "$DOCK_CONFIG" "$ACTIVE_CONFIG"
+        cp "$DOCK_STYLE" "$ACTIVE_STYLE"
+        
+        echo "dock" > "$STATE"
+
+    else
+        
+        cp "$BAR_CONFIG" "$ACTIVE_CONFIG"
+        cp "$BAR_STYLE" "$ACTIVE_STYLE"
+        
+        echo "bar" > "$STATE"
+
+    fi
+
+    killall -SIGUSR2 waybar
+    exit
+fi
+
+
+if [ "$MODE" = "bar" ]; then
+    echo '{"text":"Bar","tooltip":"Switch to dock style"}'
+else
+    echo '{"text":"Dock","tooltip":"Switch to bar style"}'
+fi
+</file>
+
+<file path="V4.y/style.css">
+@import "colors.css";
+
+* {
+  border: none;
+  border-radius: 1;
+  min-height: 0;
+  font-family: 'JetBrainsMono Nerd Font Propo';
+  font-size: 12px;
+}
+
+.modules-left {
+  margin-left: 8px;
+}
+
+.modules-right {
+  margin-right: 8px;
+}
+
+window#waybar {
+  background-color: @background;
+  transition-property: background-color;
+  transition-duration: .5s;
+  border-radius: 32px;
+}
+
+window#waybar.empty #window {
+  background: transparent;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: transparent;
+  padding: 0;
+  margin: 0;
+}
+#waybar.empty .modules-center {
+  opacity: 0;
+}
+
+#workspaces {
+    padding: 0px 5px;
+    margin: 3.5 3.5px;
+    border-radius: 11px;
+    background-color: alpha(@foreground, 0.1);
+    opacity: 0.95;
+    
+}
+
+#workspaces button {
+  color: @foreground;
+  padding: 0 6px;
+  margin: 0 1.5px;
+  min-width: 9px;
+}
+
+#workspaces button.empty {
+  color: @foreground;
+  opacity: 0.5;
+}
+
+#workspaces button.active {
+   transition: all 50ms ease-out;
+  border-radius: 18px;
+  color: @background;
+  background: alpha(@foreground, 0.9);
+  opacity: 1;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-left: 5px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
+#workspaces button.active:hover {
+  background-color: alpha(@background, 0.5);
+  color: @foreground;
+} 
+
+#workspaces button:hover {
+  background-color: transparent;
+}
+
+#workspaces button.empty:hover {
+  border-radius: 18px;
+  background: transparent;
+  opacity: 1;
+}
+
+#battery,
+#pulseaudio,
+#custom-screenrecording-indicator,
+#custom-update {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+#tray {
+  background:alpha(@foreground, 0.0);
+  border-radius: 16px;
+  padding: 0px 5px;
+  margin: 3.5 2px;
+  margin-right: 4px;
+}
+
+#clock {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+#pulseaudio {
+  margin-right: 5px;
+}
+
+#bluetooth {
+  margin-right: 12px;
+}
+
+#custom-idle-indicator,
+#custom-notification-silencing-indicator {
+  margin-right: 2px;
+  min-width: 15px;
+}
+
+#network {
+  margin-right: 9px;
+}
+
+#custom-gamemode {
+  margin-right: 8px;
+}
+
+tooltip {
+  background: @background;
+  border: 1px solid alpha(@foreground, 0.2);
+  border-radius: 4px 4px 11px 11px;
+}
+tooltip label {
+  color: white;
+}
+
+
+#custom-active_window {
+    padding: 3px 6px;
+    border-radius: 14px;
+    background: @background;
+    font-size: 12px;
+}
+
+#custom-update {
+  font-size: 10px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 8.75px;
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: red;
+}
+
+#custom-mode {
+  margin-right: 4px;
+}
+
+#custom-omarchy{
+  background:alpha(@foreground, 0.1);
+  border-radius: 99px;
+  /* margin:3px; */
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-left: -3px;
+  margin-right: 5px;
+  padding-right: 7px;
+  padding-left: 7px;
+
+}
+
+#cpu, #memory {
+    font-size: 18px;      
+    padding: 2px 1px;
+}
+
+#group-right1,
+#group_right1,
+#right1 {
+    font-weight: 800;
+    background: transparent;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+}
+
+#group-center3,
+#group_center3,
+#center3,
+#group-center2,
+#group_center2,
+#center2 {
+    font-weight: 800;
+    background:alpha(@foreground, 0.1);
+    border-radius: 12px;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+}
+</file>
+
+<file path="V4.y/window.sh">
+#!/usr/bin/env bash
+
+MAX_TITLE_LEN=20
+
+print_status() {
+    window=$(hyprctl activewindow -j 2>/dev/null)
+    address=$(jq -r '.address // empty' <<< "$window")
+
+    # No active window → show Desktop + Workspace
+    if [[ -z "$address" || "$address" == "null" ]]; then
+        ws=$(hyprctl activeworkspace -j | jq -r '.id')
+
+        top_line="Desktop"
+        bottom_line="Workspace $ws"
+
+        esc_top=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$top_line")
+        esc_bottom=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$bottom_line")
+
+        text="<span size='7500' foreground='#a6adc8' rise='-2000'>$esc_top</span>
+<span size='9000' weight='bold' foreground='#ffffff'>$esc_bottom</span>"
+
+        jq -nc \
+            --arg text "$text" \
+            --arg tooltip "$bottom_line" \
+            '{ text: $text, class: "custom-window", tooltip: $tooltip }'
+        return
+    fi
+
+    class=$(jq -r '.class // "Unknown"' <<< "$window")
+    title=$(jq -r '.title // ""' <<< "$window")
+
+    app_class="${class,,}"
+
+    # Discord / Vesktop cleanup
+    if [[ "$app_class" == *discord* || "$app_class" == *vesktop* ]]; then
+        title=$(sed -E 's/^\([0-9]+\)[[:space:]]*//' <<< "$title")
+        title=$(sed -E 's/^Discord[[:space:]]*\|[[:space:]]*//' <<< "$title")
+    fi
+
+    # Truncate title
+    if (( ${#title} > MAX_TITLE_LEN )); then
+        title="${title:0:$((MAX_TITLE_LEN-3))}..."
+    fi
+
+    esc_top=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$class")
+    esc_bottom=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$title")
+
+    text="<span size='7500' foreground='#a6adc8' rise='-2000'>$esc_top</span>
+<span size='9000' weight='bold' foreground='#ffffff'>$esc_bottom</span>"
+
+    tooltip="$class: $title"
+
+    jq -nc \
+        --arg text "$text" \
+        --arg tooltip "$tooltip" \
+        '{ text: $text, class: "custom-window", tooltip: $tooltip }'
+}
+
+# Initial output
+print_status
+
+last=""
+
+# Update only when state changes
+while true; do
+    current_window=$(hyprctl activewindow -j 2>/dev/null)
+    current_ws=$(hyprctl activeworkspace -j 2>/dev/null)
+
+    current="$current_window$current_ws"
+
+    if [[ "$current" != "$last" ]]; then
+        print_status
+        last="$current"
+    fi
+
+    sleep 0.5
+done
+</file>
+
+<file path="V5/config.jsonc">
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 35,
+  "border-radius": 25,
+  "margin-right": 0,
+  "margin-left": 0,
+  "margin-top": 0,
+  "modules-left": ["custom/active_window", ],
+  "modules-center": [ "group/center3-expander", "hyprland/workspaces", "group/center2-expander" ],
+  "modules-right": [
+    "tray",
+    "custom/separator#blank",
+    "custom/separator#dot",
+    "group/right1",
+  ],
+
+// GROUPS MODULE
+
+  "group/center2": {
+	"orientation": "inherit",
+	"modules": [
+    "clock",
+    "custom/screenrecording-indicator", 
+    "custom/update",
+    "custom/idle-indicator",
+    "custom/notification-silencing-indicator", 
+	]
+},
+
+  "group/center3": {
+	"orientation": "inherit",
+	"modules": [
+    "cpu",
+    "memory",
+    "disk",
+	]
+},
+
+  "group/right1": {
+	"orientation": "inherit",
+	"modules": [
+    "pulseaudio",
+    "bluetooth",
+    "network",
+    "battery",
+	]
+},
+
+// MODULES
+
+  "custom/active_window": {
+    "exec": "~/.config/waybar/window.sh",
+    "return-type": "json",
+    "markup": true,
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+  },
+  
+  "hyprland/workspaces": {
+	  "on-click": "activate",
+        "format": "{icon}",
+        "format-icons": {
+          "default": "",
+          "active": "",
+          "empty": "",
+        },
+      "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": [],
+      "6": [],
+      "7": [],
+      "8": [],
+    },
+	},
+
+  "custom/omarchy": {
+    // "format": "󰹡",
+    "format": "<span size='11500'></span>",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space"
+  },
+
+"cpu": {
+  "interval": 2,
+  "format": "{icon} {usage} ",
+  "format-icons": ["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "on-click": "omarchy-launch-or-focus-tui btop"
+},
+
+"memory": {
+  "interval": 2,
+  "format": "{icon} {percentage} ",
+  "format-icons": ["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "on-click": "omarchy-launch-or-focus-tui btop"
+},
+
+"disk": {
+    "interval": 30,
+    "format": "󰨣 {percentage_free}%",
+    // "format-icons": ["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+    "path": "/"
+},
+
+"clock": {
+    "format": " {:%I:%M %p • %a, %d/%m}",
+    "format-alt": "{:%A, %d %B %Y}   ",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+},
+
+  "network": {
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "<span size='11500'>󰌘</span>",
+    "format-disconnected": "<span size='11500'>󰤮</span>",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "omarchy-launch-wifi"
+  },
+
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging": "{icon}",
+    "format-plugged": "",
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "interval": 5,
+    "on-click": "omarchy-menu power",
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  },
+
+  "bluetooth": {
+    "format": "<span size='11500'>󰂯</span>",
+    "format-disabled": "<span size='11500'>󰂲</span>",
+    "format-connected": "<span size='11500'></span>",
+    "format-no-controller": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "omarchy-launch-bluetooth"
+  },
+
+  "pulseaudio": {
+    "format": "<span size='11500'>{icon}</span>",
+    "on-click": "omarchy-launch-or-focus-tui wiremix",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": "",
+    "format-icons": {
+      "default": [
+        " ",
+        " ",
+        " "
+      ]
+    }
+  },
+  
+  "group/center3-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "center3-group-item"
+    },
+    "modules": ["custom/expand-iconl", "group/center3"]
+  },
+
+  "group/center2-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "transition-left-to-right": false,
+      "children-class": "center2-group-item"
+    },
+    "modules": [ "custom/expand-iconr", "group/center2"]
+  },
+
+  "custom/expand-iconl": {
+    "format": "     ",
+    "tooltip": false
+  },
+
+    "custom/expand-iconr": {
+    "format": "     ",
+    "tooltip": false
+  },
+
+  "custom/screenrecording-indicator": {
+    "on-click": "omarchy-cmd-screenrecord",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "signal": 8,
+    "return-type": "json"
+  },
+
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  },
+
+  "custom/separator#blank": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/separator#dot": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/idle-indicator": {
+    "on-click": "omarchy-toggle-idle",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+    "signal": 9,
+    "return-type": "json"
+  },
+  
+  "custom/notification-silencing-indicator": {
+    "on-click": "omarchy-toggle-notification-silencing",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+    "signal": 10,
+    "return-type": "json"
+  },
+
+  "custom/update": {
+    "format": "",
+    "exec": "omarchy-update-available",
+    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
+    "tooltip-format": "Omarchy update available",
+    "signal": 7,
+    "interval": 21600
+  },
+
+}
+</file>
+
+<file path="V5/style.css">
+@import "colors.css";
+
+* {
+  border: none;
+  border-radius: 1;
+  min-height: 0;
+  font-family: 'JetBrainsMono Nerd Font Propo';
+  font-size: 12px;
+}
+
+.modules-left {
+  margin-left: 0px;
+}
+
+.modules-center {
+  padding-left:  15px;
+  padding-right: 15px;
+  background-color: @background;
+  border-radius: 1px 1px 99px 99px;
+  margin-left: 0px;
+}
+
+.modules-right {
+  margin-right: 8px;
+}
+
+window#waybar {
+  background-color: transparent;
+  transition-property: background-color;
+  transition-duration: .5s;
+  border-radius: 32px;
+}
+
+window#waybar.empty #window {
+  background: transparent;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: transparent;
+  padding: 0;
+  margin: 0;
+}
+#waybar.empty .modules-center {
+  opacity: 0;
+}
+
+#workspaces {
+    padding: 0px 5px;
+    padding-bottom: 1px;
+    padding-left: 24px;
+    padding-right: 24px;
+    margin: 3.5 3.5px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    border-radius: 1px 1px 99px 99px;
+    background-color: alpha(#000000, 0.3);
+    opacity: 0.95;
+    
+}
+
+#workspaces button {
+  color: @foreground;
+  padding: 0 6px;
+  margin: 0 1.5px;
+  min-width: 9px;
+}
+
+#workspaces button.empty {
+  color: @foreground;
+  opacity: 0.5;
+}
+
+#workspaces button.active {
+   transition: all 50ms ease-out;
+  border-radius: 18px;
+  color: @background;
+  background: alpha(@foreground, 0.9);
+  opacity: 1;
+  margin-top: 6px;
+  margin-bottom: 7px;
+  margin-left: 5px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
+#workspaces button:hover,
+#workspaces button.empty:hover {
+  color: @foreground;
+  border-radius: 18px;
+  background: transparent;
+  opacity: 1;
+}
+
+#battery,
+#pulseaudio,
+#custom-screenrecording-indicator,
+#custom-update {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+#tray {
+  font-weight: 800;
+  background:alpha(@foreground, 0.0);
+  border-radius: 16px;
+  padding: 0px 5px;
+  margin: 3.5 2px;
+  margin-right: 4px;
+}
+
+#clock {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+#pulseaudio {
+  margin-right: 5px;
+}
+
+#bluetooth {
+  margin-right: 12px;
+}
+
+#network {
+  margin-right: 9px;
+}
+
+
+tooltip {
+  background: @background;
+  border: 1px solid alpha(@foreground, 0.2);
+  border-radius: 4px 4px 11px 11px;
+}
+tooltip label {
+  color: white;
+}
+
+
+#custom-active_window {
+    padding: 3px 6px;
+    margin-left: 10px;
+    font-size: 12px;
+}
+
+#custom-update {
+  font-size: 10px;
+}
+
+#custom-idle-indicator,
+#custom-notification-silencing-indicator {
+  margin-right: 2px;
+  min-width: 15px;
+}
+
+#custom-idle-indicator {
+  margin-left: 16px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 8.75px;
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: red;
+}
+
+#custom-omarchy{
+  background:alpha(@foreground, 0.1);
+  border-radius: 99px;
+  /* margin:3px; */
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-left: -3px;
+  margin-right: 5px;
+  padding-right: 7px;
+  padding-left: 7px;
+
+}
+
+#cpu, #memory, #disk {
+  font-weight: 700;
+    font-size: 14px;      
+    padding: 2px 1px;
+}
+
+#group-right1,
+#group_right1,
+#right1 {
+    background-color: alpha(@background, 0.6);
+    font-weight: 800;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+    margin-right: 4px;
+    border-radius: 16px;
+}
+
+#group-center3,
+#group_center3,
+#center3,
+#group-center2,
+#group_center2,
+#center2 {
+    font-weight: 800;
+    border-radius: 12px;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+}
+</file>
+
+<file path="V5/window.sh">
+#!/usr/bin/env bash
+
+MAX_TITLE_LEN=28
+
+print_status() {
+    window=$(hyprctl activewindow -j 2>/dev/null)
+    address=$(jq -r '.address // empty' <<< "$window")
+
+    # No active window → show Desktop + Workspace
+    if [[ -z "$address" || "$address" == "null" ]]; then
+        ws=$(hyprctl activeworkspace -j | jq -r '.id')
+
+        top_line="Desktop"
+        bottom_line="Workspace $ws"
+
+        esc_top=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$top_line")
+        esc_bottom=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$bottom_line")
+
+        text="<span size='7500' foreground='#a6adc8' rise='-2000'>$esc_top</span>
+<span size='9000' weight='bold' foreground='#ffffff'>$esc_bottom</span>"
+
+        jq -nc \
+            --arg text "$text" \
+            --arg tooltip "$bottom_line" \
+            '{ text: $text, class: "custom-window", tooltip: $tooltip }'
+        return
+    fi
+
+    class=$(jq -r '.class // "Unknown"' <<< "$window")
+    title=$(jq -r '.title // ""' <<< "$window")
+
+    app_class="${class,,}"
+
+    # Discord / Vesktop cleanup
+    if [[ "$app_class" == *discord* || "$app_class" == *vesktop* ]]; then
+        title=$(sed -E 's/^\([0-9]+\)[[:space:]]*//' <<< "$title")
+        title=$(sed -E 's/^Discord[[:space:]]*\|[[:space:]]*//' <<< "$title")
+    fi
+
+    # Truncate title
+    if (( ${#title} > MAX_TITLE_LEN )); then
+        title="${title:0:$((MAX_TITLE_LEN-3))}..."
+    fi
+
+    esc_top=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$class")
+    esc_bottom=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$title")
+
+    text="<span size='7500' foreground='#a6adc8' rise='-2000'>$esc_top</span>
+<span size='9000' weight='bold' foreground='#ffffff'>$esc_bottom</span>"
+
+    tooltip="$class: $title"
+
+    jq -nc \
+        --arg text "$text" \
+        --arg tooltip "$tooltip" \
+        '{ text: $text, class: "custom-window", tooltip: $tooltip }'
+}
+
+# Initial output
+print_status
+
+last=""
+
+# Update only when state changes
+while true; do
+    current_window=$(hyprctl activewindow -j 2>/dev/null)
+    current_ws=$(hyprctl activeworkspace -j 2>/dev/null)
+
+    current="$current_window$current_ws"
+
+    if [[ "$current" != "$last" ]]; then
+        print_status
+        last="$current"
+    fi
+
+    sleep 0.5
+done
+</file>
+
+<file path="V6/config.jsonc">
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "bottom",
+  "spacing": 0,
+  "height": 35,
+  "border-radius": 25,
+  "margin-right": 0,
+  "margin-left": 0,
+  "margin-top": 0,
+  "modules-left": ["custom/omarchy", "hyprland/workspaces", "custom/active_window"],
+  "modules-center": [ "custom/separator#blank" ],
+  "modules-right": [
+    "tray",
+    "group/mpris-expander",
+    "custom/separator#blank",
+    "group/right1",
+    "clock"
+  ],
+
+// GROUPS MODULE
+
+  "group/right1": {
+	"orientation": "inherit",
+	"modules": [
+    "custom/idle-indicator",
+    "custom/notification-silencing-indicator",
+    "custom/screenrecording-indicator", 
+    "custom/update", 
+    "pulseaudio",
+    "bluetooth",
+    "network",
+    "battery",
+	]
+},
+
+// MODULES
+
+  "custom/active_window": {
+    "exec": "~/.config/waybar/window.sh",
+    "return-type": "json",
+    "markup": true,
+  },
+  
+  "hyprland/workspaces": {
+	  "on-click": "activate",
+        "format": "{icon}",
+        "format-icons": {
+          "default": "",
+          "active": "",
+          "empty": "",
+        },
+      "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": [],
+      "6": [],
+      "7": [],
+      "8": [],
+    },
+	},
+
+  "custom/omarchy": {
+    // "format": "󰹡",
+    "format": "<span size='11500'></span>",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space"
+  },
+
+"clock": {
+    "format": " {:%I:%M %p}",
+    "format-alt": "{:%A, %d %B %Y}",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+},
+
+  "network": {
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "<span size='11500'>󰌘</span>",
+    "format-disconnected": "<span size='11500'>󰤮</span>",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "omarchy-launch-wifi"
+  },
+
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging": "{icon}",
+    "format-plugged": "",
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "interval": 5,
+    "on-click": "omarchy-menu power",
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  },
+
+  "bluetooth": {
+    "format": "<span size='11500'>󰂯</span>",
+    "format-disabled": "<span size='11500'>󰂲</span>",
+    "format-connected": "<span size='11500'></span>",
+    "format-no-controller": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "omarchy-launch-bluetooth"
+  },
+
+  "pulseaudio": {
+    "format": "<span size='11500'>{icon}</span>",
+    "on-click": "omarchy-launch-or-focus-tui wiremix",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": "",
+    "format-icons": {
+      "default": [
+        " ",
+        " ",
+        " "
+      ]
+    }
+  },
+  
+  "group/mpris-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "mpris-group-item"
+    },
+    "modules": ["custom/expand-mpris", "mpris"]
+  },
+
+  "custom/expand-mpris": {
+    "format": "󰃂",
+    "tooltip": false
+  },
+
+  "mpris": {
+	   "interval": 10,
+	   "format": " {dynamic}",
+	   "format-paused": " {artist} {title}",
+	   "on-click-middle": "playerctl play-pause",
+	   "on-click": "playerctl previous",
+	   "on-click-right": "playerctl next",
+	   "scroll-step": 5.0,
+	   "on-scroll-up": "$HOME/.config/hypr/scripts/volume.sh --inc",
+	   "on-scroll-down": "$HOME/.config/hypr/scripts/volume.sh --dec",
+	   "smooth-scrolling-threshold": 1,
+	   "tooltip": true,
+	   "tooltip-format": "{status_icon} {dynamic}\nLeft Click: previous\nMid Click: Pause\nRight Click: Next",
+	   "player-icons": {
+	   	"chromium": "",
+	   	"default": "",
+	   	"firefox": "",
+	   	"kdeconnect": "",
+	   	"mopidy": "",
+	   	"mpv": "󰐹",
+	   	"spotify": "󰎆",
+	   	"vlc": "󰕼",
+	   },
+	   "status-icons": {
+	   	"paused": "",
+	   	"playing": "",
+	   	"stopped": "",
+	   },
+	   "dynamic-order": ["artist", "title"],
+	   "ignored-players": ["firefox", "zen"],
+	   "max-length": 28,
+  },
+
+  "custom/screenrecording-indicator": {
+    "on-click": "omarchy-cmd-screenrecord",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "signal": 8,
+    "return-type": "json"
+  },
+
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  },
+
+  "custom/separator#blank": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/separator#dot": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/idle-indicator": {
+    "on-click": "omarchy-toggle-idle",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+    "signal": 9,
+    "return-type": "json"
+  },
+  
+  "custom/notification-silencing-indicator": {
+    "on-click": "omarchy-toggle-notification-silencing",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+    "signal": 10,
+    "return-type": "json"
+  },
+
+  "custom/update": {
+    "format": "",
+    "exec": "omarchy-update-available",
+    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
+    "tooltip-format": "Omarchy update available",
+    "signal": 7,
+    "interval": 21600
+  },
+
+}
+</file>
+
+<file path="V6/style.css">
+@import "colors.css";
+
+* {
+  border-radius: 1;
+  min-height: 0;
+  font-family: 'JetBrainsMono Nerd Font Propo';
+  font-size: 12px;
+}
+
+.modules-left {
+  margin-left: 10px;
+}
+
+.modules-center {
+  padding-left:  15px;
+  padding-right: 15px;
+  background-color: @background;
+  border-radius: 1px 1px 99px 99px;
+  margin-left: 0px;
+}
+
+.modules-right {
+  margin-right: 0px;
+}
+
+window#waybar {
+  background-color: @background;
+  transition-property: background-color;
+  transition-duration: .5s;
+}
+
+window#waybar.empty #window {
+  background: transparent;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: transparent;
+  padding: 0;
+  margin: 0;
+}
+#waybar.empty .modules-center {
+  opacity: 0;
+}
+
+#workspaces {
+    padding: 0px 5px;
+    padding-bottom: 1px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin: 3.5 3.5px;
+    margin-top: 2px;
+    margin-bottom: 0px;
+    border-radius: 16px 16px 1px 1px;
+    background-color: alpha(#000000, 0.3);
+    opacity: 0.95;
+    
+}
+
+#workspaces button {
+  color: @foreground;
+  padding: 0 6px;
+  margin: 0 1.5px;
+  margin-top: 2px;
+  min-width: 9px;
+}
+
+#workspaces button.empty {
+  color: @foreground;
+  opacity: 0.5;
+}
+
+#workspaces button.active {
+  transition: all 50ms ease-out;
+  border-radius: 18px;
+  color: @background;
+  background: alpha(@foreground, 0.9);
+  opacity: 1;
+  margin-top: 6px;
+  margin-bottom: 4px;
+  margin-left: 5px;
+  padding-right: 5px;
+  padding-left: 5px;
+}
+
+#workspaces button:hover,
+#workspaces button.empty:hover {
+  color: @foreground;
+  border-radius: 18px;
+  background: transparent;
+  opacity: 1;
+}
+
+#battery,
+#pulseaudio,
+#custom-screenrecording-indicator,
+#custom-update {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+#tray {
+  font-weight: 800;
+  background:alpha(@foreground, 0.0);
+  border-radius: 16px;
+  padding: 0px 5px;
+  margin: 3.5 2px;
+  margin-right: 4px;
+}
+
+#clock {
+  font-size: 13;
+  background-color: alpha(@foreground, 0.1);
+  font-weight: 800;
+  padding: 0px 5px;
+  margin: 3.5 1px;
+  margin-right: 0px;
+  border-radius: 16px 0px 0px 16px;
+}
+
+#pulseaudio {
+  margin-right: 5px;
+}
+
+#bluetooth {
+  margin-right: 12px;
+}
+
+#network {
+  margin-right: 9px;
+}
+
+#mpris {
+  font-size: 12;
+}
+
+#custom-expand-mpris {
+  font-size: 16;
+  margin-right: 1px;
+  margin-left: 4px;
+}
+
+tooltip {
+  background: @background;
+  border: 1px solid alpha(@foreground, 0.2);
+  border-radius: 11px 11px 4px 4px;
+}
+tooltip label {
+  color: white;
+}
+
+#custom-active_window {
+    padding: 3px 6px;
+    margin-top: 1px;
+    margin-left: 10px;
+    font-size: 12px;
+}
+
+#custom-update {
+  font-size: 10px;
+}
+
+#custom-idle-indicator,
+#custom-notification-silencing-indicator {
+  margin-right: 2px;
+  min-width: 15px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 8.75px;
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: red;
+}
+
+#custom-omarchy{
+  background:alpha(@foreground, 0.1);
+  border-radius: 99px;
+  /* margin:3px; */
+  margin-top: 4px;
+  margin-bottom: 4px;
+  margin-left: -3px;
+  margin-right: 5px;
+  padding-right: 7px;
+  padding-left: 7px;
+
+}
+
+#group-right1,
+#group_right1,
+#right1 {
+    background-color: alpha(@foreground, 0.1);
+    font-weight: 800;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+    margin-right: 4px;
+    border-radius: 16px;
+}
+</file>
+
+<file path="V6/window.sh">
+#!/usr/bin/env bash
+
+MAX_TITLE_LEN=24
+
+print_status() {
+    window=$(hyprctl activewindow -j 2>/dev/null)
+    address=$(jq -r '.address // empty' <<< "$window")
+
+    # No active window → show Desktop + Workspace
+    if [[ -z "$address" || "$address" == "null" ]]; then
+        ws=$(hyprctl activeworkspace -j | jq -r '.id')
+
+        top_line="Desktop"
+        bottom_line="Workspace $ws"
+
+        esc_top=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$top_line")
+        esc_bottom=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$bottom_line")
+
+        text="<span size='7500' foreground='#a6adc8' rise='-2000'>$esc_top</span>
+<span size='9000' weight='bold' foreground='#ffffff'>$esc_bottom</span>"
+
+        jq -nc \
+            --arg text "$text" \
+            --arg tooltip "$bottom_line" \
+            '{ text: $text, class: "custom-window", tooltip: $tooltip }'
+        return
+    fi
+
+    class=$(jq -r '.class // "Unknown"' <<< "$window")
+    title=$(jq -r '.title // ""' <<< "$window")
+
+    app_class="${class,,}"
+
+    # Discord / Vesktop cleanup
+    if [[ "$app_class" == *discord* || "$app_class" == *vesktop* ]]; then
+        title=$(sed -E 's/^\([0-9]+\)[[:space:]]*//' <<< "$title")
+        title=$(sed -E 's/^Discord[[:space:]]*\|[[:space:]]*//' <<< "$title")
+    fi
+
+    # Truncate title
+    if (( ${#title} > MAX_TITLE_LEN )); then
+        title="${title:0:$((MAX_TITLE_LEN-3))}..."
+    fi
+
+    esc_top=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$class")
+    esc_bottom=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$title")
+
+    text="<span size='7500' foreground='#a6adc8' rise='-2000'>$esc_top</span>
+<span size='9000' weight='bold' foreground='#ffffff'>$esc_bottom</span>"
+
+    tooltip="$class: $title"
+
+    jq -nc \
+        --arg text "$text" \
+        --arg tooltip "$tooltip" \
+        '{ text: $text, class: "custom-window", tooltip: $tooltip }'
+}
+
+# Initial output
+print_status
+
+last=""
+
+# Update only when state changes
+while true; do
+    current_window=$(hyprctl activewindow -j 2>/dev/null)
+    current_ws=$(hyprctl activeworkspace -j 2>/dev/null)
+
+    current="$current_window$current_ws"
+
+    if [[ "$current" != "$last" ]]; then
+        print_status
+        last="$current"
+    fi
+
+    sleep 0.5
+done
+</file>
+
+<file path="V7/clock.sh">
+#!/usr/bin/env bash
+
+time=$(date +"%I:%M %p")
+date_str=$(date +"%A, %d/%m")
+
+printf '{"text":"%s\\n%s"}\n' "$time" "$date_str"
+</file>
+
+<file path="V7/config.jsonc">
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 46,
+  "border-radius": 25,
+  "margin-right": 10,
+  "margin-left": 10,
+  "margin-top": 2,
+  "modules-left": [ ],
+  "modules-center": [ "group/center4", "group/center3", "hyprland/workspaces", "group/center2" ],
+  "modules-right": [ ],
+
+// GROUPS MODULE
+
+  "group/center2": {
+	"orientation": "inherit",
+	"modules": [
+    "custom/clock",
+    "custom/separator#blank",
+    "custom/separator#blank",
+    "custom/separator#blank",
+    "custom/separator#blank",
+    "group/right1",
+    "cpu",
+    "memory",
+	]
+},
+
+  "group/center3": {
+	"orientation": "inherit",
+	"modules": [
+    "custom/separator#blank",
+    "custom/gamemode",
+    "custom/idle-indicator",
+    "custom/notification-silencing-indicator",
+    "custom/screenrecording-indicator", 
+    "custom/update", 
+    "custom/separator#dot",
+    "custom/separator#blank",
+    "custom/media", 
+	]
+},
+
+  "group/center4": {
+	"orientation": "inherit",
+	"modules": [
+    "custom/omarchy",
+    "custom/active_window",
+    "custom/separator#blank",
+    "custom/separator#dot",
+    "tray",
+    "network",
+    "bluetooth"
+	]
+},
+
+// MODULES
+
+  "custom/active_window": {
+    "exec": "~/.config/waybar/window.sh",
+    "return-type": "json",
+    "markup": true
+  },
+  
+  "hyprland/workspaces": {
+    "on-click": "activate",
+    "format": "{icon}",
+    "format-icons": {
+      "default": "",
+      "1":  "<span size='13500'>󰲠</span>",
+      "2":  "<span size='13500'>󰲢</span>",
+      "3":  "<span size='13500'>󰲤</span>",
+      "4":  "<span size='13500'>󰲦</span>",
+      "5":  "<span size='13500'>󰲨</span>",
+      "6":  "<span size='13500'>󰲪</span>",
+      "7":  "<span size='13500'>󰲬</span>",
+      "8":  "<span size='13500'>󰲮</span>",
+      "9":  "<span size='13500'>󰲰</span>",
+      "10": "<span size='13500'>󰿬</span>",
+    },
+      "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": [],
+      "6": [],
+      "7": [],
+      "8": [],
+    },
+	},
+
+  "custom/omarchy": {
+    // "format": "󰹡",
+    "format": "<span size='11500'></span>",
+    "on-click": "omarchy-menu",
+    "on-click-right": "xdg-terminal-exec",
+    "tooltip-format": "Omarchy Menu\n\nSuper + Alt + Space"
+  },
+
+"cpu": {
+  "interval": 2,
+  "format": "{icon} ",
+  "format-icons": ["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "on-click": "omarchy-launch-or-focus-tui btop"
+},
+
+"memory": {
+  "interval": 2,
+  "format": "{icon} ",
+  "format-icons": ["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "on-click": "omarchy-launch-or-focus-tui btop"
+},
+
+"custom/clock": {
+    "exec": "~/.config/waybar/clock.sh",
+    "interval": 1,
+    "return-type": "json",
+    "tooltip": false
+},
+
+  "network": {
+    "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+    "format": "{icon}",
+    "format-wifi": "{icon}",
+    "format-ethernet": "<span size='11500'>󰌘</span>",
+    "format-disconnected": "<span size='11500'>󰤮</span>",
+    "tooltip-format-wifi": "{essid} ({frequency} GHz)\n⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-ethernet": "⇣{bandwidthDownBytes}  ⇡{bandwidthUpBytes}",
+    "tooltip-format-disconnected": "Disconnected",
+    "interval": 3,
+    "spacing": 1,
+    "on-click": "omarchy-launch-wifi"
+  },
+
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-discharging": "{icon}",
+    "format-charging": "{icon}",
+    "format-plugged": "",
+    "format-icons": {
+      "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
+      "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "format-full": "󰂅",
+    "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
+    "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
+    "interval": 5,
+    "on-click": "omarchy-menu power",
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  },
+
+  "bluetooth": {
+    "format": "<span size='11500'>󰂯</span>",
+    "format-disabled": "<span size='11500'>󰂲</span>",
+    "format-connected": "<span size='11500'></span>",
+    "format-no-controller": "",
+    "tooltip-format": "Devices connected: {num_connections}",
+    "on-click": "omarchy-launch-bluetooth"
+  },
+
+  "pulseaudio": {
+    "format": "<span size='11500'>{icon}</span>",
+    "on-click": "omarchy-launch-or-focus-tui wiremix",
+    "on-click-right": "pamixer -t",
+    "tooltip-format": "Playing at {volume}%",
+    "scroll-step": 5,
+    "format-muted": "",
+    "format-icons": {
+      "default": [
+        " ",
+        " ",
+        " "
+      ]
+    }
+  },
+
+  "custom/screenrecording-indicator": {
+    "on-click": "omarchy-cmd-screenrecord",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "signal": 8,
+    "return-type": "json"
+  },
+
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  },
+
+"custom/media": {
+  "exec": "title=$(playerctl metadata title 2>/dev/null); if [ -n \"$title\" ]; then echo \"  ${title:0:25} \"; else echo \"         No media           \"; fi",
+  "interval": 2,
+  "on-click": "playerctl play-pause"
+},
+
+  "custom/separator#blank": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/separator#dot": {
+	  "format": " ",
+	  "interval": "once",
+	  "tooltip": false
+},
+
+  "custom/update": {
+    "format": "",
+    "exec": "omarchy-update-available",
+    "on-click": "omarchy-launch-floating-terminal-with-presentation omarchy-update",
+    "tooltip-format": "Omarchy update available",
+    "signal": 7,
+    "interval": 21600
+  },
+
+  "custom/idle-indicator": {
+    "on-click": "omarchy-toggle-idle",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+    "signal": 9,
+    "return-type": "json"
+  },
+  
+  "custom/notification-silencing-indicator": {
+    "on-click": "omarchy-toggle-notification-silencing",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+    "signal": 10,
+    "return-type": "json"
+  },
+
+  "custom/gamemode": {
+    "exec": "test -f ~/.cache/hypr_gamemode && echo '{\"text\":\"\"}' || echo '{\"text\":\"\"}'",
+    "on-click": "test -f ~/.cache/hypr_gamemode && (rm ~/.cache/hypr_gamemode && hyprctl keyword animations:enabled 1 && hyprctl keyword decoration:blur:enabled 1) || (touch ~/.cache/hypr_gamemode && hyprctl keyword animations:enabled 0 && hyprctl keyword decoration:blur:enabled 0)",
+    "interval": 1,
+    "return-type": "json",
+    "tooltip": true,
+    "tooltip-format": "GameMode"
+  },
+
+}
+</file>
+
+<file path="V7/style.css">
+@import "colors.css";
+
+* {
+  border: none;
+  border-radius: 1;
+  min-height: 0;
+  font-family: 'JetBrainsMono Nerd Font Propo';
+  font-size: 12px;
+}
+
+.modules-left {
+  margin-left: 8px;
+}
+
+.modules-right {
+  margin-right: 8px;
+}
+
+window#waybar {
+  background-color: transparent;
+  transition-property: background-color;
+  transition-duration: .5s;
+  border-radius: 32px;
+}
+
+window#waybar.empty #window {
+  background: transparent;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: transparent;
+  padding: 0;
+  margin: 0;
+}
+#waybar.empty .modules-center {
+  opacity: 0;
+}
+
+#workspaces {
+    padding: 0px 10px;
+    margin: 3.5 3.5px;
+    border-radius: 11px;
+    background-color: @background;
+}
+
+#workspaces button {
+  color: @foreground;
+  padding: 0 3px;
+  margin: 0 0.5px;
+  min-width: 9px;
+}
+
+#workspaces button.empty {
+  color: @foreground;
+  opacity: 0.5;
+}
+
+#workspaces button.active {
+  transition: all 50ms ease-out;
+  border-top: 3px solid @foreground;
+  margin-bottom: 2px;
+  color: @foreground;
+  opacity: 1;
+}
+
+#workspaces button:hover {
+  background-color: transparent;
+}
+
+#workspaces button.empty:hover {
+  background: transparent;
+  opacity: 1;
+}
+
+#battery,
+#pulseaudio,
+#custom-screenrecording-indicator,
+#custom-update {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+#tray {
+  background:alpha(@foreground, 0.0);
+  border-radius: 16px;
+  padding: 0px 5px;
+  margin: 3.5 2px;
+  margin-right: 4px;
+}
+
+#pulseaudio {
+  margin-right: 5px;
+}
+
+#bluetooth {
+  margin-right: 12px;
+}
+
+#network {
+  margin-right: 9px;
+}
+
+#custom-gamemode {
+  margin-right: 8px;
+}
+
+#custom-idle-indicator,
+#custom-notification-silencing-indicator {
+  margin-right: 2px;
+  min-width: 15px;
+}
+
+tooltip {
+  background: @background;
+  border: 1px solid alpha(@foreground, 0.2);
+  border-radius: 12px;
+}
+tooltip label {
+  color: white;
+}
+
+#custom-clock {
+  margin-left: 7px;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+#custom-active_window {
+    padding: 2px 6px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    border-radius: 14px;
+    background: @background;
+    font-size: 12px;
+}
+
+#custom-update {
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 8.75px;
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: red;
+}
+
+#custom-omarchy{
+  margin-left: 8px;
+  margin-right: 4px;
+}
+
+#cpu, #memory {
+    margin-left: 0px;
+    font-size: 18px;      
+    padding: 3px 0px;
+}
+
+#group-right1,
+#group_right1,
+#right1 {
+    font-weight: 800;
+    background: @background;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+}
+
+#group-center4,
+#group_center4,
+#center4,
+#group-center3,
+#group_center3,
+#center3,
+#group-center2,
+#group_center2,
+#center2 {
+    font-weight: 800;
+    background: @background;
+    border-radius: 12px;
+    padding: 0px 5px;
+    margin: 3.5 2px;
+}
+</file>
+
+<file path="V7/window.sh">
+#!/usr/bin/env bash
+
+MAX_TITLE_LEN=20
+
+print_status() {
+    window=$(hyprctl activewindow -j 2>/dev/null)
+    address=$(jq -r '.address // empty' <<< "$window")
+
+    # No active window → show Desktop + Workspace
+    if [[ -z "$address" || "$address" == "null" ]]; then
+        ws=$(hyprctl activeworkspace -j | jq -r '.id')
+
+        top_line="Desktop"
+        bottom_line="Workspace $ws"
+
+        esc_top=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$top_line")
+        esc_bottom=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$bottom_line")
+
+        text="<span size='7500' foreground='#a6adc8' rise='-2000'>$esc_top</span>
+<span size='9000' weight='bold' foreground='#ffffff'>$esc_bottom</span>"
+
+        jq -nc \
+            --arg text "$text" \
+            --arg tooltip "$bottom_line" \
+            '{ text: $text, class: "custom-window", tooltip: $tooltip }'
+        return
+    fi
+
+    class=$(jq -r '.class // "Unknown"' <<< "$window")
+    title=$(jq -r '.title // ""' <<< "$window")
+
+    app_class="${class,,}"
+
+    # Discord / Vesktop cleanup
+    if [[ "$app_class" == *discord* || "$app_class" == *vesktop* ]]; then
+        title=$(sed -E 's/^\([0-9]+\)[[:space:]]*//' <<< "$title")
+        title=$(sed -E 's/^Discord[[:space:]]*\|[[:space:]]*//' <<< "$title")
+    fi
+
+    # Truncate title
+    if (( ${#title} > MAX_TITLE_LEN )); then
+        title="${title:0:$((MAX_TITLE_LEN-3))}..."
+    fi
+
+    esc_top=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$class")
+    esc_bottom=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$title")
+
+    text="<span size='7500' foreground='#a6adc8' rise='-2000'>$esc_top</span>
+<span size='9000' weight='bold' foreground='#ffffff'>$esc_bottom</span>"
+
+    tooltip="$class: $title"
+
+    jq -nc \
+        --arg text "$text" \
+        --arg tooltip "$tooltip" \
+        '{ text: $text, class: "custom-window", tooltip: $tooltip }'
+}
+
+# Initial output
+print_status
+
+last=""
+
+# Update only when state changes
+while true; do
+    current_window=$(hyprctl activewindow -j 2>/dev/null)
+    current_ws=$(hyprctl activeworkspace -j 2>/dev/null)
+
+    current="$current_window$current_ws"
+
+    if [[ "$current" != "$last" ]]; then
+        print_status
+        last="$current"
+    fi
+
+    sleep 0.5
+done
+</file>
+
+</files>

@@ -1,8 +1,8 @@
 {
-  "layer": "top", "position": "top",
-  "modules-left": ["custom/logo", "clock", "memory", "cpu", "custom/gpu-usage", "temperature", "network#speed"],
+  "layer": "top", "position": "top", "margin-top": 2, "margin-right": 2, "margin-left": 2,
+  "modules-left": ["custom/logo", "clock", "memory", "cpu", "custom/gpu-usage", "network#speed"],
   "modules-center": ["hyprland/workspaces"],
-  "modules-right": ["custom/player", "custom/cava", "pulseaudio", "custom/clipboard", "idle_inhibitor", "custom/backlight_sunset", "custom/colorpicker", "tray"],
+  "modules-right": ["custom/player", "custom/cava", "idle_inhibitor", "custom/backlight_sunset", "custom/colorpicker", "tray"],
   "reload_style_on_change":true,
 
 
@@ -19,13 +19,13 @@
   },
 
   "custom/cava": {
-    "exec": "sleep 3 && cava -p ~/.config/waybar/scripts/cava/config | sed -u 's/;//g;s/0/0/g;s/1/1/g;s/2/2/g;s/3/3/g;s/4/4/g;s/5/5/g;s/6/6/g;s/7/7/g;s/8/8/g;s/9/9/g;'"
+    "exec": "sleep 3 && cava -p /home/cristioro/.config/waybar/scripts/cava/config | sed -u 's/;//g;s/0/0/g;s/1/1/g;s/2/2/g;s/3/3/g;s/4/4/g;s/5/5/g;s/6/6/g;s/7/7/g;s/8/8/g;s/9/9/g;'"
   },
 
   "custom/logo": {
     "format": "",
     "tooltip": "Power Menu",
-    "on-click": "~/.config/rofi/powermenu/powermenu.sh"
+    "on-click": "/home/cristioro/.config/rofi/powermenu/powermenu.sh"
   },
 
 "custom/backlight_sunset": {
@@ -88,7 +88,7 @@
 
 "custom/clipboard":{
   "format":"",
-  "on-click": "~/.config/rofi/clipboard/launcher.sh",
+  "on-click": "/home/cristioro/.config/rofi/clipboard/launcher.sh",
   "interval":86400
 },
 
@@ -167,28 +167,28 @@
   "smooth-scrolling-threshold": 1
   },
 
-"custom/gpu-usage": {
+  "custom/gpu-usage": {
     "format": "{icon} {text}",
     "exec": "~/.cargo/bin/gpu-usage-waybar",
     "return-type": "json",
     "format-icons": "󰾲",
     "on-click": "kitty btop"
-},
+  },
 
-"disk": {
+ "disk": {
     "interval": 30,
     "format": "  {percentage_used}%",
     "path": "/"
-},
+  },
 
-"custom/colorpicker": {
+  "custom/colorpicker": {
     "format": "{}",
     "return-type": "json",
     "interval": "once",
     "exec": "~/.config/waybar/scripts/colorpicker.sh -j",
     "on-click": "sleep 1 && ~/.config/waybar/scripts/colorpicker.sh",
     "signal": 1
-},
+  },
 
   "cpu": {
       "interval": 1,
@@ -215,7 +215,7 @@
   "format-critical": " {temperatureC}°C",
   "interval": 1,
   "critical-threshold": 80,
-  "on-click": "foot btop"
+  "on-click": "kitty btop"
  },
 
 "pulseaudio": {

@@ -53,10 +53,10 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("mako")
 	hl.exec_cmd("nm-applet")
 	hl.exec_cmd("wl-paste --watch cliphist store")
-	hl.exec_cmd("cava")
 	hl.exec_cmd("hyprpm reload")
 	hl.exec_cmd("hypridle")
 	hl.exec_cmd("hyprsunset")
+	hl.exec_cmd("systemctl --user start hyprpolkitagent")
 	hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
 	hl.exec_cmd('gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"')
 	hl.exec_cmd('gsettings set org.gnome.desktop.interface gtk-theme "adw-gtk3"')
@@ -115,7 +115,7 @@ hl.config({
 		border_size = 2,
 
 		col = {
-			active_border = { colors = { on_primary, on_secondary}, angle = 45 },
+			active_border = { colors = { on_primary, on_secondary }, angle = 45 },
 			inactive_border = on_surface,
 		},
 
@@ -125,7 +125,7 @@ hl.config({
 		-- Please see https://wiki.hypr.land/Configuring/Advanced-and-Cool/Tearing/ before you turn this on
 		allow_tearing = false,
 
-		layout = "dwindle",
+		layout = "scrolling",
 	},
 
 	decoration = {
@@ -160,7 +160,6 @@ hl.config({
 ---- Animations ----
 --------------------
 require("settings.animation")
-
 
 -- Ref https://wiki.hypr.land/Configuring/Basics/Workspace-Rules/
 -- "Smart gaps" / "No gaps when only"

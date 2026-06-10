@@ -25,7 +25,8 @@ hl.bind(mainMod .. " + F11", hl.dsp.dpms({ action = "on" }))
 hl.bind(mainMod .. " + ALT + C", hl.dsp.window.center())
 
 -- Wallpaper
-hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("quickshell -c hyprquickpaper"))
+hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("quickshell -c hyprquickpaper-copy"))
+hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("quickshell -p ~/.config/quickshell/qs-wallpaper-picker/Main.qml"))
 
 -- cliphist
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("/home/cristioro/.config/rofi/clipboard/launcher.sh"))

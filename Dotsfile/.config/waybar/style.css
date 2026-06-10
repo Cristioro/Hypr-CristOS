@@ -3,14 +3,16 @@
 
 * {
     border: none;
-    font-size: 14px;
+    font-size: 12px;
     font-family: "JetBrainsMono Nerd Font,JetBrainsMono NF";
     min-height: 25px;
 }
 
 window#waybar {
-    background: transparent;
-    margin: 5px;
+    background: alpha(@background, 0.3);
+    border: 1px solid @on_primary;
+    border-radius: 7px;
+    margin: 10;
 }
 
 #custom-logo {
@@ -20,27 +22,10 @@ window#waybar {
 .modules-right,
 .modules-center,
 .modules-left {
-    background: alpha(@background, 0.3);
+    background: alpha(@on_primary_container, 0.1);
     border: 1px solid @on_primary;
-}
-
-.modules-right {
-    padding-left: 5px;
-    border-radius: 15px 0 0 15px;
-    margin-top: 2px;
-    border-right: 0;
-}
-
-.modules-center {
-    padding: 0 15px;
-    margin-top: 2px;
-    border-radius: 15px 15px 15px 15px;
-}
-
-.modules-left {
-    border-radius: 0 15px 15px 0;
-    margin-top: 2px;
-    border-left: 0;
+    padding: 0 5px;
+    border-radius: 7px;
 }
 
 /* ===== COLOR ===== */
@@ -103,7 +88,7 @@ window#waybar {
     border-right: 0px;
     padding-bottom: 6px;
     font-family: "bargraph";
-    font-size: 22px;
+    font-size: 20px;
 }
 
 #custom-player {
@@ -112,7 +97,7 @@ window#waybar {
     font-family: "JetBrainsMono Nerd Font";
     min-width: 200px;
     letter-spacing: 1px;
-}
+} 
 
 #temperature.critical,
 #pulseaudio.muted {
@@ -124,6 +109,11 @@ window#waybar {
 
 #workspaces button.active {
     color: @on_primary;
+}
+
+#workspaces button:hover {
+    color: @on_primary;
+    background: alpha(@primary, 0.3);
 }
 
 @keyframes blink {
