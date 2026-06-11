@@ -37,6 +37,11 @@ post_hook = 'makoctl reload'
 input_path = "~/.config/matugen/templates/midnight.matugen.theme.css"
 output_path = "~/.config/BetterDiscord/themes/midnight.matugen.theme.css"
 
+[templates.midnight_discordVesktop]
+input_path = "~/.config/matugen/templates/midnight.matugen.theme.css"
+output_path = "~/.config/vesktop/themes/midnight.matugen.theme.css"
+
+
 [templates.rofi]
 input_path = "~/.config/matugen/templates/rofi.rasi"
 output_path = "~/.config/rofi/colors.rasi"
@@ -46,10 +51,10 @@ input_path = '~/.config/matugen/templates/colors.css'
 output_path = '~/.config/waybar/colors.css'
 post_hook = 'pkill -SIGUSR2 waybar'
 
-# [templates.nvim]
-# input_path = '~/.config/matugen/templates/nvim.lua'
-# output_path = '~/.config/nvim/generated.lua'
-# post_hook = 'pkill -SIGUSR1 nvim'
+[templates.nvim]
+input_path = '~/.config/matugen/templates/colors_neopywal.vim'
+output_path = '~/.cache/wallust/colors_neopywal.vim'
+post_hook = 'pkill -SIGUSR1 nvim'
 
 # VS Code matugen extension
 [templates.vscode-raw]
