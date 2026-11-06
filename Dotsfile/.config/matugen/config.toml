@@ -18,10 +18,16 @@ output_path = "~/.config/fastfetch/config.jsonc"
 [templates.hyprland_lua]
 input_path = "~/.config/matugen/templates/hyprland.lua"
 output_path = "~/.config/hypr/settings/colors.lua"
+post_hook = 'hyprctl reload'
 
 [templates.hyprquickpaper]
 input_path = "~/.config/matugen/templates/hyprquickpaper.json"
 output_path = "~/.config/quickshell/hyprquickpaper-copy/config.json"
+
+# Variante parcheada (webp, rutas con espacios, notificaciones): solo color de borde
+[templates.hyprquickpaper_variant]
+input_path = "~/.config/matugen/templates/hyprquickpaper-colors.json"
+output_path = "~/.config/quickshell/hyprquickpaper/colors.json"
 
 [templates.kitty]
 input_path = '~/.config/matugen/templates/kitty.conf'
@@ -45,6 +51,7 @@ output_path = "~/.config/vesktop/themes/midnight.matugen.theme.css"
 [templates.rofi]
 input_path = "~/.config/matugen/templates/rofi.rasi"
 output_path = "~/.config/rofi/colors.rasi"
+post_hook = '~/.config/hypr/scripts/transparency.sh rofi-apply'
 
 [templates.waybar]
 input_path = '~/.config/matugen/templates/colors.css'
@@ -64,3 +71,14 @@ output_path = '~/.cache/matugen/vscode-colors'
 [templates.vscode-json]
 input_path = '~/.config/matugen/templates/vscode/vscode-colors.json'
 output_path = '~/.cache/matugen/vscode-colors.json'
+
+# GTK 3 / GTK 4 (apps GTK: Thunar, diálogos, selectores de archivos...)
+[templates.gtk3]
+input_path = '~/.config/matugen/templates/gtk-colors.css'
+output_path = '~/.config/gtk-3.0/colors.css'
+post_hook = '~/.config/matugen/hooks/gtk-mode.sh'
+
+[templates.gtk4]
+input_path = '~/.config/matugen/templates/gtk-colors.css'
+output_path = '~/.config/gtk-4.0/colors.css'
+post_hook = '~/.config/matugen/hooks/gtk-mode.sh'

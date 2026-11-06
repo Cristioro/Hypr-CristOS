@@ -29,3 +29,7 @@ layer=overlay
 markup=1
 
 # Per-mode settings
+
+# Modo No molestar
+[mode=do-not-disturb]
+invisible=1
