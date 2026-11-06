@@ -1,0 +1,98 @@
+@import "~/.config/rofi/colors.rasi"
+
+configuration {
+    font:                        "JetBrainsMono Nerd Font 12";
+    show-icons:                  false;
+    matching:                    "normal";
+}
+
+window {
+    width:                       34em;
+    transparency:                "real";
+    location:                    center;
+    anchor:                      center;
+    border:                      2px solid;
+    border-color:                @primary;
+    border-radius:               14px;
+    background-color:            @surface;
+    padding:                     14px;
+}
+
+mainbox {
+    spacing:                     10px;
+    background-color:            transparent;
+}
+
+message {
+    background-color:            @surface-container;
+    text-color:                  @on-surface-variant;
+    padding:                     8px 12px;
+    border-radius:               10px;
+}
+
+textbox {
+    text-color:                  @on-surface;
+    background-color:            transparent;
+}
+
+listview {
+    lines:                       8;
+    spacing:                     2px;
+    scrollbar:                   false;
+    background-color:            transparent;
+    padding:                     2px 0 0 0;
+}
+
+element {
+    padding:                     8px 12px;
+    border-radius:               10px;
+    background-color:            transparent;
+    text-color:                  @on-surface;
+}
+
+element selected.normal {
+    background-color:            @primary;
+    text-color:                  @on-primary;
+}
+
+element-text {
+    background-color:            transparent;
+    text-color:                  inherit;
+    vertical-align:              0.5;
+}
+
+inputbar {
+    background-color:            transparent;
+    spacing:                     0;
+    children:                    [ prompt, entry ];
+}
+
+prompt {
+    padding:                     0 10px 0 2px;
+    text-color:                  @primary;
+    background-color:            transparent;
+}
+
+entry {
+    placeholder:                 "Buscar…";
+    placeholder-color:           @on-surface-variant;
+    text-color:                  @on-surface;
+    background-color:            transparent;
+    cursor-width:                10px;
+}
+
+case-indicator {
+    text-color:                  @on-surface-variant;
+    background-color:            transparent;
+}
+
+textbox-prompt-colon {
+    text-color:                  @primary;
+    background-color:            transparent;
+}
+
+scrollbar {
+    background-color:            transparent;
+    handle-color:                @primary;
+    handle-width:                0;
+}
