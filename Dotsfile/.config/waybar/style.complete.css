@@ -1,0 +1,124 @@
+/* @import "$HOME/.cache/wallust/waybar.css"; */
+@import "colors.css";
+
+* {
+    border: none;
+    font-size: 12px;
+    font-family: "JetBrainsMono Nerd Font,JetBrainsMono NF";
+    min-height: 25px;
+}
+
+window#waybar {
+    background: alpha(@background, 0.30);
+    border: 1px solid @on_primary;
+    border-radius: 7px;
+    margin: 10;
+}
+
+#custom-logo {
+    padding: 0 10px;
+}
+
+.modules-right,
+.modules-center,
+.modules-left {
+    background: alpha(@on_primary_container, 0.1);
+    border: 1px solid @on_primary;
+    padding: 0 5px;
+    border-radius: 7px;
+}
+
+/* ===== COLOR ===== */
+#battery,
+#custom-clipboard,
+#custom-colorpicker,
+#custom-powerDraw,
+#custom-gpu-usage,
+#custom-backlight_sunset,
+#custom-weather,
+#custom-cava,
+#custom-player,
+#bluetooth,
+#pulseaudio,
+#network,
+#disk,
+#memory,
+#backlight,
+#cpu,
+#temperature,
+#idle_inhibitor,
+#jack,
+#tray,
+#window,
+#workspaces,
+#clock,
+#pulseaudio,
+#workspaces button{
+    color: @on_primary_container;
+}
+
+
+#battery,
+#custom-clipboard,
+#custom-colorpicker,
+#custom-powerDraw,
+#custom-gpu-usage,
+#custom-backlight_sunset,
+#custom-weather,
+#idle_inhibitor,
+#bluetooth,
+#pulseaudio,
+#network,
+#disk,
+#memory,
+#backlight,
+#cpu,
+#temperature,
+#jack,
+#tray,
+#window,
+#workspaces,
+#clock,
+#pulseaudio{
+    padding: 0 5px;
+}
+
+#custom-cava {
+    border-left: 0px;
+    border-right: 0px;
+    padding-bottom: 6px;
+    font-family: "bargraph";
+    font-size: 20px;
+}
+
+#custom-player {
+    padding: 0 10px;
+    font-weight: bold;
+    font-family: "JetBrainsMono Nerd Font";
+    min-width: 200px;
+    letter-spacing: 1px;
+} 
+
+#temperature.critical,
+#pulseaudio.muted {
+    color: @on_primary;
+    padding-top: 0;
+}
+
+/* ===== WORKSPACES ===== */
+
+#workspaces button.active {
+    color: @on_primary;
+}
+
+#workspaces button:hover {
+    color: @on_primary;
+    background: alpha(@primary, 0.3);
+}
+
+@keyframes blink {
+    to {
+        background-color: @on_primary;
+        color: @background;
+    }
+}
