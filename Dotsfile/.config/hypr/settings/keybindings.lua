@@ -136,3 +136,15 @@ hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
 hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
+
+-- Centro de control (rofi): apariencia, barra, transparencia, red, audio, sistema
+hl.bind(mainMod .. " + I", hl.dsp.exec_cmd("~/.config/rofi/settings/settings.sh"))
+
+-- Capturas (scripts incluidos en ~/.config/hypr/scripts/)
+-- Print sigue usando hyprshot: estos atajos añaden región con edición y pantalla completa.
+hl.bind("SHIFT + Print", hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh region-edit"), { locked = true })
+hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh full"), { locked = true })
+hl.bind(mainMod .. " + SHIFT + Print", hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh full-edit"), { locked = true })
+
+-- Grabar pantalla (iniciar/detener)
+hl.bind(mainMod .. " + SHIFT + R", hl.dsp.exec_cmd("~/.config/hypr/scripts/record.sh full"), { locked = true })
