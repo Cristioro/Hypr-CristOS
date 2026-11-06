@@ -28,6 +28,11 @@ Este README documenta los atajos de teclado definidos en `keybindings.lua` dentr
 - `SUPER + SHIFT + W` : Abrir el selector de wallpaper de QuickShell.
 - `SUPER + V` : Abrir el historial del portapapeles con `cliphist`.
 - `Print` : Tomar captura de pantalla con `hyprshot` y copiar al portapapeles.
+- `SUPER + I` : Abrir el centro de control (apariencia, barra, transparencia, red, audio, sistema).
+- `SHIFT + Print` : Captura de una región y abrir el editor (`satty`).
+- `SUPER + Print` : Captura de toda la pantalla y copiar al portapapeles.
+- `SUPER + SHIFT + Print` : Captura de toda la pantalla y abrir el editor (`satty`).
+- `SUPER + SHIFT + R` : Iniciar o detener la grabación de pantalla.
 
 ## Navegación y gestión de ventanas
 
