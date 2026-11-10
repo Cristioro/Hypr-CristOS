@@ -42,6 +42,8 @@ FILES=(
   ".config/waybar/style.complete.css"
   ".config/waybar/style.modular.css"
   ".config/quickshell/hyprquickpaper/commands.sh"
+  ".config/gtk-3.0/gtk.css"
+  ".config/gtk-4.0/gtk.css"
   ".config/matugen/config.toml"
   ".config/matugen/templates/hyprland.lua"
   ".config/systemd/user/hypr-session.service"

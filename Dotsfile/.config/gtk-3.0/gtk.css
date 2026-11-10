@@ -1,2 +1,10 @@
-/* Paleta generada por matugen (colors.css) */
-@import 'colors.css';
+/* gtk.css — paleta global generada por matugen (colors.css).
+ *
+ * No definas colores aquí a mano: matugen regenera colors.css al cambiar de
+ * wallpaper y sobrescribiría el resultado. El antiguo bloque con
+ * `@define-color theme_selected_fg_color @primary;` referenciaba un color
+ * inexistente y rompía el parseo del tema (Thunar y apps GTK con estilos a
+ * medias). Tampoco se importa thunar.css: usaba colores fijos que no seguían
+ * el wallpaper.
+ */
+@import "colors.css";

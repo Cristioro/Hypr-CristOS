@@ -1,2 +1,5 @@
-/* Paleta generada por matugen (colors.css) */
-@import 'colors.css';
+/* gtk.css — paleta global generada por matugen (colors.css).
+ *
+ * Igual que en GTK3: nada de colores manuales ni referencias inexistentes.
+ */
+@import "colors.css";
