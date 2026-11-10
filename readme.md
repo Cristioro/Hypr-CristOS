@@ -25,6 +25,10 @@ Dotfiles para **Hyprland + Waybar** con configuración en Lua, tema dinámico co
 - Selector visual de wallpapers **hyprquickpaper** (`SUPER + W`).
 - **CI** que valida los módulos Lua con un sandbox de Hyprland, shellcheck y sintaxis Python.
 - Overrides por máquina en `config/hosts/<hostname>.lua`.
+- **Arranque idempotente** de la sesión: `scripts/session-start.sh` + la unidad
+  `systemd --user` `hypr-session.service`, que arranca waybar, mako, hypridle,
+  wallpaper, portapapeles y el daemon del scroll aunque Hyprland recargue la
+  config tarde (por el bootstrap `.conf`).
 
 ## Instalación
 
@@ -70,9 +74,15 @@ Dotsfile/.config/hypr/
 │   ├── keybinds.lua      # atajos
 │   ├── colors.lua        # GENERADO por matugen (módulo M)
 │   └── hosts/            # overrides opcionales por máquina
-├── scripts/              # cafeína, capturas, grabación, wallpaper…
+├── scripts/              # session-start, cafeína, capturas, grabación, wallpaper…
 └── hyprlock/             # arte y nowplaying
 ```
+
+La unidad `Dotsfile/.config/systemd/user/hypr-session.service` llama a
+`session-start.sh` (idempotente, con lock) al activarse
+`graphical-session.target`. `install.sh` la activa con
+`systemctl --user enable --now`; así el escritorio arranca completo incluso si
+Hyprland carga la configuración Lua después del evento `hyprland.start`.
 
 `scripts/hooks/pre-commit` protege el repo: bloquea cambios en `Wallpapers/`,
 cachés y archivos personales, y valida los scripts. `install.sh` lo activa con

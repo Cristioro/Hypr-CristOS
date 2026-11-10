@@ -94,7 +94,7 @@ hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("~/.config/rofi/clipboard/launcher.sh
 hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("~/.config/rofi/powermenu/powermenu.sh"))
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("~/.config/rofi/wifi/wifi.sh"))
 hl.bind(mainMod .. " + S", hl.dsp.exec_cmd("~/.config/rofi/shortcut/script.sh"))
-hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("hyprshutdown"))
+hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("~/.config/rofi/powermenu/powermenu.sh"))
 hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("quickshell -c hyprquickpaper"), { locked = true })
 
 -- Recargar Hyprland

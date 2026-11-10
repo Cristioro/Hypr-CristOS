@@ -1,0 +1,17 @@
+[Unit]
+Description=Hypr-CristOS session autostart (daemons, wallpaper, theme)
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# Los daemons se lanzan con setsid; sin esto systemd mata el cgroup entero
+# cuando el oneshot termina.
+KillMode=process
+Environment=PATH=%h/.local/opt/waybar-0.16/usr/bin:%h/.local/bin:%h/.cargo/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=%h/.config/hypr/scripts/session-start.sh
+TimeoutStartSec=30
+
+[Install]
+WantedBy=graphical-session.target

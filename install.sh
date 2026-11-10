@@ -33,7 +33,7 @@ info() { printf '\n== %s\n' "$*"; }
 
 [ -d "$SRC/.config" ] || { echo "install: no encuentro $SRC/.config" >&2; exit 1; }
 
-info "1/6 Backup de configuraciones que se van a reemplazar"
+info "1/7 Backup de configuraciones que se van a reemplazar"
 STAMP="$(date +%Y%m%d-%H%M%S)"
 BACKUP="$HOME/.config/backup-install-$STAMP"
 
@@ -52,7 +52,7 @@ else
   [ -e "$HOME/.local/bin" ] && cp -a "$HOME/.local/bin" "$BACKUP/local-bin"
 fi
 
-info "2/6 Instalando configuraciones"
+info "2/7 Instalando configuraciones"
 run rsync -a "$SRC/.config/" "$HOME/.config/"
 
 if [ -d "$SRC/.local" ]; then
@@ -60,7 +60,7 @@ if [ -d "$SRC/.local" ]; then
   run rsync -a "$SRC/.local/" "$HOME/.local/"
 fi
 
-info "3/6 Permisos de ejecución"
+info "3/7 Permisos de ejecución"
 if (( DRY )); then
   echo "   [dry] chmod +x en scripts y binarios"
 else
@@ -70,16 +70,29 @@ else
   [ -f "$HOME/.local/bin/ws-scroll-daemon" ] && chmod +x "$HOME/.local/bin/ws-scroll-daemon"
 fi
 
-info "4/6 Directorios de caché"
+info "4/7 Directorios de caché"
 run mkdir -p "$HOME/.cache/quickshell/hyprquickpaper" "$HOME/.cache/rofi"
 
-info "5/6 Hook de git (protección de Wallpapers y scripts)"
+info "5/7 Hook de git (protección de Wallpapers y scripts)"
 run git -C "$ROOT" config core.hooksPath scripts/hooks
 if (( ! DRY )); then
   chmod +x "$ROOT/scripts/hooks/pre-commit"
 fi
 
-info "6/6 Recargando Hyprland"
+info "6/7 Servicio de arranque de la sesión"
+if (( DRY )); then
+  echo "   [dry] systemctl --user daemon-reload && systemctl --user enable --now hypr-session.service"
+else
+  if command -v systemctl >/dev/null 2>&1; then
+    systemctl --user daemon-reload 2>/dev/null || true
+    systemctl --user enable --now hypr-session.service 2>/dev/null || true
+    echo "   ✓ hypr-session.service activo"
+  else
+    echo "   (sin systemd; arranca ~/.config/hypr/scripts/session-start.sh a mano)"
+  fi
+fi
+
+info "7/7 Recargando Hyprland"
 if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ] && command -v hyprctl >/dev/null 2>&1; then
   if (( DRY )); then
     echo "   [dry] hyprctl reload && hyprctl configerrors"

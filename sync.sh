@@ -44,6 +44,7 @@ FILES=(
   ".config/quickshell/hyprquickpaper/commands.sh"
   ".config/matugen/config.toml"
   ".config/matugen/templates/hyprland.lua"
+  ".config/systemd/user/hypr-session.service"
   ".local/bin/ws-scroll-daemon"
 )
 
