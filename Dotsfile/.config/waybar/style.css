@@ -1,4 +1,4 @@
-/* @import "/home/cristioro/.cache/wallust/waybar.css"; */
+/* @import "/home/kaiserpc/.cache/wallust/waybar.css"; */
 @import "colors.css";
 
 * {
@@ -9,10 +9,7 @@
 }
 
 window#waybar {
-    background: alpha(@background, 0.3);
-    border: 1px solid @on_primary;
-    border-radius: 7px;
-    margin: 10;
+    background: transparent;
 }
 
 #custom-logo {
@@ -22,10 +19,25 @@ window#waybar {
 .modules-right,
 .modules-center,
 .modules-left {
-    background: alpha(@on_primary_container, 0.1);
+    background: alpha(@background, 0.30);
     border: 1px solid @on_primary;
-    padding: 0 5px;
-    border-radius: 7px;
+    border-radius: 14px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.modules-left {
+    margin-left: 6px;
+    padding: 0 8px;
+}
+
+.modules-center {
+    padding: 0 14px;
+}
+
+.modules-right {
+    margin-right: 6px;
+    padding: 0 8px;
 }
 
 /* ===== COLOR ===== */
@@ -109,11 +121,6 @@ window#waybar {
 
 #workspaces button.active {
     color: @on_primary;
-}
-
-#workspaces button:hover {
-    color: @on_primary;
-    background: alpha(@primary, 0.3);
 }
 
 @keyframes blink {

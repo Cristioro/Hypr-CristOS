@@ -17,7 +17,7 @@ output_path = "~/.config/fastfetch/config.jsonc"
 
 [templates.hyprland_lua]
 input_path = "~/.config/matugen/templates/hyprland.lua"
-output_path = "~/.config/hypr/settings/colors.lua"
+output_path = "~/.config/hypr/config/colors.lua"
 post_hook = 'hyprctl reload'
 
 [templates.hyprquickpaper]

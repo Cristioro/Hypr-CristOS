@@ -39,6 +39,21 @@ Componentes sincronizados:
 
 Ubicación: `Dotsfile/.config/matugen/config.toml`
 
+### Cafeína (caffeine.sh)
+
+Script para mantener la pantalla encendida y evitar que el sistema se bloquee o suspenda.
+
+**Características:**
+- Registra un inhibidor de logind (`idle` + `sleep`, modo `block`) que hypridle respeta
+- Notificaciones al activar/desactivar
+- Alternar con `SUPER + SHIFT + CAPS` o desde *Centro de control → Pantalla*
+
+Ubicación: `Dotsfile/.config/hypr/scripts/caffeine.sh`
+
+**Uso:**
+- `~/.config/hypr/scripts/caffeine.sh toggle` - Alternar estado
+- `~/.config/hypr/scripts/caffeine.sh status` - Ver estado actual
+
 ### hyprquickpaper (Quickshell)
 
 Selector visual de wallpapers integrado en Hyprland.
@@ -62,6 +77,19 @@ pacman -S hyprland hypridle hyprlock hyprpicker hyprshot hyprshutdown hyprsunset
 ```
 hyprpm add https://github.com/virtcode/hypr-dynamic-cursors
 hyprpm enable dynamic-cursors
+```
+
+### Dependencias de la cafeína
+
+El script usa `systemd-inhibit` (viene con systemd, ya instalado):
+
+```
+pacman -S systemd
+```
+
+**Alternativa:** instalar el paquete `caffeine` o `caffeine-ng` desde chaotic-aur:
+```
+paru -S caffeine
 ```
 
 ### Waybar (yay)

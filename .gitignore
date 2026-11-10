@@ -1,0 +1,15 @@
+# Caché y temporales
+**/album_art.jpg
+**/song_title.cache
+**/__pycache__/
+**/*.pyc
+**/*.bak
+**/*.tmp
+*~
+.DS_Store
+.idea/
+.vscode/
+
+# Logs / runtime de Hyprland
+hyprland.log
+hyprland.sock

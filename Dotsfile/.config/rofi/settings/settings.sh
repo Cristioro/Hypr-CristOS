@@ -57,6 +57,10 @@ audio_state() {
     wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | sed 's/Volume: //'
 }
 
+caffeine_state() {
+    "$HOME/.config/hypr/scripts/caffeine.sh" status 2>/dev/null || echo "Desactivada"
+}
+
 # ------------------------------------------------------------ Transparencia
 pick_transparency_level() {
     local prompt="$1" sel
@@ -167,6 +171,7 @@ display() {
         "󰃟  Brillo -5%" \
         "󰍹  Resolución y escala (nwg-displays)" \
         "󰔎  Luz nocturna (on/off)" \
+        "󰈈  Caféína (keep awake) · $(caffeine_state)" \
         "󰑓  Recargar monitores" \
         "󰅖  Volver" | menu "Pantalla")
     case "$choice" in
@@ -187,7 +192,9 @@ display() {
             fi
             pkill -RTMIN+8 waybar 2>/dev/null
             ;;
+        *Caféína*) ~/.config/hypr/scripts/caffeine.sh toggle ;;
         *Recargar*) hyprctl reload >/dev/null ;;
+        *Volver*) return ;;
     esac
 }
 
@@ -203,6 +210,7 @@ network() {
         *WiFi*) "$HOME/.config/rofi/wifi/wifi.sh" ;;
         *Bluetooth*) "$DIR/bluetooth.sh" ;;
         *Conexiones*|*editor*) setsid -f nm-connection-editor ;;
+        *Volver*) return ;;
     esac
 }
 
@@ -222,6 +230,7 @@ audio() {
         *"Volumen -"*) swayosd-client --output-volume lower ;;
         *"Silenciar salida"*) swayosd-client --output-volume mute-toggle ;;
         *micrófono*) swayosd-client --input-volume mute-toggle ;;
+        *Volver*) return ;;
     esac
 }
 
@@ -242,6 +251,33 @@ notifications() {
         *Descartar*) makoctl dismiss -a >/dev/null 2>&1 ;;
         *Restaurar*) makoctl restore >/dev/null 2>&1 ;;
         *Reiniciar*) pkill -x mako 2>/dev/null; sleep 0.4; setsid -f mako >/dev/null 2>&1 ;;
+        *Volver*) return ;;
+    esac
+}
+
+# ---------------------------------------------------------- Teclado
+keyboard() {
+    local choice device
+    choice=$(printf '%s\n' \
+        "Español (Latam)" \
+        "English (US)" \
+        "󰅖  Volver" | menu "Teclado" "Cambiar layout del teclado")
+    case "$choice" in
+        *"Español"*)
+            device=$(hyprctl devices -j 2>/dev/null | jq -r '.keyboards[] | select(.main == true) | .name')
+            if [ -n "$device" ]; then
+                hyprctl switchxkblayout "$device" 0
+                notify-send -a "Teclado" "Layout cambiado" "Español (Latam)"
+            fi
+            ;;
+        *"English"*)
+            device=$(hyprctl devices -j 2>/dev/null | jq -r '.keyboards[] | select(.main == true) | .name')
+            if [ -n "$device" ]; then
+                hyprctl switchxkblayout "$device" 1
+                notify-send -a "Teclado" "Layout cambiado" "English (US)"
+            fi
+            ;;
+        *Volver*) return ;;
     esac
 }
 
@@ -250,6 +286,7 @@ system() {
     local choice
     choice=$(printf '%s\n' \
         "󰌌  Ver atajos de teclado" \
+        "󰈀  Cambiar layout del teclado" \
         "󰋼  Información del sistema (fastfetch)" \
         "󰢮  Monitor de recursos (btop)" \
         "󰚰  Actualizar sistema (paru -Syu)" \
@@ -257,6 +294,7 @@ system() {
         "󰅖  Volver" | menu "Atajos y sistema" "$(hostname) · $(uname -r)")
     case "$choice" in
         *atajos*) setsid -f foot -e sh -c 'less -R "$HOME/.config/hypr/KEYBINDINGS-CristOS.md"' ;;
+        *"Cambiar layout"*) keyboard ;;
         *fastfetch*) setsid -f foot -e sh -c 'fastfetch; echo; read -rp "Enter para cerrar..."' ;;
         *btop*) setsid -f foot -e btop ;;
         *Actualizar*) setsid -f foot -e paru -Syu ;;
@@ -280,6 +318,7 @@ session() {
         *"Cerrar sesión"*) confirm "¿Cerrar la sesión de Hyprland?" && hyprctl dispatch exit ;;
         *Reiniciar*) confirm "¿Reiniciar el equipo?" && systemctl reboot ;;
         *Apagar*) confirm "¿Apagar el equipo?" && systemctl poweroff ;;
+        *Volver*) return ;;
     esac
 }
 
@@ -294,6 +333,7 @@ if [ -n "${SETTINGS_SECTION:-}" ]; then
         notifications) notifications ;;
         system) system ;;
         session) session ;;
+        keyboard) keyboard ;;
     esac
     exit 0
 fi
