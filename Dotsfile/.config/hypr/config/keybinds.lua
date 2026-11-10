@@ -48,6 +48,7 @@ hl.bind("SUPER + Print",           hl.dsp.exec_cmd("~/.config/hypr/scripts/scree
 hl.bind("SUPER + SHIFT + Print",   hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh full-edit"),   { locked = true })
 
 -- Atajos alternativos para teclados 68 keys (sin Print)
+hl.bind(mainMod .. " + P",         hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh region"),      { locked = true })
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh region"),      { locked = true })
 hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh full"),        { locked = true })
 hl.bind(mainMod .. " + CTRL + P",  hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh full-edit"),   { locked = true })
