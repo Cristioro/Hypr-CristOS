@@ -59,6 +59,7 @@ window#waybar {
 #cpu,
 #temperature,
 #idle_inhibitor,
+#custom-caffeine,
 #jack,
 #tray,
 #window,
@@ -78,6 +79,7 @@ window#waybar {
 #custom-backlight_sunset,
 #custom-weather,
 #idle_inhibitor,
+#custom-caffeine,
 #bluetooth,
 #pulseaudio,
 #network,
@@ -129,3 +131,6 @@ window#waybar {
         color: @background;
     }
 }
+
+#custom-caffeine.active { color: @on_primary; }
+#custom-caffeine.inactive { opacity: 0.55; }

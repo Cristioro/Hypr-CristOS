@@ -125,4 +125,3 @@ else
 fi
 
 echo -e "<span font_weight='light' size='small' alpha='80%'>${player_display_name} <small>${player_status}</small></span>\n<b>${song_title}</b>    <span alpha='80%' style='italic'>${song_artist}</span>"
-fi

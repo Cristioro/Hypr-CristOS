@@ -2,7 +2,7 @@
   "layer": "top", "position": "top", "margin-top": 2, "margin-right": 2, "margin-left": 2,
   "modules-left": ["custom/logo", "clock", "memory", "cpu", "custom/gpu-usage", "network#speed"],
   "modules-center": ["hyprland/workspaces"],
-  "modules-right": ["custom/player", "custom/cava", "idle_inhibitor", "custom/backlight_sunset", "custom/colorpicker", "tray"],
+  "modules-right": ["custom/player", "custom/cava", "custom/caffeine", "custom/backlight_sunset", "custom/colorpicker", "tray"],
   "reload_style_on_change":true,
 
 
@@ -70,12 +70,14 @@
     "enable-bar-scroll": false
 },
 
-"idle_inhibitor":{
-  "format": "<span font='12'>{icon} </span>",
-  "format-icons": {
-    "activated":"󰈈",
-    "deactivated":"󰈉"
-  }
+"custom/caffeine": {
+  "format": "<span font='12'>{text}</span>",
+  "return-type": "json",
+  "exec": "~/.config/waybar/scripts/caffeine-status.sh",
+  "interval": 5,
+  "signal": 8,
+  "tooltip": true,
+  "on-click": "~/.config/hypr/scripts/caffeine.sh toggle >/dev/null 2>&1; pkill -RTMIN+8 -x waybar"
 },
 
 "custom/weather": {

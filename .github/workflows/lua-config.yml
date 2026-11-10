@@ -1,0 +1,82 @@
+name: Validar dotfiles
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lua:
+    name: Config Lua de Hyprland
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Lua 5.4
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lua5.4
+
+      - name: Sintaxis de los módulos
+        run: |
+          fail=0
+          while IFS= read -r -d '' f; do
+            if ! luac5.4 -p "$f"; then
+              echo "::error file=$f::sintaxis Lua inválida"
+              fail=1
+            fi
+          done < <(find Dotsfile/.config/hypr -name '*.lua' -print0)
+          exit "$fail"
+
+      - name: Prohibir require("hyprland") (recursión infinita)
+        run: |
+          if grep -rn --include='*.lua' 'require("hyprland")' Dotsfile/.config/hypr; then
+            echo "::error::require(\"hyprland\") carga el archivo raíz a sí mismo; usa el global hl"
+            exit 1
+          fi
+
+      - name: Cargar la config en sandbox
+        run: lua5.4 tools/hypr-sandbox.lua Dotsfile/.config/hypr
+
+  shell:
+    name: Scripts de shell
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar shellcheck
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq shellcheck
+
+      - name: Recomponer permisos y sintaxis
+        run: |
+          fail=0
+          while IFS= read -r -d '' f; do
+            if ! bash -n "$f"; then
+              echo "::error file=$f::sintaxis bash inválida"
+              fail=1
+            fi
+          done < <(find . -name '*.sh' -not -path './.git/*' -print0)
+          exit "$fail"
+
+      - name: shellcheck (solo errores)
+        run: |
+          fail=0
+          while IFS= read -r -d '' f; do
+            if ! shellcheck -S error "$f"; then
+              echo "::error file=$f::shellcheck encontró errores"
+              fail=1
+            fi
+          done < <(find . -name '*.sh' -not -path './.git/*' -print0)
+          exit "$fail"
+
+  python:
+    name: Daemon de scroll
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sintaxis Python
+        run: python3 -m py_compile Dotsfile/.config/waybar/scripts/ws-scroll-daemon.py

@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# pre-commit — protege archivos personales y valida scripts antes de commitear.
+#
+# Instalación (una vez por clon):
+#   git config core.hooksPath scripts/hooks
+#
+# Reglas:
+#   1. Wallpapers/ es intocable: son los fondos originales del proyecto.
+#   2. No se cuelan cachés, carátulas, logs ni backups.
+#   3. Los .sh modificados pasan bash -n (y shellcheck si está instalado).
+set -euo pipefail
+
+fail() { printf 'pre-commit: %s\n' "$*" >&2; exit 1; }
+
+staged="$(git diff --cached --name-only --diff-filter=ACMRD)"
+[ -n "$staged" ] || exit 0
+
+# 1) Wallpapers intocables
+if grep -qE '^Wallpapers/' <<<"$staged"; then
+  fail "no se permiten cambios en Wallpapers/ (son los fondos originales del proyecto)."
+fi
+
+# 2) Archivos personales / runtime / caché
+personal="$(grep -E '(^|/)(album_art\.jpg|song_title\.cache|__pycache__/|.*\.pyc|.*\.log|.*\.bak|.*\.tmp|.*~)$' <<<"$staged" || true)"
+if [ -n "$personal" ]; then
+  fail "archivos personales o de runtime detectados (usa .gitignore):
+$personal"
+fi
+
+# 3) Validación de scripts bash modificados
+mapfile -t scripts < <(grep -E '\.sh$' <<<"$staged" | while read -r f; do
+  [ -f "$f" ] && echo "$f"
+done || true)
+
+for f in "${scripts[@]:-}"; do
+  [ -n "$f" ] || continue
+  bash -n "$f" || fail "sintaxis inválida en $f"
+done
+
+# 4) shellcheck (si está disponible)
+if command -v shellcheck >/dev/null 2>&1; then
+  for f in "${scripts[@]:-}"; do
+    [ -n "$f" ] || continue
+    shellcheck -S error "$f" || fail "shellcheck encontró errores en $f"
+  done
+fi
+
+printf 'pre-commit: OK (%d script(s) validado(s))\n' "${#scripts[@]}"
