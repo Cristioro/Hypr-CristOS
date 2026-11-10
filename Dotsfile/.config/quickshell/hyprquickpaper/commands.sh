@@ -15,8 +15,8 @@ fi
 
 # Cache para hyprlock (fondo de la pantalla de bloqueo)
 mkdir -p "$HOME/.cache/rofi"
-magick "$wall[0]" "$HOME/.cache/rofi/current_wallpaper.png" 2>/dev/null \
-    || convert "$wall[0]" "$HOME/.cache/rofi/current_wallpaper.png" 2>/dev/null
+magick "${wall}[0]" "$HOME/.cache/rofi/current_wallpaper.png" 2>/dev/null \
+    || convert "${wall}[0]" "$HOME/.cache/rofi/current_wallpaper.png" 2>/dev/null
 
 # Regenerar tema global (hyprland, waybar, kitty, rofi, btop, cava...)
 MODE="dark"

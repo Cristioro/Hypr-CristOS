@@ -26,6 +26,7 @@ warn() { printf 'sync: %s\n' "$*" >&2; }
 DIRS=(
   ".config/hypr/config"
   ".config/hypr/scripts"
+  ".config/waybar/scripts"
 )
 
 # Archivos individuales.
@@ -40,9 +41,7 @@ FILES=(
   ".config/waybar/style.css"
   ".config/waybar/style.complete.css"
   ".config/waybar/style.modular.css"
-  ".config/waybar/scripts/ws-scroll-daemon.py"
-  ".config/waybar/scripts/ws-scroll.sh"
-  ".config/waybar/scripts/caffeine-status.sh"
+  ".config/quickshell/hyprquickpaper/commands.sh"
   ".config/matugen/config.toml"
   ".config/matugen/templates/hyprland.lua"
   ".local/bin/ws-scroll-daemon"
@@ -56,7 +55,7 @@ sync_dir() {
     warn "falta $src, se omite"
     return 0
   fi
-  local opts=(-a --delete --itemize-changes)
+  local opts=(-a --delete --itemize-changes --exclude='__pycache__' --exclude='*.pyc')
   (( DRY )) || opts+=()
   if (( DRY )); then
     info "── dir: $rel (dry-run)"

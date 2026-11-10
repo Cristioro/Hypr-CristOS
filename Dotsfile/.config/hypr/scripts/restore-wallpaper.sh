@@ -18,8 +18,8 @@ awww img "$wall" -t grow --transition-duration 1
 
 # Fondo para hyprlock
 mkdir -p "$HOME/.cache/rofi"
-magick "$wall[0]" "$HOME/.cache/rofi/current_wallpaper.png" 2>/dev/null \
-    || convert "$wall[0]" "$HOME/.cache/rofi/current_wallpaper.png" 2>/dev/null
+magick "${wall}[0]" "$HOME/.cache/rofi/current_wallpaper.png" 2>/dev/null \
+    || convert "${wall}[0]" "$HOME/.cache/rofi/current_wallpaper.png" 2>/dev/null
 
 # Tema global
 MODE="dark"
