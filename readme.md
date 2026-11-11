@@ -80,9 +80,12 @@ Dotsfile/.config/hypr/
 
 La unidad `Dotsfile/.config/systemd/user/hypr-session.service` llama a
 `session-start.sh` (idempotente, con lock) al activarse
-`graphical-session.target`. `install.sh` la activa con
-`systemctl --user enable --now`; así el escritorio arranca completo incluso si
-Hyprland carga la configuración Lua después del evento `hyprland.start`.
+`graphical-session.target`. Además, `hyprland.conf` lo lanza con `exec-once`
+nativo y el script espera a que Hyprland esté listo (socket + Wayland) antes de
+arrancar nada. `install.sh` activa la unidad con `systemctl --user enable
+--now`; entre los dos mecanismos, el escritorio arranca completo aunque el
+evento `hyprland.start` se dispare antes de cargar la config Lua o aunque una
+actualización deshabilite la unidad.
 
 `scripts/hooks/pre-commit` protege el repo: bloquea cambios en `Wallpapers/`,
 cachés y archivos personales, y valida los scripts. `install.sh` lo activa con

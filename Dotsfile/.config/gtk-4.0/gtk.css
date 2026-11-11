@@ -3,3 +3,4 @@
  * Igual que en GTK3: nada de colores manuales ni referencias inexistentes.
  */
 @import "colors.css";
+@import 'colors.css';

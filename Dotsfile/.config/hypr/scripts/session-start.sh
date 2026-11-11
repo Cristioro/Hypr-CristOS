@@ -13,21 +13,46 @@ HOME_DIR="${HOME:?}"
 # systemd arranca con un PATH mínimo; añade lo instalado por el usuario.
 export PATH="$HOME_DIR/.local/opt/waybar-0.16/usr/bin:$HOME_DIR/.local/bin:$HOME_DIR/.cargo/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 
+# Sin entorno de la sesión (systemd, o el evento Lua disparado demasiado
+# pronto), deducirlo del socket de Hyprland/Wayland.
+detect_env() {
+  if [ -z "${HYPRLAND_INSTANCE_SIGNATURE:-}" ] && [ -d "$RUNTIME/hypr" ]; then
+    sig="$(find "$RUNTIME/hypr" -maxdepth 2 -name .socket.sock -printf '%T@ %h\n' 2>/dev/null \
+      | sort -nr | head -1 | awk '{print $2}' | xargs -r basename)"
+    [ -n "$sig" ] && export HYPRLAND_INSTANCE_SIGNATURE="$sig"
+  fi
+  if [ -z "${WAYLAND_DISPLAY:-}" ]; then
+    for w in "$RUNTIME"/wayland-[0-9]*; do
+      [ -S "$w" ] && export WAYLAND_DISPLAY="${w##*/}" && break
+    done
+  fi
+}
+
+# Espera a que Hyprland esté realmente listo (máx. ~15 s). Esto es lo que
+# hacía fallar el arranque: el evento hyprland.start podía llegar antes de que
+# existiera el socket, y la detección se rendía.
+detect_env
+for _ in $(seq 1 50); do
+  [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ] && [ -n "${WAYLAND_DISPLAY:-}" ] && break
+  sleep 0.3
+  detect_env
+done
+
+# Aislamiento entre escritorios: esta sesión solo debe arrancar bajo Hyprland.
+# Si systemd activa la unidad en otra sesión gráfica (Plasma, GNOME...) no
+# tocamos nada, para no meter waybar/mako/hypridle en el otro escritorio.
+case "${XDG_CURRENT_DESKTOP:-}" in
+  *[Hh]yprland*) ;;
+  *) [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ] || exit 0 ;;
+esac
+
+# Aislamiento de tema con VistaThemePlasma: Hyprland debe usar el perfil
+# Qt/KDE propio, no el de la sesión VistaThemePlasma.
+cp -f "$HOME_DIR/.config/kdeglobals.nonvtp" "$HOME_DIR/.config/kdeglobals" 2>/dev/null || true
+
 # Lock: evita ejecuciones simultáneas.
 exec 9>"$RUNTIME/hypr-session-start.lock"
 flock -n 9 || exit 0
-
-# Sin entorno de la sesión (p. ej. si lo lanza systemd), deducirlo.
-if [ -z "${HYPRLAND_INSTANCE_SIGNATURE:-}" ] && [ -d "$RUNTIME/hypr" ]; then
-  sig="$(find "$RUNTIME/hypr" -maxdepth 2 -name .socket.sock -printf '%T@ %h\n' 2>/dev/null \
-    | sort -nr | head -1 | awk '{print $2}' | xargs -r basename)"
-  [ -n "$sig" ] && export HYPRLAND_INSTANCE_SIGNATURE="$sig"
-fi
-if [ -z "${WAYLAND_DISPLAY:-}" ]; then
-  for w in "$RUNTIME"/wayland-[0-9]*; do
-    [ -S "$w" ] && export WAYLAND_DISPLAY="${w##*/}" && break
-  done
-fi
 
 have() { command -v "$1" >/dev/null 2>&1; }
 
@@ -55,11 +80,18 @@ start_cmd() {
   return 0
 }
 
-marker="$RUNTIME/hypr-session-started.${HYPRLAND_INSTANCE_SIGNATURE:-unknown}"
-first_run=0
-if [ ! -f "$marker" ]; then
+# Marcador por instancia (el wallpaper se restaura una vez por sesión). Si no
+# hay firma no creamos uno "unknown" que bloquee el siguiente intento.
+if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+  marker="$RUNTIME/hypr-session-started.$HYPRLAND_INSTANCE_SIGNATURE"
+else
+  marker=""
+fi
+first_run=1
+if [ -n "$marker" ] && [ -f "$marker" ]; then
+  first_run=0
+elif [ -n "$marker" ]; then
   : >"$marker"
-  first_run=1
 fi
 
 # Portapapeles
@@ -104,5 +136,9 @@ if [ "$first_run" = "1" ]; then
     "$HOME_DIR/.config/hypr/scripts/restore-wallpaper.sh" >/dev/null 2>&1 || true
   fi
 fi
+
+# Redundancia: algunas actualizaciones ejecutan `systemctl preset`, que puede
+# deshabilitar la unidad. La dejamos habilitada para el próximo login.
+systemctl --user enable hypr-session.service >/dev/null 2>&1 || true
 
 exit 0
