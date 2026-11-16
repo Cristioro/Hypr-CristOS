@@ -111,3 +111,10 @@ textbox {
     background-color: transparent;
     text-color: @foreground;
 }
+
+/* transparency:managed:start */
+window {
+    transparency: "real";
+    background-color: rgba(17, 19, 24, 0.50);
+}
+/* transparency:managed:end */

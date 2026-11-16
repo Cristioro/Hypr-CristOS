@@ -27,6 +27,36 @@ save() {
 apply_waybar() {
     local alpha mode
     alpha=$(awk -v l="$WAYBAR" 'BEGIN { printf "%.2f", (100 - l) / 100 }')
+
+    # Tema de Waybar activo: su estilo vive en style.css (copia del tema).
+    # Se ajustan solo los fondos que usan @background, sin tocar textos.
+    if [ -f "$WAYBAR_DIR/.theme" ] && [ -f "$WAYBAR_DIR/style.css" ]; then
+        python3 - "$WAYBAR_DIR/style.css" "$alpha" <<'PY'
+import re
+import sys
+
+path, alpha = sys.argv[1], sys.argv[2]
+with open(path, "r", encoding="utf-8") as fh:
+    text = fh.read()
+
+text = re.sub(
+    r"(background(?:-color)?\s*:\s*)alpha\(\s*@background\s*,\s*[0-9.]+\)",
+    lambda m: f"{m.group(1)}alpha(@background, {alpha})",
+    text,
+)
+text = re.sub(
+    r"(background(?:-color)?\s*:\s*)@background\b",
+    lambda m: f"{m.group(1)}alpha(@background, {alpha})",
+    text,
+)
+
+with open(path, "w", encoding="utf-8") as fh:
+    fh.write(text)
+PY
+        pkill -SIGUSR2 -x waybar 2>/dev/null || true
+        return 0
+    fi
+
     for f in "$WAYBAR_DIR/style.complete.css" "$WAYBAR_DIR/style.modular.css"; do
         [ -f "$f" ] || continue
         sed -i -E "s|background: alpha\(@background, [0-9.]+\);|background: alpha(@background, $alpha);|" "$f"

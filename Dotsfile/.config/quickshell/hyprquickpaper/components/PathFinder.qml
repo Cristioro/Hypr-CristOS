@@ -8,7 +8,7 @@ Process {
     required property string cache_path
 
     running: false
-    command: ["find", path, "-type", "f", "-printf", "%d %P\n"]
+    command: ["find", "-L", path, "-type", "f", "-printf", "%d %P\n"]
     stdout: StdioCollector {
         onStreamFinished: {
             const lines = this.text.split('\n').filter(el => el != '');

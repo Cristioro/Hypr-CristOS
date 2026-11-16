@@ -53,6 +53,11 @@ input_path = "~/.config/matugen/templates/rofi.rasi"
 output_path = "~/.config/rofi/colors.rasi"
 post_hook = '~/.config/hypr/scripts/transparency.sh rofi-apply'
 
+# GUI de ajustes (quickshell) — colores Material You
+[templates.cristos_settings]
+input_path = "~/.config/matugen/templates/cristos-settings.json"
+output_path = "~/.config/quickshell/cristos-settings/colors.json"
+
 [templates.waybar]
 input_path = '~/.config/matugen/templates/colors.css'
 output_path = '~/.config/waybar/colors.css'
@@ -82,3 +87,8 @@ post_hook = '~/.config/matugen/hooks/gtk-mode.sh'
 input_path = '~/.config/matugen/templates/gtk-colors.css'
 output_path = '~/.config/gtk-4.0/colors.css'
 post_hook = '~/.config/matugen/hooks/gtk-mode.sh'
+
+# Centro de control rápido (quickshell) — mismos colores Material You
+[templates.cristos_cc]
+input_path = "~/.config/matugen/templates/cristos-settings.json"
+output_path = "~/.config/quickshell/cristos-cc/colors.json"

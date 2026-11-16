@@ -6,105 +6,105 @@ local M = {}
 
 -- Paleta generada por matugen
 
-M.background = "0xff0f1416"
+M.background = "0xff111318"
 
 M.error = "0xffffb4ab"
 
 M.error_container = "0xff93000a"
 
-M.inverse_on_surface = "0xff2c3134"
+M.inverse_on_surface = "0xff2e3035"
 
-M.inverse_primary = "0xff07677f"
+M.inverse_primary = "0xff3d5f90"
 
-M.inverse_surface = "0xffdee3e6"
+M.inverse_surface = "0xffe1e2e9"
 
-M.on_background = "0xffdee3e6"
+M.on_background = "0xffe1e2e9"
 
 M.on_error = "0xff690005"
 
 M.on_error_container = "0xffffdad6"
 
-M.on_primary = "0xff003543"
+M.on_primary = "0xff01315e"
 
-M.on_primary_container = "0xffb7eaff"
+M.on_primary_container = "0xffd5e3ff"
 
-M.on_primary_fixed = "0xff001f28"
+M.on_primary_fixed = "0xff001c3b"
 
-M.on_primary_fixed_variant = "0xff004e61"
+M.on_primary_fixed_variant = "0xff224876"
 
-M.on_secondary = "0xff1e333b"
+M.on_secondary = "0xff273141"
 
-M.on_secondary_container = "0xffcfe6f1"
+M.on_secondary_container = "0xffd8e3f8"
 
-M.on_secondary_fixed = "0xff071e26"
+M.on_secondary_fixed = "0xff121c2b"
 
-M.on_secondary_fixed_variant = "0xff344a52"
+M.on_secondary_fixed_variant = "0xff3d4758"
 
-M.on_surface = "0xffdee3e6"
+M.on_surface = "0xffe1e2e9"
 
-M.on_surface_variant = "0xffbfc8cc"
+M.on_surface_variant = "0xffc3c6cf"
 
-M.on_tertiary = "0xff2c2e4d"
+M.on_tertiary = "0xff3d2846"
 
-M.on_tertiary_container = "0xffe0e0ff"
+M.on_tertiary_container = "0xfff7d8ff"
 
-M.on_tertiary_fixed = "0xff171937"
+M.on_tertiary_fixed = "0xff271430"
 
-M.on_tertiary_fixed_variant = "0xff424465"
+M.on_tertiary_fixed_variant = "0xff553f5d"
 
-M.outline = "0xff8a9296"
+M.outline = "0xff8d9199"
 
-M.outline_variant = "0xff40484c"
+M.outline_variant = "0xff43474e"
 
-M.primary = "0xff88d1ec"
+M.primary = "0xffa6c8ff"
 
-M.primary_container = "0xff004e61"
+M.primary_container = "0xff224876"
 
-M.primary_fixed = "0xffb7eaff"
+M.primary_fixed = "0xffd5e3ff"
 
-M.primary_fixed_dim = "0xff88d1ec"
+M.primary_fixed_dim = "0xffa6c8ff"
 
 M.scrim = "0xff000000"
 
-M.secondary = "0xffb3cad4"
+M.secondary = "0xffbcc7dc"
 
-M.secondary_container = "0xff344a52"
+M.secondary_container = "0xff3d4758"
 
-M.secondary_fixed = "0xffcfe6f1"
+M.secondary_fixed = "0xffd8e3f8"
 
-M.secondary_fixed_dim = "0xffb3cad4"
+M.secondary_fixed_dim = "0xffbcc7dc"
 
 M.shadow = "0xff000000"
 
-M.source_color = "0xff24687d"
+M.source_color = "0xff385b8b"
 
-M.surface = "0xff0f1416"
+M.surface = "0xff111318"
 
-M.surface_bright = "0xff353a3c"
+M.surface_bright = "0xff37393e"
 
-M.surface_container = "0xff1b2023"
+M.surface_container = "0xff1d2024"
 
-M.surface_container_high = "0xff252b2d"
+M.surface_container_high = "0xff282a2f"
 
-M.surface_container_highest = "0xff303638"
+M.surface_container_highest = "0xff32353a"
 
-M.surface_container_low = "0xff171c1f"
+M.surface_container_low = "0xff191c20"
 
-M.surface_container_lowest = "0xff0a0f11"
+M.surface_container_lowest = "0xff0c0e13"
 
-M.surface_dim = "0xff0f1416"
+M.surface_dim = "0xff111318"
 
-M.surface_tint = "0xff88d1ec"
+M.surface_tint = "0xffa6c8ff"
 
-M.surface_variant = "0xff40484c"
+M.surface_variant = "0xff43474e"
 
-M.tertiary = "0xffc3c3eb"
+M.tertiary = "0xffdabde2"
 
-M.tertiary_container = "0xff424465"
+M.tertiary_container = "0xff553f5d"
 
-M.tertiary_fixed = "0xffe0e0ff"
+M.tertiary_fixed = "0xfff7d8ff"
 
-M.tertiary_fixed_dim = "0xffc3c3eb"
+M.tertiary_fixed_dim = "0xffdabde2"
 
 
 -- Helpers para bordes

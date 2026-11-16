@@ -1,14 +1,21 @@
 #!/usr/bin/env bash
-# Centro de control de Hypr-CristOS (rofi)
+# Centro de control de Hypr-CristOS — frontend rofi.
+#
+# OBSOLETO: reemplazado por la GUI de quickshell (SUPER + I).
+# Se conserva solo como referencia/legado; ya no está enlazado a ningún atajo.
+# La lógica sigue viviendo en ~/.config/hypr/scripts/settings-core.sh.
+#
+# Aquí solo hay interfaz: se describen los menús y se despacha al core
+# (~/.config/hypr/scripts/settings-core.sh), que es quien tiene la lógica.
+# Para añadir una opción basta con un `menu_add "etiqueta" "acción"`.
+#
+# Códigos de menu_run: 0 = acción ejecutada · 1 = cancelado · 2 = volver · 3 = cerrar
+set -u
 
-DIR="$HOME/.config/rofi/settings"
-THEME="$DIR/style.rasi"
-CONF="$HOME/.config/matugen/settings.conf"
-DEFAULT_WALL="$HOME/Pictures/Wallpapers/astralgrave/astralgrave_purple.png"
+CORE="${SETTINGS_CORE:-$HOME/.config/hypr/scripts/settings-core.sh}"
+THEME="$HOME/.config/rofi/settings/style.rasi"
 
-MODE="dark"
-SCHEME="scheme-tonal-spot"
-[ -f "$CONF" ] && source "$CONF"
+core() { "$CORE" "$@"; }
 
 menu() {
     local prompt="$1" mesg="${2:-}"
@@ -21,342 +28,290 @@ menu() {
 
 confirm() {
     local msg="$1"
-    local ans
-    ans=$(printf 'Sí\nNo' | menu "Confirmar" "$msg")
-    [ "$ans" = "Sí" ]
+    [ "$(printf 'Sí\nNo' | menu "Confirmar" "$msg")" = "Sí" ]
 }
 
-current_wall() {
-    local w
-    w="$(cat "$HOME/.cache/quickshell/hyprquickpaper/.current" 2>/dev/null)"
-    [ -f "$w" ] || w="$DEFAULT_WALL"
-    printf '%s' "$w"
+# ---------------------------------------------------------- motor de menús
+declare -a MENU_LABELS=() MENU_ACTIONS=()
+
+menu_reset() { MENU_LABELS=(); MENU_ACTIONS=(); }
+menu_add()   { MENU_LABELS+=("$1"); MENU_ACTIONS+=("$2"); }
+
+menu_run() {
+    local prompt="$1" mesg="${2:-}" sel i
+    sel=$(printf '%s\n' "${MENU_LABELS[@]}" | menu "$prompt" "$mesg") || return 1
+    [ -n "$sel" ] || return 1
+    for i in "${!MENU_LABELS[@]}"; do
+        [ "${MENU_LABELS[$i]}" = "$sel" ] || continue
+        case "${MENU_ACTIONS[$i]}" in
+            @back)  return 2 ;;
+            @close) return 3 ;;
+        esac
+        eval "${MENU_ACTIONS[$i]}"
+        return 0
+    done
+    return 1
 }
 
-save_state() {
-    printf 'MODE=%s\nSCHEME=%s\n' "$MODE" "$SCHEME" > "$CONF"
+# ----------------------------------------------------------------- estado
+MODE="dark"
+SCHEME_NAME="tonal-spot"
+DND="No"
+VOLUME=""
+CAFFEINE="Desactivada"
+WALL=""
+WALL_NAME=""
+BAR_THEME="actual"
+BAR_MODE="complete"
+CLOCK_LABEL="24 h"
+NIGHTLIGHT="off"
+TRANSPARENCY_WAYBAR="70"
+TRANSPARENCY_ROFI="15"
+NETWORK_STATE=""
+HOSTNAME="$(hostname)"
+KERNEL="$(uname -r)"
+
+load_state() { eval "$(core state 2>/dev/null)"; }
+
+# ------------------------------------------------------------- Apariencia
+bar_mode_supported() {
+    [ "$BAR_THEME" = "actual" ] && return 0
+    local d="$HOME/.config/waybar/theme-waybar/$BAR_THEME"
+    [ -f "$d/style.complete.css" ] && [ -f "$d/style.modular.css" ]
 }
 
-apply_theme() {
-    save_state
-    if matugen image "$(current_wall)" -m "$MODE" -t "$SCHEME" --prefer saturation >>"$HOME/.cache/matugen.log" 2>&1; then
-        local color
-        color=$(grep -m1 '^    primary:' "$HOME/.config/rofi/colors.rasi" | awk '{print $2}')
-        notify-send -a "Matugen" "Tema actualizado" "Modo: $MODE · Esquema: ${SCHEME#scheme-} · ${color:-ok}"
-    else
-        notify-send -a "Matugen" -u critical "Matugen falló" "Revisa ~/.cache/matugen.log"
-    fi
-    pkill -SIGUSR2 waybar 2>/dev/null
-}
-
-dnd_state() {
-    if makoctl mode 2>/dev/null | grep -qx 'do-not-disturb'; then echo "Sí"; else echo "No"; fi
-}
-
-audio_state() {
-    wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | sed 's/Volume: //'
-}
-
-caffeine_state() {
-    "$HOME/.config/hypr/scripts/caffeine.sh" status 2>/dev/null || echo "Desactivada"
-}
-
-# ------------------------------------------------------------ Transparencia
-pick_transparency_level() {
-    local prompt="$1" sel
-    sel=$(printf '%s\n' \
-        "Sólida (0%)" \
-        "Ligera (25%)" \
-        "Media (50%)" \
-        "Notable (70%)" \
-        "Vaporosa (85%)" | menu "$prompt")
-    case "$sel" in
-        "Sólida (0%)")   echo 0 ;;
-        "Ligera (25%)")  echo 25 ;;
-        "Media (50%)")   echo 50 ;;
-        "Notable (70%)") echo 70 ;;
-        "Vaporosa (85%)") echo 85 ;;
-    esac
-}
-
-transparency() {
-    local waybar_level rofi_level choice level
-    waybar_level=$(awk -F= '/^WAYBAR=/{print $2}' "$HOME/.config/transparency.conf" 2>/dev/null)
-    rofi_level=$(awk -F= '/^ROFI=/{print $2}' "$HOME/.config/transparency.conf" 2>/dev/null)
-
-    choice=$(printf '%s\n' \
-        "󰂔  Barra      · ${waybar_level:-70}%" \
-        "󰈆  Rofi       · ${rofi_level:-15}%" \
-        "󰤊  Ambos (mismo nivel)" \
-        "󰅖  Volver" | menu "Transparencia" "0% = opaco · 100% = invisible")
-
-    case "$choice" in
-        *Barra*)
-            level=$(pick_transparency_level "Transparencia · Barra")
-            [ -n "$level" ] || return
-            "$HOME/.config/hypr/scripts/transparency.sh" waybar "$level"
-            notify-send -a "Transparencia" "Barra" "Nivel: ${level}%"
-            ;;
-        *Rofi*)
-            level=$(pick_transparency_level "Transparencia · Rofi")
-            [ -n "$level" ] || return
-            "$HOME/.config/hypr/scripts/transparency.sh" rofi "$level"
-            notify-send -a "Transparencia" "Rofi" "Nivel: ${level}%"
-            ;;
-        *Ambos*)
-            level=$(pick_transparency_level "Transparencia · Ambos")
-            [ -n "$level" ] || return
-            "$HOME/.config/hypr/scripts/transparency.sh" both "$level"
-            notify-send -a "Transparencia" "Barra y Rofi" "Nivel: ${level}%"
-            ;;
-    esac
-}
-
-
-# ---------------------------------------------------------------- Apariencia
-appearance() {
+appearance_menu() {
+    local mode_label bar_label
     while true; do
-        local choice mode_label="Oscuro" bar_label="completa"
+        load_state
+        mode_label="Oscuro"
+        bar_label="completa"
         [ "$MODE" = "light" ] && mode_label="Claro"
-        [ "$("$HOME/.config/waybar/bar-mode.sh" status 2>/dev/null)" = "modular" ] && bar_label="modular"
-        choice=$(printf '%s\n' \
-            "󰸉  Cambiar wallpaper" \
-            "󰔎  Modo: $mode_label" \
-            "󰏘  Esquema de color: ${SCHEME#scheme-}" \
-            "󰍜  Barra: $bar_label (completa/módulos)" \
-            "󰂔  Transparencia (barra / rofi)" \
-            "󰑓  Regenerar tema desde el wallpaper" \
-            "󰒓  Reiniciar Waybar" \
-            "󰑓  Recargar Hyprland" \
-            "󰅖  Volver" | menu "Apariencia" "Wallpaper: $(basename "$(current_wall)")")
-        case "$choice" in
-            *wallpaper*) setsid -f quickshell -c hyprquickpaper ;;
-            *"Modo:"*)
-                local m
-                m=$(printf 'Oscuro\nClaro' | menu "Modo de color")
-                case "$m" in
-                    Oscuro) MODE="dark" ;;
-                    Claro)  MODE="light" ;;
-                    *) continue ;;
-                esac
-                apply_theme
-                ;;
-            *"Esquema de color"*)
-                local s
-                s=$(printf '%s\n' tonal-spot vibrant expressive fidelity content neutral monochrome rainbow fruit-salad smart | menu "Esquema de color" "Actual: ${SCHEME#scheme-}")
-                [ -n "$s" ] || continue
-                SCHEME="scheme-$s"
-                apply_theme
-                ;;
-            *Regenerar*) apply_theme ;;
-            *"Barra:"*) "$HOME/.config/waybar/bar-mode.sh" toggle ;;
-            *Transparencia*) transparency ;;
-            *Waybar*)
-                pkill -x waybar 2>/dev/null
-                sleep 0.4
-                setsid -f waybar >/dev/null 2>&1
-                ;;
-            *Hyprland*) hyprctl reload >/dev/null ;;
-            *Volver*) return ;;
-            *) return ;;
+        [ "$BAR_MODE" = "modular" ] && bar_label="modular"
+
+        menu_reset
+        menu_add "󰸉  Cambiar wallpaper"                     "core wallpaper picker"
+        menu_add "󰔎  Modo: $mode_label"                     "mode_menu"
+        menu_add "󰏘  Esquema de color: $SCHEME_NAME"        "scheme_menu"
+        menu_add "󰓡  Tema de barra: $BAR_THEME"             "bar_theme_menu"
+        bar_mode_supported && menu_add "󰍜  Barra: $bar_label (completa/módulos)" "core bar mode"
+        menu_add "󰅐  Hora: $CLOCK_LABEL"                    "clock_menu"
+        menu_add "󰂔  Transparencia (barra / rofi)"           "transparency_menu"
+        menu_add "󰑓  Regenerar tema desde el wallpaper"      "core theme regenerate"
+        menu_add "󰒓  Reiniciar Waybar"                      "core bar reload"
+        menu_add "󰑓  Recargar Hyprland"                     "core reload"
+        menu_add "󰅖  Volver"                                "@back"
+
+        menu_run "Apariencia" "Wallpaper: $WALL_NAME"
+        case $? in
+            0) continue ;;
+            *) return 0 ;;
         esac
     done
 }
 
-# ------------------------------------------------------------------ Pantalla
-display() {
-    local choice
-    choice=$(printf '%s\n' \
-        "󰃞  Brillo +5%" \
-        "󰃟  Brillo -5%" \
-        "󰍹  Resolución y escala (nwg-displays)" \
-        "󰔎  Luz nocturna (on/off)" \
-        "󰈈  Caféína (keep awake) · $(caffeine_state)" \
-        "󰑓  Recargar monitores" \
-        "󰅖  Volver" | menu "Pantalla")
-    case "$choice" in
-        *"Brillo +"*) swayosd-client --brightness raise ;;
-        *"Brillo -"*) swayosd-client --brightness lower ;;
-        *nwg-displays*|*Resolución*) setsid -f nwg-displays ;;
-        *"Luz nocturna"*)
-            state_file="/tmp/hyprsunset_clicked_state"
-            state=$(cat "$state_file" 2>/dev/null || echo 0)
-            if [ "$state" = "1" ]; then
-                hyprctl hyprsunset identity >/dev/null 2>&1
-                echo 0 > "$state_file"
-                notify-send "Luz nocturna" "Desactivada"
-            else
-                hyprctl hyprsunset temperature 4000 >/dev/null 2>&1
-                echo 1 > "$state_file"
-                notify-send "Luz nocturna" "Activada (4000K)"
-            fi
-            pkill -RTMIN+8 waybar 2>/dev/null
-            ;;
-        *Caféína*) ~/.config/hypr/scripts/caffeine.sh toggle ;;
-        *Recargar*) hyprctl reload >/dev/null ;;
-        *Volver*) return ;;
+mode_menu() {
+    menu_reset
+    menu_add "Oscuro" "core theme mode dark"
+    menu_add "Claro"  "core theme mode light"
+    menu_add "󰅖  Volver" "@back"
+    menu_run "Modo de color"
+}
+
+scheme_menu() {
+    local s
+    menu_reset
+    for s in tonal-spot vibrant expressive fidelity content neutral monochrome rainbow fruit-salad smart; do
+        menu_add "$s" "core theme scheme $s"
+    done
+    menu_add "󰅖  Volver" "@back"
+    menu_run "Esquema de color" "Actual: $SCHEME_NAME"
+}
+
+bar_theme_menu() {
+    local line name
+    menu_reset
+    while IFS= read -r line; do
+        [ -n "$line" ] || continue
+        name="${line#● }"
+        name="${name#  }"
+        menu_add "$line" "core bar theme $(printf '%q' "$name")"
+    done < <(core bar theme-list 2>/dev/null)
+    if [ -d "$HOME/.config/waybar/.theme-backup" ]; then
+        menu_add "󰦨  Restaurar original" "core bar theme-restore"
+    fi
+    menu_add "󰅖  Volver" "@back"
+    menu_run "Tema de barra" "Actual: $BAR_THEME"
+}
+
+clock_menu() {
+    menu_reset
+    menu_add "24 h"              "core clock preset 24h"
+    menu_add "24 h con segundos" "core clock preset 24h-seg"
+    menu_add "12 h"              "core clock preset 12h"
+    menu_add "12 h con segundos" "core clock preset 12h-seg"
+    menu_add "Fecha y hora"      "core clock preset fecha-hora"
+    menu_add "Solo fecha"        "core clock preset fecha"
+    menu_add "Personalizado…"    "clock_custom"
+    menu_add "󰅖  Volver"          "@back"
+    menu_run "Formato de hora" "Actual: $CLOCK_LABEL"
+}
+
+clock_custom() {
+    local custom fmt
+    custom=$(menu "Formato de hora" "Sintaxis strftime. Ej: %H:%M · %d/%m %H:%M")
+    [ -n "$custom" ] || return 0
+    case "$custom" in
+        *"{:"*) fmt="$custom" ;;
+        *)      fmt="{:$custom}" ;;
     esac
+    core clock set "$fmt"
+}
+
+transparency_menu() {
+    menu_reset
+    menu_add "󰂔  Barra      · ${TRANSPARENCY_WAYBAR}%" "level_menu waybar 'Transparencia · Barra'"
+    menu_add "󰈆  Rofi       · ${TRANSPARENCY_ROFI}%"   "level_menu rofi 'Transparencia · Rofi'"
+    menu_add "󰤊  Ambos (mismo nivel)"                  "level_menu both 'Transparencia · Ambos'"
+    menu_add "󰅖  Volver"                               "@back"
+    menu_run "Transparencia" "0% = opaco · 100% = invisible"
+}
+
+level_menu() {
+    local target="$1" prompt="$2"
+    menu_reset
+    menu_add "Sólida (0%)"    "core transparency $target 0"
+    menu_add "Ligera (25%)"   "core transparency $target 25"
+    menu_add "Media (50%)"    "core transparency $target 50"
+    menu_add "Notable (70%)"  "core transparency $target 70"
+    menu_add "Vaporosa (85%)" "core transparency $target 85"
+    menu_add "󰅖  Volver"       "@back"
+    menu_run "$prompt"
+}
+
+# ----------------------------------------------------------------- Pantalla
+display_menu() {
+    load_state
+    menu_reset
+    menu_add "󰃞  Brillo +5%"                            "core display brightness-up"
+    menu_add "󰃟  Brillo -5%"                            "core display brightness-down"
+    menu_add "󰍹  Resolución y escala (nwg-displays)"    "core display displays"
+    menu_add "󰔎  Luz nocturna (on/off)"                 "core display nightlight"
+    menu_add "󰈈  Caféína (keep awake) · $CAFFEINE"      "core display caffeine"
+    menu_add "󰑓  Recargar monitores"                    "core display reload"
+    menu_add "󰅖  Volver"                                "@back"
+    menu_run "Pantalla"
 }
 
 # ---------------------------------------------------------- Red y Bluetooth
-network() {
-    local choice
-    choice=$(printf '%s\n' \
-        "󰖩  WiFi (rofi)" \
-        "󰂯  Bluetooth" \
-        "󰈀  Conexiones de red (editor)" \
-        "󰅖  Volver" | menu "Red y Bluetooth" "$(nmcli -t -f GENERAL.STATE dev show 2>/dev/null | head -1 | cut -d: -f2)")
-    case "$choice" in
-        *WiFi*) "$HOME/.config/rofi/wifi/wifi.sh" ;;
-        *Bluetooth*) "$DIR/bluetooth.sh" ;;
-        *Conexiones*|*editor*) setsid -f nm-connection-editor ;;
-        *Volver*) return ;;
-    esac
+network_menu() {
+    load_state
+    menu_reset
+    menu_add "󰖩  WiFi (rofi)"                   "core network wifi"
+    menu_add "󰂯  Bluetooth"                     "core network bluetooth"
+    menu_add "󰈀  Conexiones de red (editor)"    "core network editor"
+    menu_add "󰅖  Volver"                        "@back"
+    menu_run "Red y Bluetooth" "$NETWORK_STATE"
 }
 
-# --------------------------------------------------------------------- Audio
-audio() {
-    local choice
-    choice=$(printf '%s\n' \
-        "󰕾  Abrir mezclador (pavucontrol)" \
-        "󰝝  Volumen +5%" \
-        "󰝞  Volumen -5%" \
-        "󰖁  Silenciar salida" \
-        "󰍬  Silenciar micrófono" \
-        "󰅖  Volver" | menu "Audio" "Volumen: $(audio_state)")
-    case "$choice" in
-        *pavucontrol*|*mezclador*) setsid -f pavucontrol ;;
-        *"Volumen +"*) swayosd-client --output-volume raise ;;
-        *"Volumen -"*) swayosd-client --output-volume lower ;;
-        *"Silenciar salida"*) swayosd-client --output-volume mute-toggle ;;
-        *micrófono*) swayosd-client --input-volume mute-toggle ;;
-        *Volver*) return ;;
-    esac
+# -------------------------------------------------------------------- Audio
+audio_menu() {
+    load_state
+    menu_reset
+    menu_add "󰕾  Abrir mezclador (pavucontrol)" "core audio mixer"
+    menu_add "󰝝  Volumen +5%"                   "core audio up"
+    menu_add "󰝞  Volumen -5%"                   "core audio down"
+    menu_add "󰖁  Silenciar salida"              "core audio mute"
+    menu_add "󰍬  Silenciar micrófono"           "core audio mic-mute"
+    menu_add "󰅖  Volver"                        "@back"
+    menu_run "Audio" "Volumen: $VOLUME"
 }
 
 # ------------------------------------------------------------ Notificaciones
-notifications() {
-    local choice
-    choice=$(printf '%s\n' \
-        "󰂚  No molestar (actual: $(dnd_state))" \
-        "󰎟  Descartar todas" \
-        "󰃷  Restaurar última" \
-        "󰑓  Reiniciar mako" \
-        "󰅖  Volver" | menu "Notificaciones")
-    case "$choice" in
-        *"No molestar"*)
-            makoctl mode -t do-not-disturb >/dev/null 2>&1
-            notify-send "Notificaciones" "No molestar: $(dnd_state)"
-            ;;
-        *Descartar*) makoctl dismiss -a >/dev/null 2>&1 ;;
-        *Restaurar*) makoctl restore >/dev/null 2>&1 ;;
-        *Reiniciar*) pkill -x mako 2>/dev/null; sleep 0.4; setsid -f mako >/dev/null 2>&1 ;;
-        *Volver*) return ;;
-    esac
+notifications_menu() {
+    load_state
+    menu_reset
+    menu_add "󰂚  No molestar (actual: $DND)" "core notifications dnd"
+    menu_add "󰎟  Descartar todas"            "core notifications dismiss-all"
+    menu_add "󰃷  Restaurar última"           "core notifications restore"
+    menu_add "󰑓  Reiniciar mako"             "core notifications restart"
+    menu_add "󰅖  Volver"                     "@back"
+    menu_run "Notificaciones"
 }
 
-# ---------------------------------------------------------- Teclado
-keyboard() {
-    local choice device
-    choice=$(printf '%s\n' \
-        "Español (Latam)" \
-        "English (US)" \
-        "󰅖  Volver" | menu "Teclado" "Cambiar layout del teclado")
-    case "$choice" in
-        *"Español"*)
-            device=$(hyprctl devices -j 2>/dev/null | jq -r '.keyboards[] | select(.main == true) | .name')
-            if [ -n "$device" ]; then
-                hyprctl switchxkblayout "$device" 0
-                notify-send -a "Teclado" "Layout cambiado" "Español (Latam)"
-            fi
-            ;;
-        *"English"*)
-            device=$(hyprctl devices -j 2>/dev/null | jq -r '.keyboards[] | select(.main == true) | .name')
-            if [ -n "$device" ]; then
-                hyprctl switchxkblayout "$device" 1
-                notify-send -a "Teclado" "Layout cambiado" "English (US)"
-            fi
-            ;;
-        *Volver*) return ;;
-    esac
+# ------------------------------------------------------------------ Teclado
+keyboard_menu() {
+    menu_reset
+    menu_add "Español (Latam)" "core keyboard es"
+    menu_add "English (US)"    "core keyboard us"
+    menu_add "󰅖  Volver"        "@back"
+    menu_run "Teclado" "Cambiar layout del teclado"
 }
 
 # --------------------------------------------------------- Atajos y sistema
-system() {
-    local choice
-    choice=$(printf '%s\n' \
-        "󰌌  Ver atajos de teclado" \
-        "󰈀  Cambiar layout del teclado" \
-        "󰋼  Información del sistema (fastfetch)" \
-        "󰢮  Monitor de recursos (btop)" \
-        "󰚰  Actualizar sistema (paru -Syu)" \
-        "󰑓  Reconstruir miniaturas de wallpapers" \
-        "󰅖  Volver" | menu "Atajos y sistema" "$(hostname) · $(uname -r)")
-    case "$choice" in
-        *atajos*) setsid -f foot -e sh -c 'less -R "$HOME/.config/hypr/KEYBINDINGS-CristOS.md"' ;;
-        *"Cambiar layout"*) keyboard ;;
-        *fastfetch*) setsid -f foot -e sh -c 'fastfetch; echo; read -rp "Enter para cerrar..."' ;;
-        *btop*) setsid -f foot -e btop ;;
-        *Actualizar*) setsid -f foot -e paru -Syu ;;
-        *miniaturas*) bash "$HOME/.config/quickshell/hyprquickpaper/cache.sh" "$HOME/.config/quickshell/hyprquickpaper" >/dev/null 2>&1 ;;
-    esac
+system_menu() {
+    load_state
+    menu_reset
+    menu_add "󰌌  Ver atajos de teclado"                  "core system keybinds"
+    menu_add "󰈀  Cambiar layout del teclado"             "keyboard_menu"
+    menu_add "󰋼  Información del sistema (fastfetch)"    "core system fastfetch"
+    menu_add "󰢮  Monitor de recursos (btop)"             "core system btop"
+    menu_add "󰚰  Actualizar sistema (paru -Syu)"         "core system update"
+    menu_add "󰑓  Reconstruir miniaturas de wallpapers"   "core system thumbs"
+    menu_add "󰅖  Volver"                                 "@back"
+    menu_run "Atajos y sistema" "$HOSTNAME · $KERNEL"
 }
 
-# ------------------------------------------------------- Sesión y energía
-session() {
-    local choice
-    choice=$(printf '%s\n' \
-        "󰌾  Bloquear pantalla" \
-        "󰒲  Suspender" \
-        "󰍃  Cerrar sesión" \
-        "󰜉  Reiniciar" \
-        "󰐥  Apagar" \
-        "󰅖  Volver" | menu "Sesión y energía")
-    case "$choice" in
-        *Bloquear*) setsid -f hyprlock ;;
-        *Suspender*) confirm "¿Suspender el equipo?" && systemctl suspend ;;
-        *"Cerrar sesión"*) confirm "¿Cerrar la sesión de Hyprland?" && hyprctl dispatch exit ;;
-        *Reiniciar*) confirm "¿Reiniciar el equipo?" && systemctl reboot ;;
-        *Apagar*) confirm "¿Apagar el equipo?" && systemctl poweroff ;;
-        *Volver*) return ;;
-    esac
+# --------------------------------------------------------- Sesión y energía
+session_menu() {
+    menu_reset
+    menu_add "󰌾  Bloquear pantalla" "core session lock"
+    menu_add "󰒲  Suspender"         "confirm '¿Suspender el equipo?' && core session suspend"
+    menu_add "󰍃  Cerrar sesión"     "confirm '¿Cerrar la sesión de Hyprland?' && core session logout"
+    menu_add "󰜉  Reiniciar"         "confirm '¿Reiniciar el equipo?' && core session reboot"
+    menu_add "󰐥  Apagar"            "confirm '¿Apagar el equipo?' && core session poweroff"
+    menu_add "󰅖  Volver"            "@back"
+    menu_run "Sesión y energía"
 }
 
 # --------------------------------------------------------------- Principal
+main_menu() {
+    while true; do
+        load_state
+        menu_reset
+        menu_add "󰏘  Apariencia"                                 "appearance_menu"
+        menu_add "󰍹  Pantalla"                                   "display_menu"
+        menu_add "󰖩  Red y Bluetooth"                            "network_menu"
+        menu_add "󰕾  Audio"                                      "audio_menu"
+        menu_add "󰂚  Notificaciones  ·  No molestar: $DND"       "notifications_menu"
+        menu_add "󰘕  Atajos y sistema"                           "system_menu"
+        menu_add "󰐥  Sesión y energía"                           "session_menu"
+        menu_add "󰒓  Abrir ajustes gráficos (GUI)"               "quickshell -n -c cristos-settings"
+        menu_add "󰅖  Cerrar"                                     "@close"
+
+        menu_run "Centro de control" "$(date '+%A, %d %B · %H:%M')"
+        case $? in
+            0) continue ;;
+            *) exit 0 ;;
+        esac
+    done
+}
+
+# Acceso directo a una sección (compatibilidad con SETTINGS_SECTION).
 if [ -n "${SETTINGS_SECTION:-}" ]; then
     case "$SETTINGS_SECTION" in
-        appearance) appearance ;;
-        transparency) transparency ;;
-        display) display ;;
-        network) network ;;
-        audio) audio ;;
-        notifications) notifications ;;
-        system) system ;;
-        session) session ;;
-        keyboard) keyboard ;;
+        appearance) appearance_menu ;;
+        transparency) transparency_menu ;;
+        display) display_menu ;;
+        network) network_menu ;;
+        audio) audio_menu ;;
+        notifications) notifications_menu ;;
+        system) system_menu ;;
+        session) session_menu ;;
+        keyboard) keyboard_menu ;;
+        *) main_menu ;;
     esac
     exit 0
 fi
 
-while true; do
-    choice=$(printf '%s\n' \
-        "󰏘  Apariencia" \
-        "󰍹  Pantalla" \
-        "󰖩  Red y Bluetooth" \
-        "󰕾  Audio" \
-        "󰂚  Notificaciones  ·  No molestar: $(dnd_state)" \
-        "󰘕  Atajos y sistema" \
-        "󰐥  Sesión y energía" \
-        "󰅖  Cerrar" | menu "Centro de control" "$(date '+%A, %d %B · %H:%M')")
-
-    case "$choice" in
-        *Apariencia*) appearance ;;
-        *Pantalla*) display ;;
-        *"Red y Bluetooth"*) network ;;
-        *Audio*) audio ;;
-        *Notificaciones*) notifications ;;
-        *"Atajos y sistema"*) system ;;
-        *"Sesión y energía"*) session ;;
-        *|*Cerrar*) exit 0 ;;
-    esac
-done
+main_menu

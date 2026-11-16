@@ -1,6 +1,6 @@
 {
-    "wallpaper_path": "/home/cristioro/Pictures/Wallpapers/",
-    "cache_path": "/home/cristioro/.cache/quickshell/thumbs/",
+    "wallpaper_path": "/home/kaiserpc/Pictures/Wallpapers/",
+    "cache_path": "/home/kaiserpc/.cache/quickshell/thumbs/",
     "number_of_pictures": 7,
     "border_color": "{{ colors.on_primary.default.hex }}",
     "cache_batch_size": 20

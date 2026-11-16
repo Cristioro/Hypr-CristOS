@@ -1,0 +1,72 @@
+import QtQuick
+import QtQuick.Layouts
+
+Rectangle {
+    id: root
+    required property var theme
+    property string glyph: ""
+    property string label: ""
+    property bool checked: false
+
+    signal toggled()
+
+    Layout.fillWidth: true
+    implicitHeight: 44
+    radius: 10
+    color: mouse.containsMouse ? theme.surfaceHigh : "transparent"
+
+    RowLayout {
+        anchors.fill: parent
+        anchors.leftMargin: 12
+        anchors.rightMargin: 12
+        spacing: 10
+
+        Text {
+            visible: root.glyph.length > 0
+            text: root.glyph
+            color: root.theme.foregroundMuted
+            font.family: root.theme.fontFamily
+            font.pixelSize: 15
+        }
+
+        Text {
+            text: root.label
+            color: root.theme.foreground
+            font.family: root.theme.fontFamily
+            font.pixelSize: 14
+            elide: Text.ElideRight
+            Layout.fillWidth: true
+        }
+
+        Rectangle {
+            id: track
+            implicitWidth: 42
+            implicitHeight: 24
+            radius: 12
+            color: root.checked ? root.theme.primary : root.theme.surfaceHighest
+            border.width: 1
+            border.color: root.checked ? root.theme.primary : root.theme.outlineVariant
+
+            Rectangle {
+                id: knob
+                width: 16
+                height: 16
+                radius: 8
+                y: 3
+                x: root.checked ? track.width - width - 4 : 4
+                color: root.checked ? root.theme.foregroundPrimary : root.theme.foregroundMuted
+                Behavior on x {
+                    NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
+                }
+            }
+        }
+    }
+
+    MouseArea {
+        id: mouse
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: root.toggled()
+    }
+}

@@ -64,11 +64,11 @@ run_cmd() {
 		elif [[ $1 == '--hibernate' ]]; then
 			systemctl hibernate
 		elif [[ $1 == '--suspend' ]]; then
-			mpc -q pause
-			amixer set Master mute
-			hyprshutdown -t 'close sesion...' --post-cmd 'hyprctl dispatch exit'
+			mpc -q pause 2>/dev/null || true
+			amixer set Master mute 2>/dev/null || true
+			systemctl suspend
 		elif [[ $1 == '--logout' ]]; then
-      hyprshutdown -t 'close sesion...' --post-cmd 'hyprctl dispatch exit'
+      hyprshutdown -t 'close sesion...' --post-cmd "hyprctl dispatch 'hl.dsp.exit()'"
   	fi
 	else
 		exit 0

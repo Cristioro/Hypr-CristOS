@@ -3,6 +3,9 @@
 hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
 hl.env("XDG_SESSION_TYPE", "wayland")
 hl.env("XDG_SESSION_DESKTOP", "Hyprland")
+-- Compatibilidad con temas de Waybar basados en Omarchy.
+hl.env("OMARCHY_PATH", "/home/kaiserpc/.config/waybar/omarchy")
+
 -- Variables de tema para Qt.
 -- NO fuerces GTK_THEME aquí: en apps libadwaita (Nautilus, GNOME Files,
 -- Configuración...) el tema Breeze-Dark de KDE rompe el CSS interno de GTK

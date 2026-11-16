@@ -1,0 +1,181 @@
+@import "colors.css";
+
+/* ──────────────────────────────────────────────────────────────
+   glassy — islas flotantes translúcidas
+   Paleta dinámica de matugen (colors.css):
+   @background  → color de superficie del wallpaper
+   @foreground  → texto
+   @accent      → acento primario (cambia con el fondo)
+   La transparencia de las islas la controla transparency.sh
+   (alpha(@background, X) en background-color).
+   ────────────────────────────────────────────────────────────── */
+
+* {
+    border: none;
+    font-family: "JetBrainsMono Nerd Font Propo", "JetBrainsMono Nerd Font", monospace;
+    font-size: 12px;
+    min-height: 0;
+}
+
+/* Barra base 100% transparente: solo se ven las islas */
+window#waybar {
+    background: transparent;
+}
+
+/* ── Islas glass ── */
+.modules-left,
+.modules-right,
+#workspaces {
+    background-color: alpha(@background, 0.40);
+    /* brillo superior sutil, tipo vidrio */
+    background-image: linear-gradient(to bottom,
+        alpha(@foreground, 0.12),
+        alpha(@foreground, 0.00));
+    border: 1px solid alpha(@accent, 0.28);
+    border-radius: 999px;
+    box-shadow: none;
+}
+
+.modules-left {
+    margin: 4px 0 4px 8px;
+    padding: 0 12px 0 8px;
+}
+
+.modules-right {
+    margin: 4px 8px 4px 0;
+    padding: 0 12px;
+}
+
+/* El contenedor central no pinta: las islas son los grupos */
+.modules-center {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+    padding: 0 2px;
+}
+
+#workspaces {
+    margin: 4px 3px;
+    padding: 0 12px;
+}
+
+/* ── Texto y colores base ── */
+#clock,
+#cpu,
+#memory,
+#tray,
+#custom-omarchy,
+#custom-active_window,
+#custom-media,
+#custom-update,
+#custom-idle-indicator,
+#custom-notification-silencing-indicator,
+#custom-screenrecording-indicator,
+#custom-controlcenter,
+#workspaces,
+#workspaces button {
+    color: @foreground;
+}
+
+#clock {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 0 2px;
+}
+
+#cpu,
+#memory {
+    font-size: 14px;
+    padding: 0 5px;
+}
+
+#custom-media {
+    padding: 0 6px;
+    font-weight: 600;
+}
+
+/* Dentro de las islas no hay sub-píldoras */
+#custom-omarchy,
+#custom-active_window {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+#custom-omarchy {
+    padding: 0 8px 0 2px;
+}
+
+#custom-active_window {
+    padding: 0 10px 0 0;
+}
+
+/* ── Workspaces ── */
+#workspaces button {
+    padding: 0 5px;
+    margin: 0 1px;
+    min-width: 10px;
+    border-radius: 999px;
+    color: alpha(@foreground, 0.50);
+    transition: all 120ms ease-out;
+}
+
+#workspaces button.empty {
+    color: alpha(@foreground, 0.30);
+}
+
+#workspaces button:hover {
+    background: alpha(@accent, 0.18);
+    color: @foreground;
+}
+
+#workspaces button.active {
+    background: @accent;
+    color: @on_primary;
+    min-width: 25px;
+    min-height: 25px;
+    margin: 3px 1px;
+    padding: 0;
+    border-radius: 50%;
+}
+
+/* ── Estados ── */
+#custom-screenrecording-indicator.active {
+    color: @error;
+}
+
+#custom-idle-indicator,
+#custom-notification-silencing-indicator,
+#custom-update {
+    min-width: 14px;
+    margin: 0 5px;
+}
+
+#custom-controlcenter {
+    font-size: 15px;
+    margin: 0 4px 0 8px;
+    padding: 0 2px;
+}
+
+#tray {
+    margin: 0 6px;
+}
+
+/* ── Tooltip glass ──
+   Ojo: usamos @surface_container (no @background) para que el slider
+   de transparencia de las islas no vuelva el tooltip ilegible. */
+tooltip {
+    background-color: alpha(@surface_container, 0.95);
+    border: 1px solid alpha(@accent, 0.35);
+    border-radius: 14px;
+}
+
+tooltip label {
+    color: @foreground;
+    padding: 3px 6px;
+}
+
+.hidden {
+    opacity: 0;
+}

@@ -2,7 +2,7 @@
 
 bars=(▁ ▂ ▃ ▄ ▅ ▆ ▇ █)
 
-cava -p /home/cristioro/.config/waybar/scripts/cava/config | while read -r line; do
+cava -p /home/kaiserpc/.config/waybar/scripts/cava/config | while read -r line; do
     output=""
     IFS=';' read -ra values <<< "$line"
 

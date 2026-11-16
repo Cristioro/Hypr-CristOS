@@ -192,3 +192,10 @@ textbox-prompt-colon {
    text-color: @foreground;
    background-color: transparent;
 }
+
+/* transparency:managed:start */
+window {
+    transparency: "real";
+    background-color: rgba(17, 19, 24, 0.50);
+}
+/* transparency:managed:end */

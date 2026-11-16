@@ -26,7 +26,13 @@ warn() { printf 'sync: %s\n' "$*" >&2; }
 DIRS=(
   ".config/hypr/config"
   ".config/hypr/scripts"
-  ".config/waybar/scripts"
+  ".config/waybar"
+  ".config/quickshell/cristos-cc"
+  ".config/quickshell/cristos-settings"
+  ".config/quickshell/hyprquickpaper"
+  ".config/rofi"
+  ".config/swayosd"
+  ".config/matugen/templates"
 )
 
 # Archivos individuales.
@@ -37,14 +43,11 @@ FILES=(
   ".config/hypr/hyprlock.conf"
   ".config/hypr/hyprlock/nowplaying.sh"
   ".config/hypr/hyprlock/fallback_album_art.jpg"
-  ".config/waybar/config.jsonc"
-  ".config/waybar/style.css"
-  ".config/waybar/style.complete.css"
-  ".config/waybar/style.modular.css"
   ".config/quickshell/hyprquickpaper/commands.sh"
   ".config/gtk-3.0/gtk.css"
   ".config/gtk-4.0/gtk.css"
   ".config/matugen/config.toml"
+  ".config/matugen/settings.conf"
   ".config/matugen/templates/hyprland.lua"
   ".config/systemd/user/hypr-session.service"
   ".local/bin/ws-scroll-daemon"
@@ -58,7 +61,12 @@ sync_dir() {
     warn "falta $src, se omite"
     return 0
   fi
-  local opts=(-a --delete --itemize-changes --exclude='__pycache__' --exclude='*.pyc')
+  local opts=(-a --delete --itemize-changes
+    --exclude='__pycache__' --exclude='*.pyc'
+    --exclude='*.bak*' --exclude='*.orig' --exclude='*.rej'
+    --exclude='.theme' --exclude='.theme-backup*' --exclude='.bar-mode*'
+    --exclude='"put this*'
+    --exclude='.waybar.log*')
   (( DRY )) || opts+=()
   if (( DRY )); then
     info "── dir: $rel (dry-run)"

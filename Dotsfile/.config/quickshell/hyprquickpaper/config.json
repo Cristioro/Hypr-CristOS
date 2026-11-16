@@ -1,6 +1,6 @@
 {
-    "wallpaper_path": "$HOME/Pictures/Wallpapers/",
-    "cache_path": "$HOME/.cache/quickshell/hyprquickpaper/",
+    "wallpaper_path": "/home/kaiserpc/Pictures/Wallpapers/",
+    "cache_path": "/home/kaiserpc/.cache/quickshell/hyprquickpaper/",
     "number_of_pictures": 7,
     "border_color": "#ffb3b3",
     "cache_batch_size": 20,

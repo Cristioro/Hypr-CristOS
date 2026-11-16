@@ -12,7 +12,7 @@ echo "Wallpaper path: $wallpaper_path"
 echo "Cache path: $cache_path"
 
 
-find "$wallpaper_path" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.gif" \) -printf "%P\n" |
+find -L "$wallpaper_path" -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.webp" -o -iname "*.gif" \) -printf "%P\n" |
 while IFS= read -r img; do
     input_file="$wallpaper_path/$img"
     output_file="$cache_path/$img"
