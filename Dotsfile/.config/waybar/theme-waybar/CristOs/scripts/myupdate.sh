@@ -11,7 +11,7 @@ text=${#updatesli[@]}
 icon=""
 [ $text -eq 0 ] && icon="" || icon="📦"
 
-for i in ${updatesli[@]}
+for i in "${updatesli[@]}"
 do
   tooltip+="$i\n"
 done

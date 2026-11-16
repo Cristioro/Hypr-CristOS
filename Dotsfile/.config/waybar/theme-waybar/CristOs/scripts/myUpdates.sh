@@ -21,4 +21,4 @@ if [ "$updates" -gt 0 ]; then
     echo " ($(format $updates_arch)/$(format $updates_aur))"
 else
     echo
-fia
+fi

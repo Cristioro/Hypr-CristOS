@@ -1,11 +1,10 @@
 #!/bin/bash
+# amixer-toggle.sh — alterna mute/unmute del Master (PulseAudio/PipeWire).
 
-# Check the current state of the speaker
-state=$(amixer -D pulse sget Master | awk '/\[on\]/{print "unmute"; exit} /\[off\]/{print "mute"; exit}')
+state=$(amixer -D pulse sget Master | awk '/\[on\]/{print "on"; exit} /\[off\]/{print "off"; exit}')
 
-# Toggle the state of the speaker
-#
-if [ "$state" = "[on] "]; then 
-  amixer 
-# amixer -D pulse sset Master "$state" > /dev/null
-
+if [ "$state" = "on" ]; then
+    amixer -D pulse sset Master mute > /dev/null
+else
+    amixer -D pulse sset Master unmute > /dev/null
+fi
