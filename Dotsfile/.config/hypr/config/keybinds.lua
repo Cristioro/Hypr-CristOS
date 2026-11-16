@@ -26,6 +26,54 @@ hl.bind(mainMod .. " + CTRL + Right", hl.dsp.window.move({ direction = "r" }))
 hl.bind(mainMod .. " + CTRL + Up",    hl.dsp.window.move({ direction = "u" }))
 hl.bind(mainMod .. " + CTRL + Down",  hl.dsp.window.move({ direction = "d" }))
 
+-- Tiling (layout dwindle)
+-- Invertir la orientación del split actual (horizontal ↔ vertical).
+hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"), { repeating = true })
+-- Intercambiar la ventana activa con la vecina en esa dirección.
+hl.bind(mainMod .. " + ALT + Left",  hl.dsp.window.swap({ direction = "left" }))
+hl.bind(mainMod .. " + ALT + Right", hl.dsp.window.swap({ direction = "right" }))
+hl.bind(mainMod .. " + ALT + Up",    hl.dsp.window.swap({ direction = "up" }))
+hl.bind(mainMod .. " + ALT + Down",  hl.dsp.window.swap({ direction = "down" }))
+-- Pseudotiling: la ventana mantiene su tamaño al abrir otras.
+hl.bind(mainMod .. " + U", hl.dsp.window.pseudo())
+-- Pin: fija la ventana por encima del resto. Hyprland solo permite fijar
+-- ventanas flotantes, así que si está tileada la flotamos primero.
+hl.bind(mainMod .. " + ALT + P", function()
+  local window = hl.get_active_window()
+  if not window then
+    return
+  end
+  if not window.floating then
+    hl.dispatch(hl.dsp.window.float({ action = "enable" }))
+  end
+  hl.dispatch(hl.dsp.window.pin())
+end)
+-- Preseleccionar la dirección del próximo split (teclas vim).
+hl.bind(mainMod .. " + ALT + H", hl.dsp.layout("preselect l"))
+hl.bind(mainMod .. " + ALT + J", hl.dsp.layout("preselect d"))
+hl.bind(mainMod .. " + ALT + K", hl.dsp.layout("preselect u"))
+hl.bind(mainMod .. " + ALT + L", hl.dsp.layout("preselect r"))
+
+-- Mover el workspace activo al otro monitor (intercambia ambos monitores).
+hl.bind(mainMod .. " + O", function()
+  local workspace = hl.get_active_workspace()
+  local monitors = hl.get_monitors()
+  if not workspace or not workspace.monitor or #monitors < 2 then
+    return
+  end
+  local current = workspace.monitor.name
+  local target
+  for _, monitor in ipairs(monitors) do
+    if monitor.name ~= current then
+      target = monitor.name
+      break
+    end
+  end
+  if target then
+    hl.dispatch(hl.dsp.workspace.swap_monitors({ monitor1 = current, monitor2 = target }))
+  end
+end)
+
 -- Foco direccional
 hl.bind(mainMod .. " + Left",  hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. " + Right", hl.dsp.focus({ direction = "right" }))
@@ -87,7 +135,7 @@ hl.bind(mainMod .. " + ALT + CAPS_LOCK", hl.dsp.exec_cmd([[
 ]]), { locked = true })
 
 -- Launchers / Paneles (Rofi)
-hl.bind(mainMod .. " + I", hl.dsp.exec_cmd("~/.config/rofi/settings/settings.sh"))
+hl.bind(mainMod .. " + I", hl.dsp.exec_cmd("~/.config/hypr/scripts/settings-gui.sh"))
 hl.bind(mainMod .. " + D", hl.dsp.exec_cmd("rofi -show drun"))
 hl.bind(mainMod .. " + C", hl.dsp.exec_cmd("~/.config/rofi/clipboard/launcher.sh"))
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("~/.config/rofi/clipboard/launcher.sh"))

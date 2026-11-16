@@ -24,6 +24,19 @@ La configuración vive en `~/.config/hypr/config/`.
 - `SUPER + arrastrar (mouse:272)` : Mover ventana.
 - `SUPER + clic derecho (mouse:273)` : Redimensionar ventana.
 
+## Tiling (layout dwindle)
+
+- `SUPER + J` : Invertir la orientación del split actual (horizontal ↔ vertical).
+- `SUPER + ALT + flechas` : Intercambiar la ventana activa con la vecina en esa dirección.
+- `SUPER + U` : Pseudotiling (la ventana no se redimensiona al abrir otras).
+- `SUPER + ALT + P` : Fijar ventana (la flota y la mantiene por encima).
+- `SUPER + ALT + H/J/K/L` : Preseleccionar dirección del próximo split (izquierda/abajo/arriba/derecha).
+- `SUPER + O` : Mover el workspace activo al otro monitor.
+
+## Pantallas
+
+- Al conectar o desconectar un monitor se reaplica automáticamente el modo preferido y la posición (`monitors.lua`), sin reglas por nombre de salida.
+
 ## Capturas de pantalla
 
 Pensado para teclados 68 teclas **sin tecla Print** (donde está Print hay una rueda de volumen):
