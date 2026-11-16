@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Compatibilidad para los demás temas de barra.
+"$HOME/.config/hypr/scripts/notifications.sh" toggle >/dev/null 2>&1
+pkill -RTMIN+10 waybar 2>/dev/null
+exit 0

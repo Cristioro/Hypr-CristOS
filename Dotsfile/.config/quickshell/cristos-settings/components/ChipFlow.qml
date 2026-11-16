@@ -28,9 +28,10 @@ Item {
                 width: chipText.implicitWidth + 24
                 height: 32
                 radius: 16
-                color: chip.active ? root.theme.primaryContainer : root.theme.surfaceHigh
+                color: chip.active ? root.theme.primaryContainer : (mouse.containsMouse ? root.theme.surfaceHighest : root.theme.surfaceHigh)
                 border.width: 1
                 border.color: chip.active ? root.theme.primary : root.theme.outlineVariant
+                Behavior on color { ColorAnimation { duration: 120 } }
 
                 Text {
                     id: chipText
@@ -42,7 +43,9 @@ Item {
                 }
 
                 MouseArea {
+                    id: mouse
                     anchors.fill: parent
+                    hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: root.selected(chip.modelData)
                 }

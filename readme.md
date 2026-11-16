@@ -26,7 +26,7 @@ Dotfiles para **Hyprland + Waybar** con configuración en Lua, tema dinámico co
 - **CI** que valida los módulos Lua con un sandbox de Hyprland, shellcheck y sintaxis Python.
 - Overrides por máquina en `config/hosts/<hostname>.lua`.
 - **Arranque idempotente** de la sesión: `scripts/session-start.sh` + la unidad
-  `systemd --user` `hypr-session.service`, que arranca waybar, mako, hypridle,
+  `systemd --user` `hypr-session.service`, que arranca waybar, el servicio de notificaciones, hypridle,
   wallpaper, portapapeles y el daemon del scroll aunque Hyprland recargue la
   config tarde (por el bootstrap `.conf`).
 

@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 import "../components"
 
 Flickable {
@@ -12,6 +13,7 @@ Flickable {
     contentWidth: width
     contentHeight: col.implicitHeight
     boundsBehavior: Flickable.StopAtBounds
+    ScrollBar.vertical: SlimScrollBar { theme: page.theme }
 
     ColumnLayout {
         id: col
@@ -20,12 +22,12 @@ Flickable {
 
         Card {
             theme: page.theme
-            title: "Wallpaper"
+            title: "Tu fondo"
 
             ActionRow {
                 theme: page.theme
                 glyph: "󰸉"
-                label: "Cambiar wallpaper"
+                label: "Cambiar fondo de pantalla"
                 value: page.core.wallName
                 onClicked: page.core.runExternal(["wallpaper", "picker"])
             }
@@ -33,26 +35,50 @@ Flickable {
 
         Card {
             theme: page.theme
-            title: "Tema"
+            title: "Colores y estilo"
 
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 12
 
                 Text {
-                    text: "Modo"
-                    color: page.theme.foreground
+                    text: "Paleta actual"
+                    color: page.theme.foregroundMuted
                     font.family: page.theme.fontFamily
-                    font.pixelSize: 14
+                    font.pixelSize: 12
                     Layout.fillWidth: true
                 }
 
-                Segment {
-                    theme: page.theme
-                    options: ["Oscuro", "Claro"]
-                    current: page.core.mode === "light" ? "Claro" : "Oscuro"
-                    onSelected: (v) => page.core.run(["theme", "mode", v === "Claro" ? "light" : "dark"])
+                Row {
+                    spacing: 5
+                    Repeater {
+                        model: [page.theme.primary, page.theme.primaryContainer, page.theme.secondaryContainer,
+                                page.theme.surfaceHighest, page.theme.foreground]
+                        delegate: Rectangle {
+                            required property var modelData
+                            width: 18
+                            height: 18
+                            radius: 9
+                            color: modelData
+                            border.width: 1
+                            border.color: page.theme.outlineVariant
+                        }
+                    }
                 }
+            }
+
+            Text {
+                text: "Modo"
+                color: page.theme.foregroundMuted
+                font.family: page.theme.fontFamily
+                font.pixelSize: 12
+            }
+
+            ModePreview {
+                Layout.fillWidth: true
+                theme: page.theme
+                current: page.core.mode
+                onSelected: (v) => page.core.run(["theme", "mode", v])
             }
 
             Text {
@@ -83,7 +109,7 @@ Flickable {
                 font.pixelSize: 12
             }
 
-            ChipFlow {
+            BarThemeChoices {
                 theme: page.theme
                 options: page.core.barThemes
                 current: page.core.barTheme

@@ -17,6 +17,7 @@ Item {
     property bool micMuted: false
     property bool nightlight: false
     property bool dnd: false
+    property bool panelVisible: false
 
     // Conectividad (red y bluetooth).
     property bool networkConnected: false
@@ -116,11 +117,6 @@ Item {
             "else hyprctl hyprsunset temperature 4000 >/dev/null 2>&1; echo 1 > /tmp/hyprsunset_clicked_state; fi"]);
     }
 
-    function toggleDnd() {
-        root.dnd = !root.dnd;
-        act(["makoctl", "mode", "-t", "do-not-disturb"]);
-    }
-
     Process {
         id: stateProc
         command: ["bash", root.stateScript]
@@ -139,7 +135,6 @@ Item {
                     root.ddcAvailable = s.ddcAvailable !== false;
                     root.micMuted = !!s.micMuted;
                     root.nightlight = !!s.nightlight;
-                    root.dnd = !!s.dnd;
                     root.networkConnected = !!s.networkConnected;
                     root.networkType = String(s.networkType ?? "none");
                     root.networkName = String(s.networkName ?? "");
@@ -169,7 +164,7 @@ Item {
     // Refresco suave mientras el panel está abierto (el proceso muere al cerrar).
     Timer {
         interval: 4000
-        running: true
+        running: root.panelVisible
         repeat: true
         onTriggered: {
             if (!actionProc.running && !menuProc.running)
@@ -177,5 +172,5 @@ Item {
         }
     }
 
-    Component.onCompleted: refresh()
+    onPanelVisibleChanged: if (panelVisible) refresh()
 }

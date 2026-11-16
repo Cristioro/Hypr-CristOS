@@ -12,8 +12,9 @@ Rectangle {
 
     Layout.fillWidth: true
     implicitHeight: 44
-    radius: 10
-    color: mouse.containsMouse ? theme.surfaceHigh : "transparent"
+    radius: 12
+    color: mouse.containsMouse ? Qt.rgba(theme.foreground.r, theme.foreground.g, theme.foreground.b, 0.07) : "transparent"
+    Behavior on color { ColorAnimation { duration: 120 } }
 
     RowLayout {
         anchors.fill: parent
@@ -21,12 +22,19 @@ Rectangle {
         anchors.rightMargin: 10
         spacing: 10
 
-        Text {
+        Rectangle {
             visible: root.glyph.length > 0
-            text: root.glyph
-            color: root.theme.foregroundMuted
-            font.family: root.theme.fontFamily
-            font.pixelSize: 15
+            implicitWidth: 30
+            implicitHeight: 30
+            radius: 10
+            color: Qt.rgba(root.theme.primary.r, root.theme.primary.g, root.theme.primary.b, 0.12)
+            Text {
+                anchors.centerIn: parent
+                text: root.glyph
+                color: root.theme.primary
+                font.family: root.theme.iconFamily
+                font.pixelSize: 15
+            }
         }
 
         Text {

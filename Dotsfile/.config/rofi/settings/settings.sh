@@ -233,8 +233,8 @@ notifications_menu() {
     menu_reset
     menu_add "󰂚  No molestar (actual: $DND)" "core notifications dnd"
     menu_add "󰎟  Descartar todas"            "core notifications dismiss-all"
-    menu_add "󰃷  Restaurar última"           "core notifications restore"
-    menu_add "󰑓  Reiniciar mako"             "core notifications restart"
+    menu_add "󰃷  Ver historial"               "core notifications restore"
+    menu_add "󰑓  Reiniciar notificaciones"    "core notifications restart"
     menu_add "󰅖  Volver"                     "@back"
     menu_run "Notificaciones"
 }

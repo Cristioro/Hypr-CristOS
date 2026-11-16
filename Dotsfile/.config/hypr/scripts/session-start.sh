@@ -150,7 +150,6 @@ start_waybar() {
   return 1
 }
 start_waybar
-start_once mako            mako
 start_once hypridle        hypridle
 start_once swayosd-server  swayosd-server --style "$HOME_DIR/.config/swayosd/style.css" --duration 1200 --top-margin 0.85
 start_once nm-applet       nm-applet --indicator
@@ -177,6 +176,11 @@ if have dbus-update-activation-environment; then
     HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY \
     XDG_CURRENT_DESKTOP XDG_SESSION_ID XDG_SESSION_TYPE XDG_SESSION_DESKTOP \
     >/dev/null 2>&1 || true
+fi
+
+# El servicio sustituye Mako solo si es su propietario y lo recupera si falla.
+if ! systemctl --user start cristos-notifications.service >/dev/null 2>&1; then
+  start_once mako mako
 fi
 
 # Polkit (después de sincronizar el entorno).

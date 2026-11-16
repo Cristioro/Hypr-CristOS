@@ -5,7 +5,8 @@ import Quickshell.Io
 Item {
     id: root
 
-    readonly property string fontFamily: "CaskaydiaCove Nerd Font Propo"
+    readonly property string fontFamily: "Noto Sans"
+    readonly property string iconFamily: "CaskaydiaCove Nerd Font Propo"
 
     // Paleta completa por defecto (tema oscuro). Solo se reemplaza por otra
     // paleta COMPLETA y válida; nunca se mezcla a medias. Así, mientras

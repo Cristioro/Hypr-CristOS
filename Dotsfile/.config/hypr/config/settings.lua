@@ -97,3 +97,25 @@ hl.layer_rule({
   blur = true,
   ignore_alpha = 0.05,
 })
+
+hl.layer_rule({
+  name = "cristos-cc-toast-blur",
+  match = { namespace = "cristos-cc-toast" },
+  blur = true,
+  ignore_alpha = 0.05,
+})
+
+hl.layer_rule({
+  name = "cristos-launcher-blur",
+  match = { namespace = "cristos-launcher" },
+  blur = true,
+  ignore_alpha = 0.05,
+})
+
+-- Solo la ventana de ajustes tiene blur; el velo exterior queda nítido.
+hl.layer_rule({
+  name = "cristos-settings-blur",
+  match = { namespace = "cristos-settings" },
+  blur = true,
+  ignore_alpha = 0.2,
+})

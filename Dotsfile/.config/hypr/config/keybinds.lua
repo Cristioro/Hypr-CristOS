@@ -136,7 +136,7 @@ hl.bind(mainMod .. " + ALT + CAPS_LOCK", hl.dsp.exec_cmd([[
 
 -- Launchers / Paneles (Rofi)
 hl.bind(mainMod .. " + I", hl.dsp.exec_cmd("~/.config/hypr/scripts/settings-gui.sh"))
-hl.bind(mainMod .. " + D", hl.dsp.exec_cmd("rofi -show drun"))
+hl.bind(mainMod .. " + D", hl.dsp.exec_cmd("~/.config/hypr/scripts/launcher.sh"))
 hl.bind(mainMod .. " + C", hl.dsp.exec_cmd("~/.config/rofi/clipboard/launcher.sh"))
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("~/.config/rofi/clipboard/launcher.sh"))
 hl.bind(mainMod .. " + Escape", hl.dsp.exec_cmd("~/.config/rofi/powermenu/powermenu.sh"))

@@ -8,16 +8,16 @@
   "margin-right": 10,
   "margin-left": 10,
   "margin-top": 2,
-  "modules-left": ["custom/omarchy", "custom/active_window", "custom/separator#dot", "cpu", "memory", "custom/media"],
+  "modules-left": ["custom/cristos-launcher", "custom/active_window", "custom/separator#dot", "cpu", "memory", "custom/media"],
   "modules-center": [ "hyprland/workspaces" ],
   "modules-right": [
     "clock",
     "custom/separator#dot",
     "custom/idle-indicator",
-    "custom/notification-silencing-indicator",
+    "custom/notifications",
     "custom/screenrecording-indicator",
     "custom/update",
-    "tray",
+    "group/tray-expander",
     "custom/controlcenter",
   ],
 
@@ -31,6 +31,7 @@
   "custom/active_window": {
     "exec": "~/.config/waybar/window.sh",
     "return-type": "json",
+    "restart-interval": 2,
     "markup": true
   },
   
@@ -54,34 +55,33 @@
     },
 	},
 
-  "custom/omarchy": {
-    // "format": "󰹡",
+  "custom/cristos-launcher": {
     "format": "<span size='11500'></span>",
-    "on-click": "~/.config/hypr/scripts/settings-gui.sh",
+    "on-click": "~/.config/hypr/scripts/launcher.sh >/dev/null 2>&1",
     "on-click-right": "~/.config/rofi/powermenu/powermenu.sh",
-    "tooltip-format": "Ajustes de CristOS\nSuper + I · clic derecho: powermenu"
+    "tooltip-format": "Aplicaciones · Super + D\nClic derecho: menú de energía"
   },
 
 "cpu": {
   "interval": 2,
-  "format": "{icon} ",
+  "format": "󰻠 {icon}",
   "tooltip-format": "CPU: {usage}%",
   "format-icons": ["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
-  "on-click": "omarchy-launch-or-focus-tui btop"
+  "on-click": "~/.config/waybar/scripts/glassy-system.sh btop"
 },
 
 "memory": {
   "interval": 2,
-  "format": "{icon} ",
+  "format": " {icon}",
   "tooltip-format": "RAM: {percentage}% ({used}/{total})",
   "format-icons": ["󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
-  "on-click": "omarchy-launch-or-focus-tui btop"
+  "on-click": "~/.config/waybar/scripts/glassy-system.sh btop"
 },
 
 "clock": {
-    "format": "{:%I:%M %p • %a, %d/%m}",
-    "format-alt": "{:%A, %d %B %Y}",
-    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    "format": "{:L%H:%M · %a %d/%m}",
+    "format-alt": "{:L%A, %d %B %Y}",
+    "tooltip-format": "<big>{:L%B %Y}</big>\n<tt><small>{calendar}</small></tt>"
 },
 
 
@@ -91,20 +91,21 @@
   "group/tray-expander": {
     "orientation": "inherit",
     "drawer": {
-      "transition-duration": 600,
-      "children-class": "tray-group-item"
+      "transition-duration": 180,
+      "children-class": "tray-group-item",
+      "transition-left-to-right": false
     },
     "modules": ["custom/expand-icon", "tray"]
   },
 
   "custom/expand-icon": {
-    "format": "",
-    "tooltip": false
+    "format": "󰅂",
+    "tooltip-format": "Aplicaciones en segundo plano"
   },
 
   "custom/screenrecording-indicator": {
-    "on-click": "omarchy-cmd-screenrecord",
-    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "on-click": "~/.config/hypr/scripts/record.sh full",
+    "exec": "~/.config/waybar/scripts/glassy-system.sh recording-status",
     "signal": 8,
     "interval": 2,
     "return-type": "json"
@@ -118,6 +119,7 @@
 "custom/media": {
   "exec": "status=$(playerctl status 2>/dev/null); title=$(playerctl metadata title 2>/dev/null); artist=$(playerctl metadata artist 2>/dev/null); if [ \"$status\" = \"Playing\" ] && [ -n \"$title\" ]; then short=\"${title:0:24}\"; [ ${#title} -gt 24 ] && short=\"$short…\"; full=\"$title\"; [ -n \"$artist\" ] && full=\"$artist — $title\"; jq -nc --arg text \"  $short \" --arg tooltip \"$full\" '{text:$text, tooltip:$tooltip, class:\"playing\"}'; else printf '{\"text\":\"\"}\n'; fi",
   "return-type": "json",
+  "escape": true,
   "interval": 2,
   "on-click": "playerctl play-pause",
   "on-click-right": "playerctl next",
@@ -138,25 +140,33 @@
 },
 
   "custom/idle-indicator": {
-    "on-click": "omarchy-toggle-idle",
-    "exec": "$OMARCHY_PATH/default/waybar/indicators/idle.sh",
+    "on-click": "~/.config/hypr/scripts/caffeine.sh toggle",
+    "exec": "~/.config/waybar/scripts/glassy-system.sh idle-status",
     "signal": 9,
     "interval": 2,
     "return-type": "json"
   },
   
   "custom/notification-silencing-indicator": {
-    "on-click": "omarchy-toggle-notification-silencing",
-    "exec": "$OMARCHY_PATH/default/waybar/indicators/notification-silencing.sh",
+    "on-click": "~/.config/hypr/scripts/notifications.sh toggle",
+    "exec": "~/.config/waybar/scripts/glassy-system.sh dnd-status",
     "signal": 10,
     "interval": 2,
     "return-type": "json"
   },
 
+  "custom/notifications": {
+    "exec": "~/.config/hypr/scripts/notifications.sh waybar",
+    "return-type": "json",
+    "interval": 2,
+    "on-click": "~/.config/hypr/scripts/notifications.sh notifications",
+    "on-click-right": "~/.config/hypr/scripts/notifications.sh toggle"
+  },
+
   "custom/update": {
     "format": "",
-    "exec": "omarchy-update-available",
-    "on-click": "omarchy-launch-floating-terminal-with-presentation paru -Syu",
+    "exec": "~/.config/waybar/scripts/glassy-system.sh updates",
+    "on-click": "~/.config/waybar/scripts/glassy-system.sh update-open",
     "tooltip-format": "{text}\nCachyOS · clic para actualizar (paru)",
     "signal": 7,
     "interval": 21600

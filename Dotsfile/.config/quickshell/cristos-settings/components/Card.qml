@@ -9,24 +9,24 @@ Rectangle {
     default property alias content: inner.data
 
     Layout.fillWidth: true
-    implicitHeight: layout.implicitHeight + 28
-    radius: 14
-    color: theme.surface
+    implicitHeight: layout.implicitHeight + 34
+    radius: 18
+    color: Qt.rgba(theme.surface.r, theme.surface.g, theme.surface.b, 0.70)
     border.width: 1
-    border.color: theme.outlineVariant
+    border.color: Qt.rgba(theme.outline.r, theme.outline.g, theme.outline.b, 0.18)
 
     ColumnLayout {
         id: layout
         anchors.fill: parent
-        anchors.margins: 14
-        spacing: 10
+        anchors.margins: 17
+        spacing: 12
 
         Text {
             visible: root.title.length > 0
             text: root.title
-            color: root.theme.primary
+            color: root.theme.foreground
             font.family: root.theme.fontFamily
-            font.pixelSize: 13
+            font.pixelSize: 14
             font.bold: true
             Layout.fillWidth: true
         }

@@ -65,14 +65,16 @@ window#waybar {
 #cpu,
 #memory,
 #tray,
-#custom-omarchy,
+#custom-cristos-launcher,
 #custom-active_window,
 #custom-media,
 #custom-update,
 #custom-idle-indicator,
 #custom-notification-silencing-indicator,
+#custom-notifications,
 #custom-screenrecording-indicator,
 #custom-controlcenter,
+#custom-expand-icon,
 #workspaces,
 #workspaces button {
     color: @foreground;
@@ -96,14 +98,14 @@ window#waybar {
 }
 
 /* Dentro de las islas no hay sub-píldoras */
-#custom-omarchy,
+#custom-cristos-launcher,
 #custom-active_window {
     background: transparent;
     border: none;
     box-shadow: none;
 }
 
-#custom-omarchy {
+#custom-cristos-launcher {
     padding: 0 8px 0 2px;
 }
 
@@ -156,6 +158,43 @@ window#waybar {
     font-size: 15px;
     margin: 0 4px 0 8px;
     padding: 0 2px;
+}
+
+#custom-notifications {
+    font-size: 15px;
+    margin: 0 4px;
+    padding: 0 3px;
+    border-radius: 12px;
+}
+
+#custom-notifications.unread,
+#custom-notifications.dnd { color: @accent; }
+#custom-notifications:hover { background-color: alpha(@accent, 0.14); }
+
+#custom-expand-icon {
+    font-size: 15px;
+    padding: 0 4px;
+}
+
+#custom-cristos-launcher,
+#custom-controlcenter,
+#custom-expand-icon,
+#cpu,
+#memory,
+#custom-media,
+#custom-update {
+    border-radius: 12px;
+    transition: background-color 120ms ease-out;
+}
+
+#custom-cristos-launcher:hover,
+#custom-controlcenter:hover,
+#custom-expand-icon:hover,
+#cpu:hover,
+#memory:hover,
+#custom-media:hover,
+#custom-update:hover {
+    background-color: alpha(@accent, 0.14);
 }
 
 #tray {

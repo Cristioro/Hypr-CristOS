@@ -28,6 +28,7 @@ DIRS=(
   ".config/hypr/scripts"
   ".config/waybar"
   ".config/quickshell/cristos-cc"
+  ".config/quickshell/cristos-launcher"
   ".config/quickshell/cristos-settings"
   ".config/quickshell/hyprquickpaper"
   ".config/rofi"
@@ -50,6 +51,8 @@ FILES=(
   ".config/matugen/settings.conf"
   ".config/matugen/templates/hyprland.lua"
   ".config/systemd/user/hypr-session.service"
+  ".config/systemd/user/cristos-notifications.service"
+  ".local/bin/omarchy-toggle-notification-silencing"
   ".local/bin/ws-scroll-daemon"
 )
 

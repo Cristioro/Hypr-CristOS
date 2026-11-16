@@ -43,9 +43,9 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 8
-        height: 5
-        radius: 3
-        color: root.theme.outlineVariant
+        height: 7
+        radius: 4
+        color: root.theme.surfaceHighest
 
         Rectangle {
             width: track.width * (root.shownValue - root.from) / Math.max(1, root.to - root.from)
@@ -57,14 +57,14 @@ Item {
 
     Rectangle {
         id: knob
-        width: 16
-        height: 16
-        radius: 8
+        width: 18
+        height: 18
+        radius: 9
         color: root.theme.primary
         border.width: 2
         border.color: root.theme.background
         anchors.bottom: track.bottom
-        anchors.bottomMargin: -5
+        anchors.bottomMargin: -5.5
         x: Math.max(0, Math.min(track.width - width,
                                track.width * (root.shownValue - root.from) / Math.max(1, root.to - root.from) - width / 2))
     }

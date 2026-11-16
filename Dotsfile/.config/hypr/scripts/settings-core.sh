@@ -36,7 +36,7 @@ current_wall() {
 }
 
 dnd_state() {
-    if makoctl mode 2>/dev/null | grep -qx 'do-not-disturb'; then
+    if [ "$("$HYPR_DIR/scripts/notifications.sh" status)" = on ]; then
         echo "Sí"
     else
         echo "No"
@@ -287,15 +287,13 @@ audio_action() {
 notifications_action() {
     case "${1:-}" in
         dnd)
-            makoctl mode -t do-not-disturb >/dev/null 2>&1
+            "$HYPR_DIR/scripts/notifications.sh" toggle >/dev/null
             notify "Notificaciones" "No molestar: $(dnd_state)"
             ;;
-        dismiss-all) makoctl dismiss -a >/dev/null 2>&1 ;;
-        restore) makoctl restore >/dev/null 2>&1 ;;
+        dismiss-all) "$HYPR_DIR/scripts/notifications.sh" clear >/dev/null 2>&1 ;;
+        restore) "$HYPR_DIR/scripts/notifications.sh" show >/dev/null 2>&1 ;;
         restart)
-            pkill -x mako 2>/dev/null
-            sleep 0.4
-            setsid -f mako >/dev/null 2>&1
+            systemctl --user restart cristos-notifications.service
             ;;
         *) echo "uso: notifications <dnd|dismiss-all|restore|restart>" >&2; return 1 ;;
     esac

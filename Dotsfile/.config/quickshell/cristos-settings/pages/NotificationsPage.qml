@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 import "../components"
 
 Flickable {
@@ -12,6 +13,7 @@ Flickable {
     contentWidth: width
     contentHeight: col.implicitHeight
     boundsBehavior: Flickable.StopAtBounds
+    ScrollBar.vertical: SlimScrollBar { theme: page.theme }
 
     ColumnLayout {
         id: col
@@ -45,14 +47,14 @@ Flickable {
             ActionRow {
                 theme: page.theme
                 glyph: "󰃷"
-                label: "Restaurar última"
-                onClicked: page.core.run(["notifications", "restore"])
+                label: "Ver historial de notificaciones"
+                onClicked: page.core.runExternal(["notifications", "restore"])
             }
 
             ActionRow {
                 theme: page.theme
                 glyph: "󰑓"
-                label: "Reiniciar mako"
+                label: "Reiniciar servidor de notificaciones"
                 onClicked: page.core.run(["notifications", "restart"])
             }
         }

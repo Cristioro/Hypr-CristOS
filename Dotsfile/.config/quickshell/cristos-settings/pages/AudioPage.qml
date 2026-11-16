@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 import "../components"
 
 Flickable {
@@ -12,6 +13,7 @@ Flickable {
     contentWidth: width
     contentHeight: col.implicitHeight
     boundsBehavior: Flickable.StopAtBounds
+    ScrollBar.vertical: SlimScrollBar { theme: page.theme }
 
     ColumnLayout {
         id: col

@@ -92,3 +92,7 @@ post_hook = '~/.config/matugen/hooks/gtk-mode.sh'
 [templates.cristos_cc]
 input_path = "~/.config/matugen/templates/cristos-settings.json"
 output_path = "~/.config/quickshell/cristos-cc/colors.json"
+
+[templates.cristos_launcher]
+input_path = "~/.config/matugen/templates/cristos-settings.json"
+output_path = "~/.config/quickshell/cristos-launcher/colors.json"

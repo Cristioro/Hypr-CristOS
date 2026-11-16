@@ -18,7 +18,8 @@ Rectangle {
     radius: 14
     color: mouse.containsMouse
         ? Qt.rgba(theme.primary.r, theme.primary.g, theme.primary.b, 0.12)
-        : "transparent"
+        : Qt.rgba(theme.surface.r, theme.surface.g, theme.surface.b, 0.65)
+    Behavior on color { ColorAnimation { duration: 120 } }
     border.width: 1
     border.color: Qt.rgba(theme.outlineVariant.r, theme.outlineVariant.g,
                           theme.outlineVariant.b, 0.55)
@@ -43,7 +44,7 @@ Rectangle {
             Text {
                 text: root.title
                 color: root.theme.foreground
-                font.family: root.theme.fontFamily
+                font.family: "Noto Sans"
                 font.pixelSize: 13
                 font.bold: true
             }
@@ -51,7 +52,7 @@ Rectangle {
             Text {
                 text: root.subtitle
                 color: root.theme.foregroundMuted
-                font.family: root.theme.fontFamily
+                font.family: "Noto Sans"
                 font.pixelSize: 11
                 elide: Text.ElideRight
                 Layout.fillWidth: true

@@ -1,0 +1,10 @@
+[Unit]
+Description=CristOS notification and control center
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=%h/.config/hypr/scripts/cristos-notifications-service.sh
+Restart=no

@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 import "../components"
 
 Flickable {
@@ -12,6 +13,7 @@ Flickable {
     contentWidth: width
     contentHeight: col.implicitHeight
     boundsBehavior: Flickable.StopAtBounds
+    ScrollBar.vertical: SlimScrollBar { theme: page.theme }
 
     ColumnLayout {
         id: col
@@ -23,7 +25,7 @@ Flickable {
             title: "Estado"
 
             Text {
-                text: page.core.networkState.length > 0 ? page.core.networkState : "Sin conexión"
+                text: page.networkLabel(page.core.networkState)
                 color: page.theme.foreground
                 font.family: page.theme.fontFamily
                 font.pixelSize: 14
@@ -57,5 +59,16 @@ Flickable {
         }
 
         Item { Layout.preferredHeight: 8 }
+    }
+
+    function networkLabel(state) {
+        const code = parseInt(state, 10);
+        if (code === 100) return "Conectado";
+        if (code === 70) return "Desconectando";
+        if (code >= 40 && code < 100) return "Conectando";
+        if (code === 30) return "Desconectado";
+        if (code === 20) return "No disponible";
+        if (code === 10) return "No gestionado";
+        return state ? state : "Sin información";
     }
 }

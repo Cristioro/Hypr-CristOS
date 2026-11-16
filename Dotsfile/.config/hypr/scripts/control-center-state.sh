@@ -37,7 +37,7 @@ nightlight=false
 
 # --------------------------------------------------------------- no molestar
 dnd=false
-makoctl mode 2>/dev/null | grep -qx 'do-not-disturb' && dnd=true
+[ "$("$HOME/.config/hypr/scripts/notifications.sh" status 2>/dev/null)" = "on" ] && dnd=true
 
 # -------------------------------------------------------------------- red
 # Prioriza ethernet/wifi; ignora loopback y túneles (ZeroTier, VPN...).
@@ -48,9 +48,9 @@ net_ip=""
 
 net_line=""
 if command -v nmcli >/dev/null 2>&1; then
-    net_line=$(nmcli -t -f DEVICE,TYPE,STATE,CONNECTION device status 2>/dev/null \
+    net_line=$(LC_ALL=C nmcli -t -f DEVICE,TYPE,STATE,CONNECTION device status 2>/dev/null \
         | awk -F: '$3=="connected" && ($2=="ethernet" || $2=="wifi") {print; exit}')
-    [ -n "$net_line" ] || net_line=$(nmcli -t -f DEVICE,TYPE,STATE,CONNECTION device status 2>/dev/null \
+    [ -n "$net_line" ] || net_line=$(LC_ALL=C nmcli -t -f DEVICE,TYPE,STATE,CONNECTION device status 2>/dev/null \
         | awk -F: '$3=="connected" && $2!="loopback" && $2!="tun" {print; exit}')
 fi
 

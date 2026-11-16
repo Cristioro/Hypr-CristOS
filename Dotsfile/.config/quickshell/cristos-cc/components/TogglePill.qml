@@ -17,6 +17,7 @@ Rectangle {
     color: root.active
         ? Qt.rgba(theme.primary.r, theme.primary.g, theme.primary.b, 0.20)
         : (mouse.containsMouse ? theme.surfaceHigh : "transparent")
+    Behavior on color { ColorAnimation { duration: 120 } }
     border.width: 1
     border.color: root.active
         ? Qt.rgba(theme.primary.r, theme.primary.g, theme.primary.b, 0.55)
@@ -41,7 +42,7 @@ Rectangle {
             horizontalAlignment: Text.AlignHCenter
             text: root.label
             color: root.active ? root.theme.foreground : root.theme.foregroundMuted
-            font.family: root.theme.fontFamily
+            font.family: "Noto Sans"
             font.pixelSize: 10
             elide: Text.ElideRight
         }

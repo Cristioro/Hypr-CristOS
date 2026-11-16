@@ -9,17 +9,24 @@ Rectangle {
     property var action: null
 
     visible: false
-    color: Qt.rgba(0, 0, 0, 0.55)
+    focus: visible
+    color: Qt.rgba(0, 0, 0, 0.50)
 
     function ask(msg, cb) {
         message = msg;
         action = cb;
         visible = true;
+        forceActiveFocus();
     }
 
     function reject() {
         visible = false;
         action = null;
+    }
+
+    Keys.onEscapePressed: (event) => {
+        root.reject();
+        event.accepted = true;
     }
 
     MouseArea {
@@ -31,7 +38,7 @@ Rectangle {
         width: Math.min(420, root.width - 80)
         implicitHeight: dialogCol.implicitHeight + 40
         anchors.centerIn: parent
-        radius: 16
+        radius: 20
         color: root.theme.surface
         border.width: 1
         border.color: root.theme.outlineVariant
@@ -72,7 +79,7 @@ Rectangle {
 
                     Text {
                         anchors.centerIn: parent
-                        text: "No"
+                        text: "Cancelar"
                         color: root.theme.foreground
                         font.family: root.theme.fontFamily
                         font.pixelSize: 13
@@ -95,7 +102,7 @@ Rectangle {
 
                     Text {
                         anchors.centerIn: parent
-                        text: "Sí"
+                        text: "Confirmar"
                         color: yesMouse.containsMouse ? root.theme.foregroundPrimary : root.theme.foregroundPrimaryContainer
                         font.family: root.theme.fontFamily
                         font.pixelSize: 13

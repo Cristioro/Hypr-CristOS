@@ -2,6 +2,11 @@
 
 MAX_TITLE_LEN=20
 
+# El módulo usa Pango markup: escapar también el tooltip.
+escape_markup() {
+    jq -nr --arg value "$1" '$value | @html'
+}
+
 print_status() {
     window=$(hyprctl activewindow -j 2>/dev/null)
     address=$(jq -r '.address // empty' <<< "$window")
@@ -10,14 +15,14 @@ print_status() {
     if [[ -z "$address" || "$address" == "null" ]]; then
         ws=$(hyprctl activeworkspace -j | jq -r '.id')
 
-        top_line="Desktop"
-        bottom_line="Workspace $ws"
+        top_line="Escritorio"
+        bottom_line="Espacio $ws"
 
-        esc_top=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$top_line")
-        esc_bottom=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$bottom_line")
+        esc_top=$(escape_markup "$top_line")
+        esc_bottom=$(escape_markup "$bottom_line")
 
-        text="<span size='7500' foreground='#a6adc8' rise='-2000'>$esc_top</span>
-<span size='9000' weight='bold' foreground='#ffffff'>$esc_bottom</span>"
+        text="<span size='7500' rise='-2000'>$esc_top</span>
+<span size='9000' weight='bold'>$esc_bottom</span>"
 
         jq -nc \
             --arg text "$text" \
@@ -37,18 +42,19 @@ print_status() {
         title=$(sed -E 's/^Discord[[:space:]]*\|[[:space:]]*//' <<< "$title")
     fi
 
-    # Truncate title
+    # El tooltip conserva el título completo.
+    full_title="$title"
     if (( ${#title} > MAX_TITLE_LEN )); then
         title="${title:0:$((MAX_TITLE_LEN-3))}..."
     fi
 
-    esc_top=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$class")
-    esc_bottom=$(sed 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g' <<< "$title")
+    esc_top=$(escape_markup "$class")
+    esc_bottom=$(escape_markup "$title")
 
-    text="<span size='7500' foreground='#a6adc8' rise='-2000'>$esc_top</span>
-<span size='9000' weight='bold' foreground='#ffffff'>$esc_bottom</span>"
+    text="<span size='7500' rise='-2000'>$esc_top</span>
+<span size='9000' weight='bold'>$esc_bottom</span>"
 
-    tooltip="$class: $title"
+    tooltip=$(escape_markup "$class: $full_title")
 
     jq -nc \
         --arg text "$text" \
